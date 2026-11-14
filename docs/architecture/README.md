@@ -10,6 +10,7 @@ choice are in [`../adr/`](../adr/README.md).
 | [Components](components.md) | C4 level 3, and what happens on a page load and a Refresh |
 | [Code layout](code-layout.md) | Where the code lives and which folder may import which |
 | [Deployment](deployment.md) | Where each part runs, and how a release reaches the server |
+| [Routes](routes.md) | The address of each page |
 | [API](api.md) | How the REST API is documented |
 | [Stack](stack.md) | The frameworks and libraries, each with its job |
 | [Diagram templates](diagram-templates.md) | The fixed template for each diagram type |
