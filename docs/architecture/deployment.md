@@ -2,43 +2,50 @@
 
 Where each part runs, and how a new version gets there.
 
-## Deployment diagram
+## Deployment: version one
+
+On which machine does each part run, and what connects the machines?
 
 ```mermaid
 flowchart TB
-    subgraph devices["Own devices, on the tailnet"]
-        phone["Phone browser"]
-        laptop["Laptop browser"]
+    subgraph devices["Own devices<br/>[Device: on the tailnet]"]
+        browser["Browser<br/>[Container: phone or laptop]<br/>Shows the pages"]:::container
     end
 
-    subgraph home["Home server"]
-        ts["tailscale serve<br/>HTTPS :443 on the tailnet name"]
-        subgraph compose["Docker Compose"]
-            c["Container: job-search-app<br/>image from ghcr.io<br/>port on 127.0.0.1 only"]
+    other(["Any other device<br/>[Person]<br/>Not on the tailnet"]):::external
+
+    subgraph home["Home server<br/>[Server]"]
+        ts["tailscale serve<br/>[External system: Tailscale]<br/>HTTPS :443 on the tailnet name"]:::external
+        subgraph compose["Docker Compose<br/>[Runtime]"]
+            c["Next.js app<br/>[Container: image from ghcr.io]<br/>Port on 127.0.0.1 only"]:::container
         end
-        vol[("Volume: vault clone<br/>mounted at VAULT_PATH")]
-        key["File: deploy key<br/>mounted read-only"]
+        vol[("Vault clone<br/>[Volume]<br/>Mounted at VAULT_PATH")]:::store
+        key[("Deploy key<br/>[File]<br/>Read-only SSH key")]:::store
     end
 
-    subgraph gh["GitHub"]
-        apprepo["App repo, public"]
-        actions["GitHub Actions"]
-        ghcr[("Container registry, public image")]
-        vaultrepo[("Vault repo, private")]
+    subgraph gh["GitHub<br/>[External service]"]
+        apprepo[("App repo<br/>[External system: git]<br/>Public app code")]:::external
+        actions["GitHub Actions<br/>[External system]<br/>Builds the image"]:::external
+        ghcr[("Container registry<br/>[External system: ghcr.io]<br/>Public image")]:::external
+        vaultrepo[("Vault repo<br/>[External system: git]<br/>Private notes")]:::external
     end
 
-    other["Any other device"]
-
-    phone -- "HTTPS over the tailnet" --> ts
-    laptop -- "HTTPS over the tailnet" --> ts
+    browser -- "opens pages, HTTPS over the tailnet" --> ts
     other -. "no route" .-x ts
-    ts -- "HTTP 127.0.0.1" --> c
-    c --- vol
-    c --- key
-    c -- "git pull over SSH" --> vaultrepo
-    apprepo -- "merge to main" --> actions
-    actions -- "build and push" --> ghcr
-    ghcr -- "docker compose pull" --> c
+    ts -- "forwards requests, HTTP on 127.0.0.1" --> c
+    vol -. "mounted at VAULT_PATH" .-> c
+    key -. "mounted read-only" .-> c
+    c -- "pulls the notes, git over SSH" --> vaultrepo
+    apprepo -- "starts a build on merge to main" --> actions
+    actions -- "pushes the image, HTTPS" --> ghcr
+    c -- "pulls the image, HTTPS" --> ghcr
+
+    classDef person fill:#08427b,stroke:#052e56,color:#ffffff
+    classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
+    classDef container fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef component fill:#85bbf0,stroke:#5d82a8,color:#000000
+    classDef store fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef external fill:#999999,stroke:#6b6b6b,color:#ffffff
 ```
 
 | Node | Runs | Holds |
@@ -48,24 +55,30 @@ flowchart TB
 | Volume | | The vault clone. It outlives the container. |
 | GitHub | Actions, the registry | The app code, the public image, the private vault |
 
-## A release
+## Sequence: a release
+
+What happens when a pull request merges to `main`?
 
 ```mermaid
 sequenceDiagram
-    actor Dev as Person
+    autonumber
+    actor Dev as Job seeker
     participant Repo as App repo
     participant CI as GitHub Actions
     participant Reg as Container registry
     participant Srv as Home server
 
-    Dev->>Repo: merge a pull request to main
-    Repo->>CI: start the build workflow
-    CI->>CI: build the image
-    CI->>Reg: push the image
-    Dev->>Srv: docker compose pull && docker compose up -d
-    Srv->>Reg: pull the new image
-    Srv->>Srv: replace the container
-    Note over Srv: on start, the app pulls the vault and builds the index
+    Dev->>Repo: merges a pull request to main
+    Repo->>CI: starts the build workflow
+    alt the build fails
+        CI-->>Dev: a failed check, the server keeps the old version
+    else the build works
+        CI->>Reg: pushes the image
+        Dev->>Srv: runs docker compose pull and up -d
+        Srv->>Reg: pulls the new image
+        Srv->>Srv: replaces the container
+        Srv->>Srv: pulls the vault and builds the index
+    end
 ```
 
 ## Settings

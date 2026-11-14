@@ -1,38 +1,49 @@
 # Components
 
-C4 level 3: the parts inside the Next.js app. The folder names are a proposal until the code
-layout is agreed.
+The parts inside the Next.js app. The split is a proposal until the code layout is agreed.
+
+## Level 3: components of the Next.js app
+
+Which parts make up the Next.js app, and which part may call which?
 
 ```mermaid
 flowchart TB
-    subgraph ui["UI"]
-        pages["Pages<br/>server components, one per feature"]
-        comps["Components<br/>board, tables, tabs, filters,<br/>markdown view, PDF view"]
-        routes["Route handlers<br/>refresh, resume file, health"]
+    subgraph next["Next.js app"]
+        subgraph ui["UI"]
+            pages["Pages<br/>[Component: server components]<br/>One per feature"]:::component
+            comps["Components<br/>[Component: shadcn/ui]<br/>Board, tables, tabs, filters,<br/>markdown view, PDF view"]:::component
+            routes["Route handlers<br/>[Component: Next.js]<br/>Refresh, resume file, health"]:::component
+        end
+        subgraph vaultmod["Vault module, no Next.js code"]
+            queries["Queries<br/>[Component: TypeScript]<br/>Typed data for one page"]:::component
+            store["Index store<br/>[Component: TypeScript]<br/>Holds the index, swaps in a new one"]:::component
+            sync["Sync<br/>[Component: git]<br/>Runs git pull, records the time"]:::component
+            parser["Parser<br/>[Component: gray-matter, unified]<br/>Frontmatter and markdown body"]:::component
+            schema["Schema check<br/>[Component: Zod]<br/>The rules of the vault's SCHEMA.md"]:::component
+            links["Link resolver<br/>[Component: remark]<br/>Targets, missing targets, backlinks"]:::component
+        end
     end
 
-    subgraph vaultmod["Vault module, no Next.js code"]
-        store["Index store<br/>holds the current index,<br/>swaps in a new one"]
-        sync["Sync<br/>runs git pull,<br/>records the time"]
-        parser["Parser<br/>frontmatter and markdown body"]
-        schema["Schema check<br/>the rules of the vault's SCHEMA.md"]
-        links["Link resolver<br/>targets, missing targets, backlinks"]
-        queries["Queries<br/>board, shortlist, company listings,<br/>one note by slug"]
-    end
+    clone[("Vault clone<br/>[Container: git working copy]<br/>The server's copy of the vault")]:::store
 
-    clone[("Vault clone")]
+    pages -- "renders with" --> comps
+    pages -- "calls" --> queries
+    routes -- "calls" --> queries
+    routes -- "asks for a rebuild" --> store
+    queries -- "reads" --> store
+    store -- "calls" --> sync
+    store -- "calls" --> parser
+    parser -- "calls" --> schema
+    parser -- "calls" --> links
+    sync -- "runs git pull" --> clone
+    parser -- "reads files" --> clone
 
-    pages --> comps
-    pages --> queries
-    routes --> store
-    routes --> queries
-    queries --> store
-    store --> sync
-    store --> parser
-    parser --> schema
-    parser --> links
-    sync --> clone
-    parser --> clone
+    classDef person fill:#08427b,stroke:#052e56,color:#ffffff
+    classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
+    classDef container fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef component fill:#85bbf0,stroke:#5d82a8,color:#000000
+    classDef store fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef external fill:#999999,stroke:#6b6b6b,color:#ffffff
 ```
 
 | Component | Job |
@@ -47,54 +58,65 @@ flowchart TB
 | Schema check | Checks frontmatter against the vault's rules and returns warnings. Never throws. |
 | Link resolver | Resolves each link to a note or an achievement, marks missing targets, builds backlinks. |
 
-## A page load
+## Sequence: a page load
+
+What happens when the person opens a page?
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant Page as Page (server component)
+    autonumber
+    actor User as Job seeker
+    participant Page as Pages
     participant Q as Queries
     participant Store as Index store
 
-    User->>Page: open an application
-    Page->>Q: application by slug
-    Q->>Store: current index
+    User->>Page: opens an application
+    Page->>Q: asks for the application by slug
+    Q->>Store: asks for the current index
     Store-->>Q: index
-    Q-->>Page: note, links, backlinks, warnings
-    Page-->>User: HTML with the time of the last update
-```
-
-## A Refresh
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant R as Refresh handler
-    participant Store as Index store
-    participant Sync
-    participant Git as git
-    participant P as Parser, schema check, link resolver
-
-    User->>R: select Refresh
-    R->>Store: rebuild
-    Store->>Sync: pull
-    Sync->>Git: git pull in VAULT_PATH
-    alt pull fails
-        Git-->>Sync: error
-        Sync-->>Store: error
-        Store-->>R: old index kept, error
-        R-->>User: page shows the error and the old time
-    else pull works
-        Git-->>Sync: new commit
-        Store->>P: parse every note
-        P-->>Store: new index with warnings
-        Store->>Store: swap the new index in
-        Store-->>R: new time
-        R-->>User: page shows the new data and time
+    alt no note has that slug
+        Q-->>Page: nothing
+        Page-->>User: a not-found page
+    else the note exists
+        Q-->>Page: note, links, backlinks, warnings
+        Page-->>User: HTML with the time of the last update
     end
 ```
 
-## What the index holds
+## Sequence: a Refresh
+
+What happens when the person selects Refresh?
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Job seeker
+    participant R as Route handlers
+    participant Store as Index store
+    participant Sync
+    participant P as Parser
+
+    User->>R: selects Refresh
+    R->>Store: asks for a rebuild
+    Store->>Sync: asks for a pull
+    Sync->>Sync: runs git pull in VAULT_PATH
+    alt the pull fails
+        Sync-->>Store: error
+        Store-->>R: error, old index kept
+        R-->>User: the error and the old time
+    else the pull works
+        Sync-->>Store: new commit
+        Store->>P: asks for a parse of every note
+        P-->>Store: new index with warnings
+        Store->>Store: swaps the new index in
+        Store-->>R: new time
+        R-->>User: the new data and time
+    end
+```
+
+## Data: what the index holds
+
+This is a class diagram, which has no template yet. It shows the shape of the index.
 
 ```mermaid
 classDiagram

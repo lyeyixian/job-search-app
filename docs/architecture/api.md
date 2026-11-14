@@ -5,21 +5,32 @@ follows from [ADR-0001](../adr/0001-nextjs-with-typescript.md): pages read the v
 server, so page data needs no endpoint. The alternative is a REST API for all data, which the
 pages call.
 
-## How the browser reaches the backend
+## Level 3: how the browser reaches the backend
+
+Which parts of the Next.js app answer the browser?
 
 ```mermaid
-flowchart LR
-    browser["Browser"]
+flowchart TB
+    browser(["Job seeker<br/>[Person]<br/>Uses a browser"]):::person
+
     subgraph next["Next.js app"]
-        pages["Pages<br/>return HTML"]
-        handlers["Route handlers<br/>return JSON or a file"]
-        queries["Queries"]
+        pages["Pages<br/>[Component: server components]<br/>Return HTML"]:::component
+        handlers["Route handlers<br/>[Component: Next.js]<br/>Return JSON or a file"]:::component
+        queries["Queries<br/>[Component: TypeScript]<br/>Read the vault index"]:::component
     end
-    browser -- "GET a page URL" --> pages
-    browser -- "POST /api/refresh" --> handlers
-    browser -- "GET resume file" --> handlers
-    pages --> queries
-    handlers --> queries
+
+    browser -- "GET a page URL, HTTPS" --> pages
+    browser -- "POST /api/refresh, HTTPS" --> handlers
+    browser -- "GET a resume file, HTTPS" --> handlers
+    pages -- "calls" --> queries
+    handlers -- "calls" --> queries
+
+    classDef person fill:#08427b,stroke:#052e56,color:#ffffff
+    classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
+    classDef container fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef component fill:#85bbf0,stroke:#5d82a8,color:#000000
+    classDef store fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef external fill:#999999,stroke:#6b6b6b,color:#ffffff
 ```
 
 ## Endpoints
