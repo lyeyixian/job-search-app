@@ -103,6 +103,10 @@ interview, and to check what a fit analysis or a resume points to.
 - The vault has about 10 role notes, 10 project notes and 10 stories today. One page holds each list.
 - Each role note and project note keeps its achievements under their own headings.
 - You prepare for interviews from the stories and the achievements.
+- Most notes have no title line. A role note has a job title, a company and a team. A project
+  note and a story have only a file name.
+- The skills inventory has one section for each category, and one section for the pinned skills.
+- The tag `#revisit` marks a text or a frontmatter value that waits for an update.
 
 ## Decisions
 
@@ -112,3 +116,16 @@ interview, and to check what a fit analysis or a resume points to.
   hold what came out of them.
 - **Projects that cannot go on a resume still show.** The app is for you, and you want the full
   record. The page marks them.
+- **A note with no title line gets a title from what it has.** A role note shows its job title,
+  its company and its team. A project note and a story show the file name as words.
+- **A programme has the place of its newest stint in the list of roles.** The stints show below
+  it, newest first.
+- **The choice of a competency lives in the address.** Back returns to the same stories, and a
+  choice can be bookmarked.
+- **A skill has its own page.** It shows the category of the skill, and each role and project
+  that lists the skill.
+- **A skill that the inventory does not have still shows.** It is under "Not in the inventory",
+  so that you can add it or correct the slug.
+- **The pinned skills show as the inventory writes them.** The section is text, not a list.
+- **A month that waits for an update gets the mark too.** The mark is next to the months of the
+  note, with the comment from the note.

@@ -46,3 +46,9 @@ It has at least one note for each case that a criterion names:
 - a listing with the state `unknown`, and a sweep log with more than one day for each company
   but one
 - a watchlist entry with notes on more than one line, and a company with the mode `watch`
+- a current role, a programme with two stints, and role notes with and without a `#` heading
+- a project of three kinds, one that cannot go on a resume, and one with no link
+- three stories with different competencies, one of them from two roles
+- a skills inventory with a `Pinned` section and a name on two lines, and a skill that a note
+  lists and the inventory does not have
+- a `#revisit` tag in the text of a note, and one in a comment of the frontmatter
