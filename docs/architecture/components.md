@@ -102,7 +102,7 @@ flowchart TB
 | Pages | One server component per feature in the spec. Gets data through the API client. |
 | Components | The shared UI parts from shadcn/ui: menu, board, tables, tabs, filters, PDF view. |
 | Markdown view | Turns a note body into HTML. Uses the link table from the API to make each link. |
-| API client | Typed functions for each endpoint. Its types come from the API's schemas. |
+| API client | Typed functions for each endpoint. Its types are generated from the OpenAPI document. |
 | API proxy | Forwards a browser request for `/api/*` to the API, for Refresh, the resume PDF and the docs page. |
 
 ## Sequence: a page load

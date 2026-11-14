@@ -8,6 +8,7 @@ choice are in [`../adr/`](../adr/README.md).
 |---|---|
 | This page | C4 level 1 and 2: the system and its containers |
 | [Components](components.md) | C4 level 3, and what happens on a page load and a Refresh |
+| [Code layout](code-layout.md) | Where the code lives and which folder may import which |
 | [Deployment](deployment.md) | Where each part runs, and how a release reaches the server |
 | [API](api.md) | How the REST API is documented |
 | [Stack](stack.md) | The frameworks and libraries, each with its job |

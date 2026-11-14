@@ -12,7 +12,7 @@ The frameworks and libraries, each with its job. A row marked "proposed" is not 
 | Styling | Tailwind CSS | Layout and phone breakpoints | [ADR-0006](../adr/0006-tailwind-with-shadcn-ui.md) |
 | Markdown view | unified with remark and rehype | Turns a note body into HTML with links | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
 | PDF view | PDF.js | Draws the committed resume PDF | [ADR-0007](../adr/0007-serve-the-committed-resume-pdf.md) |
-| API client | Hono client, typed from the API | Calls each endpoint with checked types | Proposed |
+| API client | `openapi-typescript`, `openapi-fetch` | Types and calls generated from the OpenAPI document | [ADR-0010](../adr/0010-monorepo-with-openapi-contract.md) |
 
 ## API
 
@@ -32,7 +32,7 @@ The frameworks and libraries, each with its job. A row marked "proposed" is not 
 | Layer | Choice | Job | Status |
 |---|---|---|---|
 | Runtime | Node, current LTS | Runs each service | Proposed |
-| Package manager | pnpm workspaces | One repo, two apps, shared packages | Proposed |
+| Package manager | pnpm workspaces | One repo, two apps | [ADR-0010](../adr/0010-monorepo-with-openapi-contract.md) |
 | Unit tests | Vitest | The vault module against made-up notes | Proposed |
 | Browser tests | Playwright | The acceptance criteria in the spec | Proposed |
 | Lint and format | ESLint, Prettier | Checks on each pull request | Proposed |
