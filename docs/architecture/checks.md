@@ -15,8 +15,8 @@ sequenceDiagram
     participant Reg as Container registry
 
     Dev->>Repo: pushes to a pull request
-    Repo->>CI: starts the checks workflow
-    CI->>CI: runs the six jobs
+    Repo->>CI: starts the checks workflow and the title workflow
+    CI->>CI: runs the six jobs and the title check
     alt a job fails
         CI-->>Dev: a failed check, merge is blocked
     else all jobs pass
@@ -40,8 +40,18 @@ All six jobs must pass before a merge.
 | Image build | `docker compose build` | A Dockerfile that no longer builds. Nothing is pushed. |
 | Docs | `pnpm docs:check`, a link check and a Mermaid parse | A dead link between docs, or a diagram that does not draw |
 
+## The title workflow
+
+A squash merge puts the pull request title on `main`. The title workflow fails if the title is not
+a Conventional Commit, as `AGENTS.md` describes it. It is a separate workflow because it also runs
+when someone edits the title. It runs a shell pattern and installs nothing.
+
+| Job | Checks | Catches |
+|---|---|---|
+| Pull request title | A type from the list, an optional scope of `web` or `api`, a subject with no period at the end, and 72 characters or fewer | A commit on `main` that does not follow the format |
+
 ## Rules on main
 
-- A branch rule requires the checks workflow to pass.
+- A branch rule requires the checks workflow and the title workflow to pass.
 - Nobody pushes to `main` directly.
 - The release workflow runs only on `main`, after a merge. It builds and pushes both images.
