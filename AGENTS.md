@@ -44,6 +44,15 @@ Hono service that owns the vault clone and serves a REST API.
 - Start each diagram from a template in `docs/architecture/diagram-templates.md`. Keep the theme
   line and the style lines as they are.
 
+## Commits and pull request titles
+
+- Write each commit message and each pull request title as a
+  [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/): `type(scope): subject`.
+  A squash merge puts the pull request title on `main`.
+- The types are `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci` and `chore`.
+- The scope is `web` or `api`. Omit the scope if the change is in both apps or in neither.
+- Example: `feat(web): show the application board`.
+
 ## Commands
 
 | Command | Result |
