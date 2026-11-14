@@ -132,9 +132,8 @@ test("shortlist 7: open a listing", async ({ page }) => {
 
   await row(page, "kestrel-pay", "payments-platform-engineer-2002").getByTestId("row-title").click();
 
-  // The page of a listing is part of the company listings feature. Until that feature is
-  // built, this test checks only the address.
   await expect(page).toHaveURL(/\/companies\/kestrel-pay\/listings\/payments-platform-engineer-2002$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Payments Platform Engineer" })).toBeVisible();
 });
 
 test("shortlist 8: go to the company", async ({ page }) => {
@@ -142,9 +141,8 @@ test("shortlist 8: go to the company", async ({ page }) => {
 
   await row(page, "kestrel-pay", "payments-platform-engineer-2002").getByTestId("row-company").click();
 
-  // The listings page of a company is part of the company listings feature. Until that
-  // feature is built, this test checks only the address.
   await expect(page).toHaveURL(/\/companies\/kestrel-pay$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Kestrel Pay" })).toBeVisible();
 });
 
 test("shortlist 9: no shortlisted listings", () => {

@@ -9,7 +9,8 @@ import { ShortlistFilters } from "./shortlist-filters";
 // On a wide screen a row is one line of six columns. On a phone the same cells stack.
 const COLUMNS = "lg:grid lg:grid-cols-[9rem_minmax(11rem,16rem)_7rem_minmax(0,1fr)_6.5rem_7.5rem] lg:gap-x-4";
 
-function Promotion({ application }: { application: ShortlistListing["application"] }) {
+/** The application of a promoted listing, as a link with its status. */
+export function Promotion({ application }: { application: ShortlistListing["application"] }) {
   if (!application) {
     return <span className="text-muted-foreground text-sm">Not promoted</span>;
   }
