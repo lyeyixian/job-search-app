@@ -10,6 +10,8 @@ on-profile: true
 
 # Recipe box
 
+## Context
+
 A small web app that stores recipes and builds a shopping list.
 
 ## Achievements

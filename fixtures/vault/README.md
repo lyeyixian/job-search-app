@@ -42,3 +42,14 @@ The market scan also covers the cases of the company listings pages:
 | `search/market/example-co/index.md` | A sweep log with three days, and a closed listing with the triage `maybe` |
 | `search/market/orchard-robotics/index.md` | A listing with the state `unknown` |
 | `search/market/marlow-freight/index.md` | A sweep log with one day |
+
+The experience notes cover the cases of the experience pages:
+
+| Note | Case |
+|---|---|
+| `experience/roles/northwind-software-engineer.md` | The current role, a `#` heading, two achievements, and a `#revisit` tag in the text |
+| `experience/roles/harbour-graduate-programme.md` | A programme with two stints, and no `#` heading |
+| `experience/projects/course-compiler.md` | A project that cannot go on a resume, no link, and a `#revisit` tag in a comment of the frontmatter |
+| `experience/projects/open-maps.md` | A skill that the skills inventory does not have, `rust` |
+| `experience/stories/unclear-owner.md` | A story from two roles, and no `#` heading |
+| `experience/skills.md` | A `Pinned` section, a name on two lines, and a skill that no note lists |

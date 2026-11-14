@@ -21,7 +21,35 @@ export type Note = {
   frontmatter: Record<string, unknown>;
   body: string;
   links: NoteLink[];
+  /** Each frontmatter key whose line has a comment with the tag `#revisit`. */
+  revisits: Revisit[];
 };
+
+/** A value in the frontmatter that waits for an update. */
+export type Revisit = {
+  /** The frontmatter key. */
+  field: string;
+  /** The comment without the tag. Can be empty. */
+  text: string;
+};
+
+export const REVISIT_TAG = "#revisit";
+const COMMENTED_KEY = /^([a-z][a-z0-9-]*):.*?\s(#.*)$/;
+
+/** Finds the frontmatter lines that have a comment with the tag `#revisit`. The YAML parser drops comments. */
+export function findRevisits(frontmatter: string): Revisit[] {
+  const revisits: Revisit[] = [];
+  for (const line of frontmatter.split("\n")) {
+    const match = COMMENTED_KEY.exec(line);
+    const comment = match?.[2] ?? "";
+    if (!match?.[1] || !comment.includes(REVISIT_TAG)) continue;
+    revisits.push({
+      field: match[1],
+      text: comment.replaceAll(REVISIT_TAG, "").replace(/^#/, "").replace(/\s+/g, " ").trim(),
+    });
+  }
+  return revisits;
+}
 
 const WIKILINK = /\[\[([^\]|#]+)(?:#([^\]|]+))?(?:\|[^\]]*)?\]\]/g;
 const processor = unified().use(remarkParse);
@@ -43,7 +71,7 @@ export function findLinks(body: string): NoteLink[] {
 
 /** Splits a note into frontmatter and body, and finds its links. */
 export function parseNote(path: string, source: string): Note {
-  const { data, content } = matter(source);
+  const { data, content, matter: rawFrontmatter } = matter(source);
   const fileName = path.split("/").at(-1) ?? path;
   return {
     path,
@@ -52,5 +80,6 @@ export function parseNote(path: string, source: string): Note {
     frontmatter: data,
     body: content,
     links: findLinks(content),
+    revisits: findRevisits(rawFrontmatter ?? ""),
   };
 }
