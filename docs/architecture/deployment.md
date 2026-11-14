@@ -59,6 +59,9 @@ flowchart TB
 | Volume | | The vault clone. It outlives the containers. |
 | GitHub | Actions, the registry | The app code, the two public images, the private vault |
 
+A third container, the trace viewer, runs only with the `tracing` profile and is not in the
+diagram. See [Errors, logging and tracing](errors-and-logging.md).
+
 The two containers share a private Docker network. Web calls the API by its service name. The API
 has no port on the host and no route from the tailnet except through Web.
 
@@ -94,6 +97,7 @@ sequenceDiagram
 |---|---|---|
 | `VAULT_PATH` | Compose file on the server | The folder of the vault clone inside the API container |
 | `API_URL` | Compose file on the server | The address of the API on the Docker network, for Web |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | The `tracing` profile of the Compose file | Where both services send traces. Not set in normal use. |
 | Deploy key path | Compose file on the server | The key that `git pull` uses |
 
 No setting holds a secret value. The key is a file on the server and is never in the repo or the

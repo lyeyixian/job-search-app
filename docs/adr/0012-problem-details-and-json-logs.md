@@ -25,4 +25,5 @@ logs.
 - OpenAPI tools know the error shape, and one schema covers every endpoint.
 - Web switches on `code`, never on the text of a message.
 - One page load can be followed across both services by its request id.
+- [ADR-0013](0013-opentelemetry-with-optional-viewer.md) replaces the request id with an OpenTelemetry trace id.
 - The logs stay on the server. `docker compose logs` reads them.
