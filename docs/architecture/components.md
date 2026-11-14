@@ -173,6 +173,6 @@ sequenceDiagram
 
 | Thing | Fields |
 |---|---|
-| Vault index | The time of the pull, the commit, and every note |
+| Vault index | The time of the pull, the commit, every note, and the path of every file |
 | Note | Slug, type, frontmatter, body, warnings, links out, backlinks |
 | Link | Target slug, achievement, label, and whether the target is missing |

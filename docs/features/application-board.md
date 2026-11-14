@@ -75,6 +75,13 @@ next.
   to apply.
 - You change a status outside the app for now. The board shows the change the next time the app
   updates.
+- The newest application is the one with the latest `captured` day.
+- You choose one value for each of company, region, verdict and direction check.
+- A card with no verdict comes after `skip` in its column.
+- An application with a status that the vault's rules do not permit shows in the `analyzed`
+  column, with a warning that names the field.
+- The page of an application is a placeholder until that feature is built. It shows the title
+  and the company.
 
 ## Decisions
 
@@ -82,5 +89,7 @@ next.
   column holds all the cards today.
 - **Finished applications start closed.** An application that is `accepted`, `rejected` or
   `dropped` needs no more action from you.
+- **Your choices go in the address of the page.** Back returns to the same board, and you can
+  bookmark a narrowed board.
 - **The board changes nothing in this version.** A later version lets you move a card to change
   its status.

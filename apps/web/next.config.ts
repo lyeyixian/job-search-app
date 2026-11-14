@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   // because pnpm keeps the packages there.
   output: "standalone",
   outputFileTracingRoot: path.join(import.meta.dirname, "../../"),
+  // The application board is the first page of the app. See docs/architecture/routes.md.
+  redirects: async () => [{ source: "/", destination: "/applications", permanent: false }],
   turbopack: {
     rules: {
       "*.css": {

@@ -32,7 +32,8 @@ apps/web/e2e/application-board.spec.ts
 `fixtures/vault/` is a small made-up vault that follows the vault's schema. It holds no real data.
 It has at least one note for each case that a criterion names:
 
-- an application in each status, with and without a tailored resume
+- an application in each status except `offer`, with and without a tailored resume. No
+  application has the status `offer`, because a criterion of the board needs an empty column.
 - a note with a missing field and a note with a value that the schema does not permit
 - a link to a note that does not exist, and a link to an achievement that does not exist
 - a company with open, closed, rejected and promoted listings
