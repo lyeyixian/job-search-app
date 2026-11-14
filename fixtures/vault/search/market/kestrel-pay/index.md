@@ -7,3 +7,10 @@
 | [[developer-tools-engineer-2003\|Developer Tools Engineer]] | unstated | shortlist | Build and test tools, no years bar | 2026-10-05 | 2026-10-18 | open | |
 | [[site-reliability-engineer-2004\|Site Reliability Engineer]] | Mid | shortlist | Reliability work on the payment services | 2026-09-20 | 2026-10-05 | closed | |
 | [[engineering-manager-2005\|Engineering Manager]] | Manager | reject | People management | 2026-09-20 | 2026-10-18 | open | |
+
+## Sweep log
+
+- **2026-09-20** - recipe: `location=Singapore`. First sweep, 3 listings.
+- **2026-10-05** - recipe: unchanged. 1 new listing.
+- **2026-10-12** - recipe: unchanged. 1 new listing, 1 closed.
+- **2026-10-18** - recipe: unchanged. No change.

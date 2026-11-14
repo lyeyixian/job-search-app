@@ -5,7 +5,18 @@ import type { VaultStore } from "../vault/store.js";
 import { WarningSchema } from "./applications.js";
 import { type AppEnv, problem, problemContent } from "./problem.js";
 
-const ShortlistListingSchema = z
+export const PromotionSchema = z
+  .object({
+    slug: z.string().openapi({ example: "example-co-backend-engineer" }),
+    found: z.boolean().openapi({ description: "False if the vault has no such application." }),
+    status: z.enum(STATUSES).nullable().openapi({
+      description: "`null` if the application does not exist or has no permitted status.",
+    }),
+  })
+  .nullable()
+  .openapi({ description: "The application that the listing was promoted to. `null` if it was not promoted." });
+
+export const ShortlistListingSchema = z
   .object({
     company: z
       .string()
@@ -25,16 +36,7 @@ const ShortlistListingSchema = z
       description: "The day of the first sweep that found the listing. `null` if the row has a warning for it.",
       example: "2026-10-01",
     }),
-    application: z
-      .object({
-        slug: z.string().openapi({ example: "example-co-backend-engineer" }),
-        found: z.boolean().openapi({ description: "False if the vault has no such application." }),
-        status: z.enum(STATUSES).nullable().openapi({
-          description: "`null` if the application does not exist or has no permitted status.",
-        }),
-      })
-      .nullable()
-      .openapi({ description: "The application that the listing was promoted to. `null` if it was not promoted." }),
+    application: PromotionSchema,
     warnings: z.array(WarningSchema).openapi({ description: "`field` is the column of the company index." }),
   })
   .openapi("ShortlistListing");

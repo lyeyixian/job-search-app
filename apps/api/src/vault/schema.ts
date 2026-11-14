@@ -23,9 +23,9 @@ const day = z.union([
   z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 ]);
 
-/** A day cell of a scan table as `YYYY-MM-DD`, or null if the cell is not a day. */
-export function checkDay(cell: string | undefined): string | null {
-  const result = day.safeParse((cell ?? "").trim());
+/** A day cell of a scan table or a day of the frontmatter as `YYYY-MM-DD`, or null if the value is not a day. */
+export function checkDay(value: unknown): string | null {
+  const result = day.safeParse(typeof value === "string" ? value.trim() : value);
   return result.success ? result.data : null;
 }
 
