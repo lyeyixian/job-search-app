@@ -13,3 +13,4 @@ file that replaces it.
 | [0006](0006-tailwind-with-shadcn-ui.md) | Tailwind CSS with shadcn/ui |
 | [0007](0007-serve-the-committed-resume-pdf.md) | Serve the committed resume PDF |
 | [0008](0008-rest-api-with-generated-openapi-docs.md) | A REST API with generated OpenAPI docs |
+| [0009](0009-separate-api-service-with-hono.md) | A separate API service, built with Hono |

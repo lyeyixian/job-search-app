@@ -9,7 +9,7 @@ choice are in [`../adr/`](../adr/README.md).
 | This page | C4 level 1 and 2: the system and its containers |
 | [Components](components.md) | C4 level 3, and what happens on a page load and a Refresh |
 | [Deployment](deployment.md) | Where each part runs, and how a release reaches the server |
-| [API](api.md) | The backend endpoints |
+| [API](api.md) | How the REST API is documented |
 | [Stack](stack.md) | The frameworks and libraries, each with its job |
 | [Diagram templates](diagram-templates.md) | The fixed template for each diagram type |
 
@@ -54,18 +54,20 @@ flowchart TB
     serve["<b>tailscale serve</b><br/>[External: Tailscale]<br/><small>HTTPS on the tailnet</small>"]:::external
 
     subgraph system["Job search app"]
-        next["<b>Next.js app</b><br/>[Container: Next.js]<br/><small>Renders pages</small>"]:::container
-        index[("<b>Vault index</b><br/>[Container: Node memory]<br/><small>All parsed notes</small>")]:::store
+        web["<b>Web</b><br/>[Container: Next.js]<br/><small>Renders pages</small>"]:::container
+        api["<b>API</b><br/>[Container: Hono on Node]<br/><small>REST API over the vault</small>"]:::container
+        index[("<b>Vault index</b><br/>[Container: API memory]<br/><small>All parsed notes</small>")]:::store
         clone[("<b>Vault clone</b><br/>[Container: git clone]<br/><small>The server's copy</small>")]:::store
     end
 
     github[("<b>Vault repo</b><br/>[External: GitHub]<br/><small>Private notes and PDFs</small>")]:::external
 
     user -- "opens pages, HTTPS" --> serve
-    serve -- "forwards, HTTP" --> next
-    next -- "reads notes" --> index
+    serve -- "forwards, HTTP" --> web
+    web -- "calls, JSON over HTTP" --> api
+    api -- "reads notes" --> index
     clone -. "is parsed into" .-> index
-    next -- "runs git pull" --> clone
+    api -- "runs git pull" --> clone
     clone -- "git pull, SSH" --> github
 
     classDef person fill:#1f6feb,stroke:#58a6ff,color:#ffffff,rx:8,ry:8
@@ -78,10 +80,14 @@ flowchart TB
 
 | Container | Technology | Job |
 |---|---|---|
-| Next.js app | Next.js, TypeScript, Node | Renders each page on the server and serves the endpoints in [API](api.md) |
-| Vault index | A TypeScript object in memory | Holds every parsed note, its links, its backlinks and its warnings |
+| Web | Next.js, TypeScript | Renders each page on the server from API data. Forwards `/api/*` from the browser to the API. Holds no data. |
+| API | Hono on Node, TypeScript | The REST API. Owns the vault clone and the vault index. Serves the OpenAPI document and the docs page. |
+| Vault index | A TypeScript object in the API's memory | Holds every parsed note, its links, its backlinks and its warnings |
 | Vault clone | A git working copy on a volume | The server's copy of the vault, pulled with the deploy key |
 | tailscale serve | Tailscale on the host | Gives the app HTTPS and keeps it private to the tailnet |
+
+Only the Web container has a port on the host. The browser reaches the API through Web, so the
+app has one address.
 
 ## What stays out of this repo
 
