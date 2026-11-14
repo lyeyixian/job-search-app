@@ -25,7 +25,7 @@ The frameworks and libraries, each with its job. A row marked "proposed" is not 
 | Docs page | Scalar | Shows the OpenAPI document at `/api/docs` | Proposed |
 | Frontmatter | gray-matter | Splits a note into YAML and body | Proposed |
 | Markdown | unified with remark | Parses a note and finds its links | Proposed |
-| Logging | pino | One JSON line per request | [ADR-0012](../adr/0012-problem-details-and-json-logs.md) |
+| Logging | pino | One JSON line per request, with the trace id | [ADR-0012](../adr/0012-problem-details-and-json-logs.md) |
 | Vault sync | git command line | `git pull` in the vault clone | [ADR-0003](../adr/0003-read-only-deploy-key.md) |
 
 ## Both services
@@ -33,6 +33,8 @@ The frameworks and libraries, each with its job. A row marked "proposed" is not 
 | Layer | Choice | Job | Status |
 |---|---|---|---|
 | Runtime | Node, current LTS | Runs each service | Proposed |
+| Tracing | OpenTelemetry SDK, OTLP export | One trace per page load across both services | [ADR-0013](../adr/0013-opentelemetry-with-optional-viewer.md) |
+| Trace viewer | Jaeger or Grafana's all-in-one image | Shows traces, only when the tracing profile runs | Proposed |
 | Package manager | pnpm workspaces | One repo, two apps | [ADR-0010](../adr/0010-monorepo-with-openapi-contract.md) |
 | Unit and API tests | Vitest | The vault module and each endpoint | [ADR-0011](../adr/0011-three-test-layers.md) |
 | Browser tests | Playwright | One test per acceptance criterion | [ADR-0011](../adr/0011-three-test-layers.md) |

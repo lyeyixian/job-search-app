@@ -17,3 +17,4 @@ file that replaces it.
 | [0010](0010-monorepo-with-openapi-contract.md) | One repo, two apps, and the OpenAPI document as the contract |
 | [0011](0011-three-test-layers.md) | Three test layers, with one browser test per acceptance criterion |
 | [0012](0012-problem-details-and-json-logs.md) | Problem Details for errors, JSON lines for logs |
+| [0013](0013-opentelemetry-with-optional-viewer.md) | OpenTelemetry tracing, with an optional viewer |

@@ -1,7 +1,8 @@
-# Errors and logging
+# Errors, logging and tracing
 
-How a failure looks to the API, to the person and in the logs. See
-[ADR-0012](../adr/0012-problem-details-and-json-logs.md).
+How a failure looks to the API, to the person, in the logs and in a trace. See
+[ADR-0012](../adr/0012-problem-details-and-json-logs.md) and
+[ADR-0013](../adr/0013-opentelemetry-with-optional-viewer.md).
 
 ## What counts as an error
 
@@ -14,7 +15,7 @@ How a failure looks to the API, to the person and in the logs. See
 | Refresh cannot pull the vault | `502` problem, code `vault_pull_failed` | A banner with the error and the old time |
 | The API has no index yet | `503` problem, code `index_not_ready` | "The app is starting" |
 | The API does not answer | none | "The API cannot be reached" |
-| A bug in the API | `500` problem, code `internal_error` | An error page with the request id |
+| A bug in the API | `500` problem, code `internal_error` | An error page with the trace id |
 
 ## The error shape
 
@@ -27,7 +28,7 @@ Every error response has the media type `application/problem+json`.
   "status": 404,
   "detail": "No application has the slug example-company-backend-engineer.",
   "code": "note_not_found",
-  "requestId": "01JCM8Z3"
+  "traceId": "4bf92f3577b34da6a3ce929d0e0e4736"
 }
 ```
 
@@ -47,18 +48,18 @@ sequenceDiagram
     participant Log as Standard output
 
     User->>Web: opens a page
-    Web->>Web: makes a request id
-    Web->>API: GET with the request id
+    Web->>Web: starts a trace
+    Web->>API: GET with the traceparent header
     alt the API does not answer
-        Web->>Log: an error line with the request id
+        Web->>Log: an error line with the trace id
         Web-->>User: the API cannot be reached
     else the API returns a problem
-        API->>Log: a line with the request id, the status and the code
+        API->>Log: a line with the trace id, the status and the code
         API-->>Web: a problem response
-        Web->>Log: a line with the request id
+        Web->>Log: a line with the trace id
         Web-->>User: the page for that code
     else the API returns data
-        API->>Log: a line with the request id and the status
+        API->>Log: a line with the trace id and the status
         API-->>Web: 200 with JSON
         Web-->>User: the page
     end
@@ -69,12 +70,37 @@ sequenceDiagram
 Each service writes one JSON line per request to standard output.
 
 ```json
-{"level":"info","time":"2026-11-14T08:47:10Z","service":"api","requestId":"01JCM8Z3","method":"GET","path":"/api/applications/example","status":404,"code":"note_not_found","ms":3}
+{"level":"info","time":"2026-11-14T08:47:10Z","service":"api","traceId":"4bf92f3577b34da6a3ce929d0e0e4736","method":"GET","path":"/api/applications/example","status":404,"code":"note_not_found","ms":3}
 ```
 
 - The API uses the `pino` library.
-- Web sends the request id to the API in the `X-Request-Id` header.
+- Each line holds the id of the current trace.
 - A log line never holds note content, frontmatter values or the text of a posting. A slug in a
   path is permitted.
 - Refresh logs the commit, the count of notes and the count of warnings.
 - Read the logs with `docker compose logs api` and `docker compose logs web`.
+
+## Tracing
+
+Both services use the OpenTelemetry SDK.
+
+| Span | Service | Covers |
+|---|---|---|
+| Page render | Web | One page load, from the request to the HTML |
+| API call | Web | One call from Web to the API |
+| Route | API | One endpoint, from the request to the response |
+| Query | API | One read of the vault index |
+| Refresh | API | The pull, the parse and the swap, each as a child span |
+
+- Web starts the trace. The `traceparent` header carries it to the API.
+- A service exports traces only when `OTEL_EXPORTER_OTLP_ENDPOINT` is set. With no setting,
+  nothing is exported.
+- A span attribute never holds note content. The rule for logs applies.
+
+### See the traces
+
+1. Run `docker compose --profile tracing up -d`. This starts the trace viewer and sets the
+   endpoint for both services.
+2. Open the viewer on its port on the server.
+3. Find a trace by the `traceId` from a log line or an error page.
+4. Run `docker compose --profile tracing down` to stop the viewer.
