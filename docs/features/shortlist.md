@@ -82,8 +82,8 @@ between companies before you promote one.
   listings of one company first.
 - **The choices live in the address.** A narrowed shortlist can be bookmarked, and Back returns
   to it.
-- **The pages of a listing and of a company come with the company listings feature.** Until
-  then, criteria 7 and 8 lead to an address with no page.
+- **The pages of a listing and of a company are the [company listings](company-listings.md)
+  feature.**
 - **No browser test for criterion 9.** The browser tests run on one made-up vault, and that vault
   has shortlisted listings. A unit test and an API test cover a vault with none.
 - **The shortlist does not start a sweep.** A later version adds that.

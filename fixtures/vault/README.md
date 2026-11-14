@@ -33,3 +33,12 @@ The market scan covers the cases of the shortlist:
 | `search/market/kestrel-pay/index.md` | Shortlisted listings first seen on three days, a closed listing with the triage `shortlist`, and a rejected listing |
 | `search/market/orchard-robotics/index.md` | Each shortlisted listing is promoted, and a listing with the triage `maybe` |
 | `search/market/marlow-freight/index.md` | No shortlisted listing |
+
+The market scan also covers the cases of the company listings pages:
+
+| Note | Case |
+|---|---|
+| `search/market/watchlist.md` | Notes on more than one line for Example Co, a web address with text after it, and the mode `watch` for Marlow Freight |
+| `search/market/example-co/index.md` | A sweep log with three days, and a closed listing with the triage `maybe` |
+| `search/market/orchard-robotics/index.md` | A listing with the state `unknown` |
+| `search/market/marlow-freight/index.md` | A sweep log with one day |
