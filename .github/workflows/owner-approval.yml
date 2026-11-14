@@ -1,0 +1,68 @@
+name: Owner approval
+
+# A pull request that changes docs/adr/ or docs/features/ needs the label owner-approved,
+# and the owner of the repo must be the one who added it. See docs/changes/README.md.
+#
+# pull_request_target runs this file from main, so a pull request cannot change the check
+# that judges it. The job does not check out or run the code of the pull request.
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+permissions:
+  pull-requests: write
+  issues: read
+
+jobs:
+  approval:
+    name: Owner approval
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if the owner did not approve a change to the ADRs or the feature spec
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          PR: ${{ github.event.pull_request.number }}
+          ACTION: ${{ github.event.action }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+          ATTEMPT: ${{ github.run_attempt }}
+          LABEL: owner-approved
+        run: |
+          set -euo pipefail
+          gated='^docs/(adr|features)/'
+          names='.[] | .filename, (.previous_filename // empty)'
+
+          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq "$names")
+          if ! grep -Eq "$gated" <<<"$files"; then
+            echo "This pull request does not change docs/adr/ or docs/features/."
+            exit 0
+          fi
+          echo "This pull request changes these gated files:"
+          grep -E "$gated" <<<"$files"
+
+          # A push that changes a gated file ends an approval that came before the push.
+          # A rerun of an old push does not remove a label that came after it.
+          if [ "$ACTION" = "synchronize" ] && [ "$ATTEMPT" = "1" ]; then
+            pushed=$(gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq ".files | $names") || pushed="docs/adr/unknown"
+            if grep -Eq "$gated" <<<"$pushed"; then
+              gh api -X DELETE "repos/$REPO/issues/$PR/labels/$LABEL" >/dev/null 2>&1 || true
+              echo "::error::A new push changed docs/adr/ or docs/features/. The owner must add the label $LABEL again."
+              exit 1
+            fi
+          fi
+
+          labels=$(gh api --paginate "repos/$REPO/issues/$PR/labels" --jq '.[].name')
+          if ! grep -Fxq "$LABEL" <<<"$labels"; then
+            echo "::error::This pull request changes docs/adr/ or docs/features/. Only the owner approves that, with the label $LABEL. See docs/changes/README.md."
+            exit 1
+          fi
+
+          actor=$(gh api --paginate "repos/$REPO/issues/$PR/events" \
+            --jq '.[] | select(.event == "labeled" and .label.name == env.LABEL) | .actor.login' | tail -n 1)
+          if [ "$actor" != "$OWNER" ]; then
+            echo "::error::${actor:-Someone} added the label $LABEL. Only $OWNER can add it."
+            exit 1
+          fi
+          echo "$OWNER approved the changes to the ADRs and the feature spec."
