@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!docs/api/openapi.json", "!apps/web/src/api/schema.d.ts", "!pnpm-lock.yaml", "!**/*.md"]
+    "includes": ["**", "!docs/api/openapi.json", "!apps/web/src/api/generated.ts", "!pnpm-lock.yaml", "!**/*.md"]
   },
   "formatter": {
     "enabled": true,

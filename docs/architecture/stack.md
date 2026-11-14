@@ -15,7 +15,7 @@ version, with TypeScript 7, Node 26 and pnpm 12.
 | Styling | Tailwind CSS | Layout and phone breakpoints | [ADR-0006](../adr/0006-tailwind-with-shadcn-ui.md) |
 | Markdown view | unified with remark and rehype | Turns a note body into HTML with links | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
 | PDF view | PDF.js | Draws the committed resume PDF | [ADR-0007](../adr/0007-serve-the-committed-resume-pdf.md) |
-| API client | `openapi-typescript`, `openapi-fetch` | Types and calls generated from the OpenAPI document | [ADR-0010](../adr/0010-monorepo-with-openapi-contract.md) |
+| API client | Orval | Types and `fetch` functions generated from the OpenAPI document | [ADR-0014](../adr/0014-orval-generates-the-web-client.md) |
 
 ## API
 
@@ -47,9 +47,5 @@ version, with TypeScript 7, Node 26 and pnpm 12.
 | Build | GitHub Actions | Builds and pushes both images | [ADR-0005](../adr/0005-github-builds-the-image.md) |
 | Registry | GitHub Container Registry | Holds the public images | [ADR-0005](../adr/0005-github-builds-the-image.md) |
 | Network | Tailscale, `tailscale serve` | Private HTTPS access | [ADR-0004](../adr/0004-docker-container.md) |
-
-`openapi-typescript` needs the JS API of TypeScript 5, which TypeScript 7 does not have. The hook
-in `.pnpmfile.cjs` gives it a private copy of TypeScript 5. Remove the hook when
-`openapi-typescript` supports TypeScript 7.
 
 Later steps add `better-sqlite3` for scan data and the Claude Agent SDK to start a scan.
