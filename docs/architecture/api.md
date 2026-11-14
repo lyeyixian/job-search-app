@@ -11,17 +11,17 @@ Which parts of the Next.js app answer the browser?
 
 ```mermaid
 flowchart TB
-    browser(["Job seeker<br/>[Person]<br/>Uses a browser"]):::person
+    browser(["<b>Job seeker</b><br/>[Person]<br/><small>Uses a browser</small>"]):::person
 
     subgraph next["Next.js app"]
-        pages["Pages<br/>[Component: server components]<br/>Return HTML"]:::component
-        handlers["Route handlers<br/>[Component: Next.js]<br/>Return JSON or a file"]:::component
-        queries["Queries<br/>[Component: TypeScript]<br/>Read the vault index"]:::component
+        pages["<b>Pages</b><br/>[Component: React]<br/><small>Return HTML</small>"]:::component
+        handlers["<b>Route handlers</b><br/>[Component: Next.js]<br/><small>Return JSON or a file</small>"]:::component
+        queries["<b>Queries</b><br/>[Component: TypeScript]<br/><small>Read the vault index</small>"]:::component
     end
 
-    browser -- "GET a page URL, HTTPS" --> pages
-    browser -- "POST /api/refresh, HTTPS" --> handlers
-    browser -- "GET a resume file, HTTPS" --> handlers
+    browser -- "GET a page" --> pages
+    browser -- "POST refresh" --> handlers
+    browser -- "GET resume" --> handlers
     pages -- "calls" --> queries
     handlers -- "calls" --> queries
 

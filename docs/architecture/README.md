@@ -23,16 +23,16 @@ Who uses the app, and which outside systems does it depend on?
 
 ```mermaid
 flowchart TB
-    user(["Job seeker<br/>[Person]<br/>Reads applications, listings,<br/>experience and the plan"]):::person
-    app["Job search app<br/>[Software system]<br/>Shows the vault in a browser"]:::system
-    tailnet["Tailscale<br/>[External system]<br/>Private network between own devices"]:::external
-    vault[("Vault repo<br/>[External system: GitHub]<br/>Private markdown notes and resume PDFs")]:::external
-    writers(["Claude Code skills and the person<br/>[Person]<br/>Write notes outside the app"]):::external
+    user(["<b>Job seeker</b><br/>[Person]<br/><small>Reads the vault</small>"]):::person
+    app["<b>Job search app</b><br/>[Software system]<br/><small>Shows the vault</small>"]:::system
+    tailnet["<b>Tailscale</b><br/>[External]<br/><small>Private network</small>"]:::external
+    vault[("<b>Vault repo</b><br/>[External: GitHub]<br/><small>Private notes and PDFs</small>")]:::external
+    writers(["<b>Skills and the person</b><br/>[Person]<br/><small>Write the notes</small>"]):::external
 
-    user -- "opens pages and selects Refresh, HTTPS" --> tailnet
-    tailnet -- "forwards requests, HTTPS" --> app
-    app -- "pulls the notes, git over SSH" --> vault
-    writers -- "push notes, git" --> vault
+    user -- "opens pages, HTTPS" --> tailnet
+    tailnet -- "forwards, HTTPS" --> app
+    app -- "git pull, SSH" --> vault
+    writers -- "git push" --> vault
 
     classDef person fill:#08427b,stroke:#052e56,color:#ffffff
     classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
@@ -48,23 +48,23 @@ Which parts that run or hold data make up the app, and how do they talk?
 
 ```mermaid
 flowchart TB
-    user(["Job seeker<br/>[Person]<br/>Uses a phone or a laptop on the tailnet"]):::person
-    serve["tailscale serve<br/>[External system: Tailscale]<br/>HTTPS on the tailnet name"]:::external
+    user(["<b>Job seeker</b><br/>[Person]<br/><small>Uses own devices</small>"]):::person
+    serve["<b>tailscale serve</b><br/>[External: Tailscale]<br/><small>HTTPS on the tailnet</small>"]:::external
 
     subgraph system["Job search app"]
-        next["Next.js app<br/>[Container: TypeScript, Node]<br/>Renders pages and serves endpoints"]:::container
-        index[("Vault index<br/>[Container: memory of the Node process]<br/>Every parsed note, link and warning")]:::store
-        clone[("Vault clone<br/>[Container: git working copy]<br/>The server's copy of the vault")]:::store
+        next["<b>Next.js app</b><br/>[Container: Next.js]<br/><small>Renders pages</small>"]:::container
+        index[("<b>Vault index</b><br/>[Container: Node memory]<br/><small>All parsed notes</small>")]:::store
+        clone[("<b>Vault clone</b><br/>[Container: git clone]<br/><small>The server's copy</small>")]:::store
     end
 
-    github[("Vault repo<br/>[External system: GitHub]<br/>Private markdown notes and resume PDFs")]:::external
+    github[("<b>Vault repo</b><br/>[External: GitHub]<br/><small>Private notes and PDFs</small>")]:::external
 
     user -- "opens pages, HTTPS" --> serve
-    serve -- "forwards requests, HTTP on 127.0.0.1" --> next
+    serve -- "forwards, HTTP" --> next
     next -- "reads notes" --> index
     clone -. "is parsed into" .-> index
     next -- "runs git pull" --> clone
-    clone -- "pulls the notes, git over SSH" --> github
+    clone -- "git pull, SSH" --> github
 
     classDef person fill:#08427b,stroke:#052e56,color:#ffffff
     classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
