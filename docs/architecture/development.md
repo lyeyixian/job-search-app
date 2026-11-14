@@ -1,16 +1,18 @@
 # Local development
 
-How to run the app on your machine. Agreed on 14 Nov 2026. The commands are the plan until the
-code exists.
+How to run the app on your machine. Agreed on 14 Nov 2026.
 
 Both services run on your machine with hot reload. Docker is not necessary for development.
 
 ## Run the app
 
-1. Install Node and pnpm.
+1. Install Node 24 and pnpm 10.
 2. Run `pnpm install`.
 3. Run `pnpm dev`.
-4. Open the address that the command prints.
+4. Open `http://localhost:3000`.
+
+Web listens on port 3000 and the API on port 3001. The API docs page is at
+`http://localhost:3000/api/docs`.
 
 The app shows the made-up vault in `fixtures/vault/`.
 
@@ -39,7 +41,14 @@ The app shows your real notes, with the changes that you did not push.
 | `pnpm e2e` | Runs the browser tests |
 | `pnpm openapi` | Writes `docs/api/openapi.json` and the Web types again |
 | `pnpm lint` | Runs Biome and the type check |
+| `pnpm format` | Lets Biome fix the format and the import order |
+| `pnpm docs:check` | Checks the links between docs and parses each Mermaid diagram |
 | `docker compose up --build` | Builds and runs the two images as the server runs them |
+
+## Browser tests
+
+`pnpm e2e` starts both services if they do not run. Before the first run, install the browser
+with `pnpm --filter @job-search/web exec playwright install chromium`.
 
 ## Rules
 

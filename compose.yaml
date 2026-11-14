@@ -1,0 +1,43 @@
+# Both services, for the server and for a local check of the images.
+# Daily development does not use this file. See docs/architecture/development.md.
+#
+# On the server, set VAULT_DIR to the folder of the vault clone.
+# With no VAULT_DIR, the API shows the made-up vault in fixtures/vault/.
+services:
+  api:
+    image: ghcr.io/lyeyixian/job-search-app-api:latest
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      VAULT_PATH: /vault
+    volumes:
+      - ${VAULT_DIR:-./fixtures/vault}:/vault
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3001/api/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  web:
+    image: ghcr.io/lyeyixian/job-search-app-web:latest
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      API_URL: http://api:3001
+    ports:
+      # Only this machine can reach the port. `tailscale serve` forwards to it.
+      - "127.0.0.1:${WEB_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped

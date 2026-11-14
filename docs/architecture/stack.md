@@ -1,14 +1,14 @@
 # Stack
 
 The frameworks and libraries, each with its job. The last column links to the decision record, or
-says "Agreed" for a choice made on 14 Nov 2026 with no record of its own. Exact versions are
-pinned when the code is set up.
+says "Agreed" for a choice made on 14 Nov 2026 with no record of its own. The exact
+versions are in each `package.json` and in `pnpm-lock.yaml`.
 
 ## Web
 
 | Layer | Choice | Job | Status |
 |---|---|---|---|
-| Language | TypeScript | All Web code | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
+| Language | TypeScript 5.9 | All Web code | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
 | Framework | Next.js, App Router | Server rendering and page routes | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
 | Components | shadcn/ui on Radix | Menu, tabs, tables, badges, filters | [ADR-0006](../adr/0006-tailwind-with-shadcn-ui.md) |
 | Styling | Tailwind CSS | Layout and phone breakpoints | [ADR-0006](../adr/0006-tailwind-with-shadcn-ui.md) |
