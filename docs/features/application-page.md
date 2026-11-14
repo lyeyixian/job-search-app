@@ -72,19 +72,13 @@ place,
 - **When** I go to the resume part of the page
 - **Then** the page tells me that no resume exists yet
 
-### 9. See the resume from before
-
-- **Given** the application keeps an older tailored resume
-- **When** I go to the resume part of the page
-- **Then** I see a link to the older resume, and the page marks it as older
-
-### 10. Go to the listing that the application came from
+### 9. Go to the listing that the application came from
 
 - **Given** I promoted the application from a listing
 - **When** I look at the top of the page
 - **Then** I see a link to that listing
 
-### 11. Go back to the board
+### 10. Go back to the board
 
 - **Given** I came to the page from the board with filters set
 - **When** I go back
@@ -95,7 +89,6 @@ place,
 - You do not change the posting or the fit analysis by hand. You change only the tailored resume.
 - A fit analysis always has the same four parts: the verdict, the direction check, the
   requirements table and the gaps.
-- An application has at most one older resume.
 
 ## Decisions
 
@@ -105,3 +98,5 @@ place,
   make the resume. You edit that text outside the app.
 - **No fit analysis from before.** When a new fit analysis replaces an old one, the page shows only
   the new one.
+- **No older resume.** The page shows only the current tailored resume. You said on 14 Nov 2026
+  that you do not need the older one.
