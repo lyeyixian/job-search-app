@@ -10,11 +10,15 @@ import {
   getApplications as fetchApplications,
   getExperienceNote as fetchExperienceNote,
   getHealth as fetchHealth,
+  getShortlist as fetchShortlist,
   type Gap,
   type GetApplicationsParams,
+  type GetShortlistParams,
   type Health,
   type Problem,
   type Requirement,
+  type Shortlist,
+  type ShortlistListing,
 } from "./generated";
 
 export type {
@@ -27,8 +31,11 @@ export type {
   FitAnalysis,
   Gap,
   GetApplicationsParams,
+  GetShortlistParams,
   Health,
   Requirement,
+  Shortlist,
+  ShortlistListing,
 };
 
 /**
@@ -64,4 +71,8 @@ export function getApplication(slug: string): Promise<ApiResult<Application>> {
 
 export function getExperienceNote(kind: ExperienceNoteKind, slug: string): Promise<ApiResult<ExperienceNote>> {
   return result(() => fetchExperienceNote(kind, slug));
+}
+
+export function getShortlist(params?: GetShortlistParams): Promise<ApiResult<Shortlist>> {
+  return result(() => fetchShortlist(params));
 }

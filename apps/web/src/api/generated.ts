@@ -432,6 +432,79 @@ export interface ExperienceNote {
   achievements: ExperienceNoteAchievementsItem[];
 }
 
+export type ShortlistCompaniesItem = {
+  slug: string;
+  name: string;
+  /** The number of its listings on the shortlist. */
+  count: number;
+};
+
+/**
+ * `null` if the application does not exist or has no permitted status.
+ * @nullable
+ */
+export type ShortlistListingApplicationStatus = typeof ShortlistListingApplicationStatus[keyof typeof ShortlistListingApplicationStatus] | null;
+
+
+export const ShortlistListingApplicationStatus = {
+  analyzed: 'analyzed',
+  applied: 'applied',
+  interviewing: 'interviewing',
+  offer: 'offer',
+  accepted: 'accepted',
+  rejected: 'rejected',
+  dropped: 'dropped',
+} as const;
+
+/**
+ * The application that the listing was promoted to. `null` if it was not promoted.
+ * @nullable
+ */
+export type ShortlistListingApplication = {
+  slug: string;
+  /** False if the vault has no such application. */
+  found: boolean;
+  /**
+     * `null` if the application does not exist or has no permitted status.
+     * @nullable
+     */
+  status: ShortlistListingApplicationStatus;
+} | null;
+
+export interface ShortlistListing {
+  /** The folder of the company in the market scan. */
+  company: string;
+  companyName: string;
+  /** The file name of the listing record without `.md`. */
+  slug: string;
+  title: string;
+  /** The level label from the job board. */
+  level: string;
+  /** The reason for the triage. One line. */
+  reason: string;
+  /**
+     * The day of the first sweep that found the listing. `null` if the row has a warning for it.
+     * @nullable
+     */
+  firstSeen: string | null;
+  /**
+     * The application that the listing was promoted to. `null` if it was not promoted.
+     * @nullable
+     */
+  application: ShortlistListingApplication;
+  /** `field` is the column of the company index. */
+  warnings: Warning[];
+}
+
+export interface Shortlist {
+  /** The listings that match the query. The companies are in the order of their names. In a company, the listing first seen most recently is first. */
+  listings: ShortlistListing[];
+  /** The number of open listings with the triage `shortlist`. The query does not change it. */
+  total: number;
+  /** The companies with a listing on the shortlist. The query does not change them. */
+  companies: ShortlistCompaniesItem[];
+}
+
 export type GetApplicationsParams = {
   /** Only applications of this company. */
   company?: string;
@@ -441,6 +514,13 @@ export type GetApplicationsParams = {
   verdict?: string;
   /** Only applications with this direction check. */
   direction?: string;
+};
+
+export type GetShortlistParams = {
+  /** Only listings of this company. The value is the folder of the company. */
+  company?: string;
+  /** `hide` leaves out each listing that has an application. Each other value does nothing. */
+  promoted?: string;
 };
 
 export type getHealthResponse200 = {
@@ -672,6 +752,56 @@ export const getExperienceNote = async (kind: 'roles' | 'projects',
     slug: string, options?: Parameters<typeof apiFetch>[1]): Promise<getExperienceNoteResponse> => {
 
   return apiFetch<getExperienceNoteResponse>(getGetExperienceNoteUrl(kind,slug),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getShortlistResponse200 = {
+  data: Shortlist
+  status: 200
+}
+
+export type getShortlistResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getShortlistResponseSuccess = (getShortlistResponse200) & {
+  headers: Headers;
+};
+export type getShortlistResponseError = (getShortlistResponse503) & {
+  headers: Headers;
+};
+
+export type getShortlistResponse = (getShortlistResponseSuccess | getShortlistResponseError)
+
+export const getGetShortlistUrl = (params?: GetShortlistParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/shortlist?${stringifiedParams}` : `/api/shortlist`
+}
+
+/**
+ * @summary List the open shortlisted listings of all companies
+ */
+export const getShortlist = async (params?: GetShortlistParams, options?: Parameters<typeof apiFetch>[1]): Promise<getShortlistResponse> => {
+
+  return apiFetch<getShortlistResponse>(getGetShortlistUrl(params),
   {
     ...options,
     method: 'GET'

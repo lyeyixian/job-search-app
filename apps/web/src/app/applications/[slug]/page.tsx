@@ -18,6 +18,7 @@ import {
 } from "@/components/board/labels";
 import { Markdown } from "@/components/markdown";
 import { Badge } from "@/components/ui/badge";
+import { day } from "@/lib/day";
 import { cn } from "@/lib/utils";
 
 // The feature is docs/features/application-page.md.
@@ -30,18 +31,6 @@ export default function ApplicationPage({ params }: PageProps<"/applications/[sl
       </Suspense>
     </main>
   );
-}
-
-const dayFormat = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
-/** `2026-10-05` as `5 Oct 2026`. A day in the vault has no time zone. */
-function day(value: string | null): string {
-  return value ? dayFormat.format(new Date(`${value}T00:00:00Z`)) : "None";
 }
 
 function Fact({ name, testId, children }: { name: string; testId: string; children: ReactNode }) {
