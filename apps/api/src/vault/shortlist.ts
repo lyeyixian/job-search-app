@@ -35,6 +35,8 @@ export type IndexRow = {
   /** One line of text. */
   reason: string;
   firstSeen: string | null;
+  /** The day of the last sweep that found the listing. `null` if the cell is not a day. */
+  lastSeen: string | null;
   /** `null` if the cell is not `open`, `closed` or `unknown`. */
   state: ListingState | null;
   application: Promotion | null;
@@ -42,7 +44,7 @@ export type IndexRow = {
   warnings: Warning[];
 };
 
-export type ShortlistListing = Omit<IndexRow, "triage" | "state">;
+export type ShortlistListing = Omit<IndexRow, "triage" | "state" | "lastSeen">;
 
 /** The choices that narrow the shortlist. A listing must match each one. */
 export type ShortlistFilter = {
@@ -61,9 +63,9 @@ export type Shortlist = {
   companies: { slug: string; name: string; count: number }[];
 };
 
-const COMPANY_INDEX = /^search\/market\/([^/]+)\/index\.md$/;
+export const COMPANY_INDEX = /^search\/market\/([^/]+)\/index\.md$/;
 const LISTING_LINK = /\[\[([^\]|#]+)(?:\|([^\]]*))?\]\]/;
-const INDEX_TITLE = /\s+-\s+listing index\s*$/i;
+export const INDEX_TITLE = /\s+-\s+listing index\s*$/i;
 
 function promotion(index: VaultIndex, cell: string | undefined): Promotion | null {
   // The cell is the slug. Some rows write it as a link.
@@ -82,7 +84,8 @@ export function indexRows(index: VaultIndex): IndexRow[] {
     const companyName = splitTitle(note.body).title?.replace(INDEX_TITLE, "").trim() || company;
     for (const row of table(note.body.split("\n"))) {
       const link = LISTING_LINK.exec(row.get("listing") ?? "");
-      const slug = link?.[1]?.trim();
+      // Some rows write the link with a path. The slug is the file name.
+      const slug = link?.[1]?.trim().split("/").at(-1);
       if (!slug) continue;
       const firstSeen = checkDay(row.get("first seen"));
       rows.push({
@@ -94,6 +97,7 @@ export function indexRows(index: VaultIndex): IndexRow[] {
         triage: enumValue(TRIAGES, row.get("triage")),
         reason: row.get("reason") ?? "",
         firstSeen,
+        lastSeen: checkDay(row.get("last seen")),
         state: enumValue(LISTING_STATES, row.get("state")),
         application: promotion(index, row.get("application")),
         warnings: firstSeen ? [] : [{ field: "First seen", problem: row.get("first seen") ? "invalid" : "missing" }],
@@ -118,7 +122,7 @@ function byCompanyThenNewest(a: ShortlistListing, b: ShortlistListing): number {
 export function getShortlist(index: VaultIndex, filter: ShortlistFilter = {}): Shortlist {
   const all = indexRows(index)
     .filter((row) => row.triage === "shortlist" && row.state === "open")
-    .map(({ triage: _triage, state: _state, ...listing }) => listing)
+    .map(({ triage: _triage, state: _state, lastSeen: _lastSeen, ...listing }) => listing)
     .sort(byCompanyThenNewest);
 
   const companies = new Map<string, { slug: string; name: string; count: number }>();

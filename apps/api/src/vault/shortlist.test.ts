@@ -31,7 +31,7 @@ describe("indexRows", () => {
   it("reads each row of each company index", () => {
     const rows = indexRows(index);
 
-    expect(rows).toHaveLength(13);
+    expect(rows).toHaveLength(14);
     expect(rows.find((row) => row.slug === "data-engineer-1004")).toEqual({
       company: "example-co",
       companyName: "Example Co",
@@ -41,10 +41,24 @@ describe("indexRows", () => {
       triage: "maybe",
       reason: "Data pipelines, senior level",
       firstSeen: "2026-10-01",
+      lastSeen: "2026-10-08",
       state: "closed",
       application: null,
       warnings: [],
     });
+  });
+
+  it("reads the slug from a link that has a path", () => {
+    const rows = indexRows(
+      indexOf({
+        "search/market/acme/index.md": companyIndex(
+          "Acme",
+          "| [[market/acme/engineer-1\\|Engineer]] | Mid | shortlist | A reason | 2026-10-01 | 2026-10-02 | open | |",
+        ),
+      }),
+    );
+
+    expect(rows[0]).toMatchObject({ slug: "engineer-1", title: "Engineer" });
   });
 
   it("reads a bar in the label of a link, and a title that has one", () => {
