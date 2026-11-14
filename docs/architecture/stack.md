@@ -36,6 +36,7 @@ The frameworks and libraries, each with its job. A row marked "proposed" is not 
 | Unit and API tests | Vitest | The vault module and each endpoint | [ADR-0011](../adr/0011-three-test-layers.md) |
 | Browser tests | Playwright | One test per acceptance criterion | [ADR-0011](../adr/0011-three-test-layers.md) |
 | Lint and format | ESLint, Prettier | Checks on each pull request | Proposed |
+| Checks | GitHub Actions | Six required jobs on each pull request, see [checks](checks.md) | Agreed |
 | Container | Docker, Docker Compose | Runs both services on the server | [ADR-0004](../adr/0004-docker-container.md) |
 | Build | GitHub Actions | Builds and pushes both images | [ADR-0005](../adr/0005-github-builds-the-image.md) |
 | Registry | GitHub Container Registry | Holds the public images | [ADR-0005](../adr/0005-github-builds-the-image.md) |
