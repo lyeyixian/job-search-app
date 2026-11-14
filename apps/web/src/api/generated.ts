@@ -505,6 +505,246 @@ export interface Shortlist {
   companies: ShortlistCompaniesItem[];
 }
 
+/**
+ * `null` if the company is not on the watchlist.
+ * @nullable
+ */
+export type CompanySummaryMode = typeof CompanySummaryMode[keyof typeof CompanySummaryMode] | null;
+
+
+export const CompanySummaryMode = {
+  active: 'active',
+  watch: 'watch',
+} as const;
+
+export interface CompanySummary {
+  /** The folder of the company in the market scan. */
+  slug: string;
+  name: string;
+  /**
+     * `null` if the company is not on the watchlist.
+     * @nullable
+     */
+  mode: CompanySummaryMode;
+  /**
+     * The day in the watchlist. If the watchlist has none, the newest day of the sweep log.
+     * @nullable
+     */
+  lastSwept: string | null;
+  /** The number of open listings with the triage `shortlist`. */
+  openShortlisted: number;
+  /** The number of listings in the company index. */
+  listings: number;
+}
+
+export interface CompanyList {
+  /** Each company that has a listing index, in the order of the names. */
+  companies: CompanySummary[];
+}
+
+/**
+ * @nullable
+ */
+export type CompanyWatchlistMode = typeof CompanyWatchlistMode[keyof typeof CompanyWatchlistMode] | null;
+
+
+export const CompanyWatchlistMode = {
+  active: 'active',
+  watch: 'watch',
+} as const;
+
+/**
+ * What the watchlist says about the company, without the instructions for a sweep. `null` if the company is not on the watchlist.
+ * @nullable
+ */
+export type CompanyWatchlist = {
+  /** @nullable */
+  mode: CompanyWatchlistMode;
+  /**
+     * The day of the last sweep.
+     * @nullable
+     */
+  lastSwept: string | null;
+  /**
+     * The web address of the job board.
+     * @nullable
+     */
+  board: string | null;
+  /** The notes about the company, as markdown. Can be empty. */
+  notes: string;
+  /** The note about the pay, as markdown. Can be empty. */
+  pay: string;
+  /** The note about remote work, as markdown. Can be empty. */
+  remote: string;
+} | null;
+
+/**
+ * `null` if the company index has a value that the vault's rules do not permit.
+ * @nullable
+ */
+export type CompanyListingTriage = typeof CompanyListingTriage[keyof typeof CompanyListingTriage] | null;
+
+
+export const CompanyListingTriage = {
+  shortlist: 'shortlist',
+  maybe: 'maybe',
+  reject: 'reject',
+} as const;
+
+/**
+ * `null` if the company index has a value that the vault's rules do not permit.
+ * @nullable
+ */
+export type CompanyListingState = typeof CompanyListingState[keyof typeof CompanyListingState] | null;
+
+
+export const CompanyListingState = {
+  open: 'open',
+  closed: 'closed',
+  unknown: 'unknown',
+} as const;
+
+export type CompanyListing = ShortlistListing & ({
+  /**
+     * `null` if the company index has a value that the vault's rules do not permit.
+     * @nullable
+     */
+  triage: CompanyListingTriage;
+  /**
+     * The day of the last sweep that found the listing.
+     * @nullable
+     */
+  lastSeen: string | null;
+  /**
+     * `null` if the company index has a value that the vault's rules do not permit.
+     * @nullable
+     */
+  state: CompanyListingState;
+});
+
+export interface Company {
+  slug: string;
+  name: string;
+  /**
+     * What the watchlist says about the company, without the instructions for a sweep. `null` if the company is not on the watchlist.
+     * @nullable
+     */
+  watchlist: CompanyWatchlist;
+  /** The day of each sweep, newest first. */
+  sweeps: string[];
+  /** Each listing of the company. The order is `shortlist`, `maybe`, then `reject`. With the same triage, open listings are first, then the listing first seen most recently. */
+  listings: CompanyListing[];
+}
+
+/**
+ * `null` if the company index has a value that the vault's rules do not permit.
+ * @nullable
+ */
+export type ListingTriage = typeof ListingTriage[keyof typeof ListingTriage] | null;
+
+
+export const ListingTriage = {
+  shortlist: 'shortlist',
+  maybe: 'maybe',
+  reject: 'reject',
+} as const;
+
+/**
+ * `null` if the company index has a value that the vault's rules do not permit.
+ * @nullable
+ */
+export type ListingState = typeof ListingState[keyof typeof ListingState] | null;
+
+
+export const ListingState = {
+  open: 'open',
+  closed: 'closed',
+  unknown: 'unknown',
+} as const;
+
+/**
+ * `null` if the application does not exist or has no permitted status.
+ * @nullable
+ */
+export type ListingApplicationStatus = typeof ListingApplicationStatus[keyof typeof ListingApplicationStatus] | null;
+
+
+export const ListingApplicationStatus = {
+  analyzed: 'analyzed',
+  applied: 'applied',
+  interviewing: 'interviewing',
+  offer: 'offer',
+  accepted: 'accepted',
+  rejected: 'rejected',
+  dropped: 'dropped',
+} as const;
+
+/**
+ * The application that the listing was promoted to. `null` if it was not promoted.
+ * @nullable
+ */
+export type ListingApplication = {
+  slug: string;
+  /** False if the vault has no such application. */
+  found: boolean;
+  /**
+     * `null` if the application does not exist or has no permitted status.
+     * @nullable
+     */
+  status: ListingApplicationStatus;
+} | null;
+
+/**
+ * One listing record. `triage`, `reason`, `lastSeen`, `state` and `application` come from the company index.
+ */
+export interface Listing {
+  company: string;
+  companyName: string;
+  slug: string;
+  title: string;
+  /**
+     * `sg`, `remote` or the slug of a different place.
+     * @nullable
+     */
+  region: string | null;
+  /** The level label from the job board. */
+  level: string;
+  /**
+     * The day of the first sweep that found the listing.
+     * @nullable
+     */
+  firstSeen: string | null;
+  /**
+     * The web address of the listing on the job board.
+     * @nullable
+     */
+  url: string | null;
+  /**
+     * `null` if the company index has a value that the vault's rules do not permit.
+     * @nullable
+     */
+  triage: ListingTriage;
+  /** The reason for the triage. One line. */
+  reason: string;
+  /**
+     * The day of the last sweep that found the listing.
+     * @nullable
+     */
+  lastSeen: string | null;
+  /**
+     * `null` if the company index has a value that the vault's rules do not permit.
+     * @nullable
+     */
+  state: ListingState;
+  /**
+     * The application that the listing was promoted to. `null` if it was not promoted.
+     * @nullable
+     */
+  application: ListingApplication;
+  /** The text of the listing as the job board had it, as markdown, without the title line. */
+  body: string;
+}
+
 export type GetApplicationsParams = {
   /** Only applications of this company. */
   company?: string;
@@ -802,6 +1042,147 @@ export const getGetShortlistUrl = (params?: GetShortlistParams,) => {
 export const getShortlist = async (params?: GetShortlistParams, options?: Parameters<typeof apiFetch>[1]): Promise<getShortlistResponse> => {
 
   return apiFetch<getShortlistResponse>(getGetShortlistUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getCompaniesResponse200 = {
+  data: CompanyList
+  status: 200
+}
+
+export type getCompaniesResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getCompaniesResponseSuccess = (getCompaniesResponse200) & {
+  headers: Headers;
+};
+export type getCompaniesResponseError = (getCompaniesResponse503) & {
+  headers: Headers;
+};
+
+export type getCompaniesResponse = (getCompaniesResponseSuccess | getCompaniesResponseError)
+
+export const getGetCompaniesUrl = () => {
+
+
+
+
+  return `/api/companies`
+}
+
+/**
+ * @summary List the companies of the market scan
+ */
+export const getCompanies = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getCompaniesResponse> => {
+
+  return apiFetch<getCompaniesResponse>(getGetCompaniesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getCompanyResponse200 = {
+  data: Company
+  status: 200
+}
+
+export type getCompanyResponse404 = {
+  data: Problem
+  status: 404
+}
+
+export type getCompanyResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getCompanyResponseSuccess = (getCompanyResponse200) & {
+  headers: Headers;
+};
+export type getCompanyResponseError = (getCompanyResponse404 | getCompanyResponse503) & {
+  headers: Headers;
+};
+
+export type getCompanyResponse = (getCompanyResponseSuccess | getCompanyResponseError)
+
+export const getGetCompanyUrl = (company: string,) => {
+
+
+
+
+  return `/api/companies/${company}`
+}
+
+/**
+ * @summary Get one company with its listings, its sweeps and its watchlist entry
+ */
+export const getCompany = async (company: string, options?: Parameters<typeof apiFetch>[1]): Promise<getCompanyResponse> => {
+
+  return apiFetch<getCompanyResponse>(getGetCompanyUrl(company),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getListingResponse200 = {
+  data: Listing
+  status: 200
+}
+
+export type getListingResponse404 = {
+  data: Problem
+  status: 404
+}
+
+export type getListingResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getListingResponseSuccess = (getListingResponse200) & {
+  headers: Headers;
+};
+export type getListingResponseError = (getListingResponse404 | getListingResponse503) & {
+  headers: Headers;
+};
+
+export type getListingResponse = (getListingResponseSuccess | getListingResponseError)
+
+export const getGetListingUrl = (company: string,
+    slug: string,) => {
+
+
+
+
+  return `/api/companies/${company}/listings/${slug}`
+}
+
+/**
+ * @summary Get one listing with its full text
+ */
+export const getListing = async (company: string,
+    slug: string, options?: Parameters<typeof apiFetch>[1]): Promise<getListingResponse> => {
+
+  return apiFetch<getListingResponse>(getGetListingUrl(company,slug),
   {
     ...options,
     method: 'GET'

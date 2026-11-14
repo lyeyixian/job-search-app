@@ -2,19 +2,27 @@ import {
   type Application,
   type ApplicationList,
   type ApplicationSummary,
+  type Company,
+  type CompanyList,
+  type CompanyListing,
+  type CompanySummary,
   type EvidencePart,
   type ExperienceNote,
   type ExperienceNoteKind,
   type FitAnalysis,
   getApplication as fetchApplication,
   getApplications as fetchApplications,
+  getCompanies as fetchCompanies,
+  getCompany as fetchCompany,
   getExperienceNote as fetchExperienceNote,
   getHealth as fetchHealth,
+  getListing as fetchListing,
   getShortlist as fetchShortlist,
   type Gap,
   type GetApplicationsParams,
   type GetShortlistParams,
   type Health,
+  type Listing,
   type Problem,
   type Requirement,
   type Shortlist,
@@ -25,6 +33,10 @@ export type {
   Application,
   ApplicationList,
   ApplicationSummary,
+  Company,
+  CompanyList,
+  CompanyListing,
+  CompanySummary,
   EvidencePart,
   ExperienceNote,
   ExperienceNoteKind,
@@ -33,6 +45,7 @@ export type {
   GetApplicationsParams,
   GetShortlistParams,
   Health,
+  Listing,
   Requirement,
   Shortlist,
   ShortlistListing,
@@ -75,4 +88,16 @@ export function getExperienceNote(kind: ExperienceNoteKind, slug: string): Promi
 
 export function getShortlist(params?: GetShortlistParams): Promise<ApiResult<Shortlist>> {
   return result(() => fetchShortlist(params));
+}
+
+export function getCompanies(): Promise<ApiResult<CompanyList>> {
+  return result(() => fetchCompanies());
+}
+
+export function getCompany(company: string): Promise<ApiResult<Company>> {
+  return result(() => fetchCompany(company));
+}
+
+export function getListing(company: string, slug: string): Promise<ApiResult<Listing>> {
+  return result(() => fetchListing(company, slug));
 }

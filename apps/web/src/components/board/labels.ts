@@ -28,6 +28,36 @@ export const REGION_LABEL = {
   remote: "Remote",
 } as const;
 
+/** The words that the app shows for the values of the market scan. */
+export const TRIAGE_LABEL = {
+  shortlist: "Shortlist",
+  maybe: "Maybe",
+  reject: "Reject",
+} as const;
+
+export const TRIAGE_STYLE = {
+  shortlist: "border-transparent bg-emerald-100 text-emerald-900",
+  maybe: "border-transparent bg-amber-100 text-amber-900",
+  reject: "border-transparent bg-secondary text-muted-foreground",
+} as const;
+
+export const LISTING_STATE_LABEL = {
+  open: "Open",
+  closed: "Closed",
+  unknown: "Unknown",
+} as const;
+
+export const MODE_LABEL = {
+  active: "Active",
+  watch: "Watch",
+} as const;
+
+/** `sg` and `remote` have a label. A different place shows as the vault writes it. */
+export function regionLabel(region: string | null): string {
+  if (!region) return "None";
+  return region in REGION_LABEL ? REGION_LABEL[region as keyof typeof REGION_LABEL] : region;
+}
+
 export type Status = keyof typeof STATUS_LABEL;
 
 /** The statuses that still need an action. Each one is a column of the board. */
