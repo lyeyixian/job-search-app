@@ -35,3 +35,24 @@ export const OPEN_STATUSES = ["analyzed", "applied", "interviewing", "offer"] as
 
 /** The statuses that need no more action. They share one closed group at the end of the board. */
 export const FINISHED_STATUSES = ["accepted", "rejected", "dropped"] as const satisfies readonly Status[];
+
+/** The colours of a verdict badge and a direction badge. */
+export const VERDICT_STYLE = {
+  "strong-fit": "border-transparent bg-emerald-700 text-white",
+  "good-fit": "border-transparent bg-emerald-100 text-emerald-900",
+  stretch: "border-transparent bg-amber-100 text-amber-900",
+  skip: "border-transparent bg-secondary text-muted-foreground",
+} as const;
+
+export const DIRECTION_STYLE = {
+  aligned: "text-foreground",
+  caution: "border-amber-500 text-amber-900",
+  conflict: "border-destructive text-destructive",
+} as const;
+
+/** The sentence that the app shows for a field of a note that breaks the vault's rules. */
+export function warningText(warning: { field: string; problem: "missing" | "invalid" }): string {
+  return warning.problem === "missing"
+    ? `The note has no ${warning.field}.`
+    : `The note has a ${warning.field} that the vault's rules do not permit.`;
+}

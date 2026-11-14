@@ -63,3 +63,63 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* The text of a note, from markdown. */
+@layer components {
+  .note-text {
+    @apply flex flex-col gap-3 text-sm leading-relaxed;
+    overflow-wrap: anywhere;
+  }
+  .note-text h1,
+  .note-text h2 {
+    @apply mt-3 font-semibold text-lg tracking-tight;
+  }
+  .note-text h3 {
+    @apply mt-2 scroll-mt-4 rounded-md font-semibold text-base;
+  }
+  .note-text h4 {
+    @apply font-semibold;
+  }
+  .note-text ul {
+    @apply flex list-disc flex-col gap-1 pl-5;
+  }
+  .note-text ol {
+    @apply flex list-decimal flex-col gap-1 pl-5;
+  }
+  .note-text a,
+  .note-text-inline a {
+    @apply underline underline-offset-2;
+  }
+  .note-text code,
+  .note-text-inline code {
+    @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.85em];
+  }
+  .note-text table {
+    @apply block overflow-x-auto text-left;
+  }
+  .note-text th,
+  .note-text td {
+    @apply border px-2 py-1 align-top;
+  }
+  .note-text blockquote {
+    @apply border-l-2 pl-3 text-muted-foreground;
+  }
+  .note-text hr {
+    @apply my-2;
+  }
+
+  /* The achievement that a link names stands out for a moment. */
+  .note-text h3:target {
+    animation: achievement-target 2.5s ease-out;
+    @apply outline-2 outline-amber-400 outline-offset-4;
+  }
+}
+
+@keyframes achievement-target {
+  from {
+    background-color: var(--color-amber-200);
+  }
+  to {
+    background-color: transparent;
+  }
+}

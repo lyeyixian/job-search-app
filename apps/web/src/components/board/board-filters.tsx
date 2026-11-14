@@ -2,10 +2,22 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import type { ApplicationList, GetApplicationsParams } from "@/api/client";
+import { BOARD_SEARCH_KEY } from "./board-search";
 import { DIRECTION_LABEL, REGION_LABEL, VERDICT_LABEL } from "./labels";
 
 type FilterKey = keyof GetApplicationsParams;
+
+/** The query string of a set of choices, with its `?`. Empty if nothing is chosen. */
+function searchOf(chosen: GetApplicationsParams): string {
+  const query = new URLSearchParams();
+  for (const [name, current] of Object.entries(chosen)) {
+    if (current) query.set(name, current);
+  }
+  const search = query.toString();
+  return search ? `?${search}` : "";
+}
 
 /**
  * The choices that narrow the board. A choice goes to the query string, so Back returns to the
@@ -20,13 +32,18 @@ export function BoardFilters({
 }) {
   const router = useRouter();
 
-  function choose(key: FilterKey, value: string) {
-    const query = new URLSearchParams();
-    for (const [name, current] of Object.entries({ ...chosen, [key]: value })) {
-      if (current) query.set(name, current);
+  // The page of an application reads this, so that its link back shows the same board.
+  const search = searchOf(chosen);
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(BOARD_SEARCH_KEY, search);
+    } catch {
+      // A browser can refuse storage. The link back then goes to the board with no filters.
     }
-    const search = query.toString();
-    router.push(search ? `/applications?${search}` : "/applications");
+  }, [search]);
+
+  function choose(key: FilterKey, value: string) {
+    router.push(`/applications${searchOf({ ...chosen, [key]: value })}`);
   }
 
   const selects: { key: FilterKey; label: string; options: { value: string; label: string }[] }[] = [

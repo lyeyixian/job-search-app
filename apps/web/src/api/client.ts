@@ -1,14 +1,35 @@
 import {
+  type Application,
   type ApplicationList,
   type ApplicationSummary,
+  type EvidencePart,
+  type ExperienceNote,
+  type ExperienceNoteKind,
+  type FitAnalysis,
+  getApplication as fetchApplication,
   getApplications as fetchApplications,
+  getExperienceNote as fetchExperienceNote,
   getHealth as fetchHealth,
+  type Gap,
   type GetApplicationsParams,
   type Health,
   type Problem,
+  type Requirement,
 } from "./generated";
 
-export type { ApplicationList, ApplicationSummary, GetApplicationsParams, Health };
+export type {
+  Application,
+  ApplicationList,
+  ApplicationSummary,
+  EvidencePart,
+  ExperienceNote,
+  ExperienceNoteKind,
+  FitAnalysis,
+  Gap,
+  GetApplicationsParams,
+  Health,
+  Requirement,
+};
 
 /**
  * The result of an API call. On a failure, `code` is the `code` of the problem response.
@@ -35,4 +56,12 @@ export function getHealth(): Promise<ApiResult<Health>> {
 
 export function getApplications(params?: GetApplicationsParams): Promise<ApiResult<ApplicationList>> {
   return result(() => fetchApplications(params));
+}
+
+export function getApplication(slug: string): Promise<ApiResult<Application>> {
+  return result(() => fetchApplication(slug));
+}
+
+export function getExperienceNote(kind: ExperienceNoteKind, slug: string): Promise<ApiResult<ExperienceNote>> {
+  return result(() => fetchExperienceNote(kind, slug));
 }
