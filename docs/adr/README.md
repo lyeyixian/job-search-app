@@ -19,3 +19,4 @@ file that replaces it.
 | [0012](0012-problem-details-and-json-logs.md) | Problem Details for errors, JSON lines for logs | Accepted |
 | [0013](0013-opentelemetry-with-optional-viewer.md) | OpenTelemetry tracing, with an optional viewer | Accepted |
 | [0014](0014-orval-generates-the-web-client.md) | Orval generates the Web API client | Accepted |
+| [0015](0015-api-reads-the-fit-analysis.md) | The API reads the fit analysis into data | Accepted |

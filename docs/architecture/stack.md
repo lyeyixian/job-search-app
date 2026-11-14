@@ -13,7 +13,7 @@ version, with TypeScript 7, Node 26 and pnpm 12.
 | Framework | Next.js, App Router | Server rendering and page routes | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
 | Components | shadcn/ui on Radix | Menu, tabs, tables, badges, filters | [ADR-0006](../adr/0006-tailwind-with-shadcn-ui.md) |
 | Styling | Tailwind CSS | Layout and phone breakpoints | [ADR-0006](../adr/0006-tailwind-with-shadcn-ui.md) |
-| Markdown view | unified with remark and rehype | Turns a note body into HTML with links | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
+| Markdown view | react-markdown, on unified with remark and rehype | Turns a note body into HTML with links | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
 | PDF view | PDF.js | Draws the committed resume PDF | [ADR-0007](../adr/0007-serve-the-committed-resume-pdf.md) |
 | API client | Orval | Types and `fetch` functions generated from the OpenAPI document | [ADR-0014](../adr/0014-orval-generates-the-web-client.md) |
 

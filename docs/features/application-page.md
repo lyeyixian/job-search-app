@@ -89,11 +89,25 @@ place,
 - You do not change the posting or the fit analysis by hand. You change only the tailored resume.
 - A fit analysis always has the same four parts: the verdict, the direction check, the
   requirements table and the gaps.
+- Evidence names an achievement as `<note>#<achievement>`. Evidence that names an achievement
+  that does not exist shows as text with a mark, and you cannot select it.
+- A gap that names no bridging action says so.
+- The page of a role note or a project note is a plain view until the experience feature is
+  built. It shows the note, and it opens at the achievement.
+- The link to the listing goes to the page of that listing. That page does not exist until the
+  company listings feature is built.
 
 ## Decisions
 
 - **The fit analysis comes before the posting.** The fit analysis is what you act on. The posting
   is long, and you read it less often.
+- **The parts are tabs.** The fit analysis, the posting and the resume are three tabs. One tab
+  shows at a time, so you do not scroll through a part to get to the next one. An application
+  with no fit analysis opens at the posting.
+- **On a phone, a requirement is a card.** A table with five columns does not fit a phone. Each
+  requirement shows as a card, and each value has the name of its column.
+- **The link back keeps the filters.** "Back to the board" goes to the board with the filters
+  that you set last, the same as Back in the browser.
 - **The page shows the resume as it prints.** The page does not show the text that you edit to
   make the resume. You edit that text outside the app.
 - **No fit analysis from before.** When a new fit analysis replaces an old one, the page shows only
