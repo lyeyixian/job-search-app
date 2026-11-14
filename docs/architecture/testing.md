@@ -43,3 +43,6 @@ It has at least one note for each case that a criterion names:
 - three companies with shortlisted listings, one of them with listings first seen on different
   days, and a company with no shortlisted listing
 - a closed listing with the triage `shortlist`
+- a listing with the state `unknown`, and a sweep log with more than one day for each company
+  but one
+- a watchlist entry with notes on more than one line, and a company with the mode `watch`

@@ -21,3 +21,4 @@ file that replaces it.
 | [0014](0014-orval-generates-the-web-client.md) | Orval generates the Web API client | Accepted |
 | [0015](0015-api-reads-the-fit-analysis.md) | The API reads the fit analysis into data | Accepted |
 | [0016](0016-shortlist-from-the-company-indexes.md) | The shortlist comes from the company indexes | Accepted |
+| [0017](0017-company-pages-read-the-watchlist-and-the-sweep-log.md) | The company pages read the watchlist and the sweep log | Accepted |
