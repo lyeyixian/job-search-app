@@ -16,6 +16,7 @@ The address of each page. Agreed on 14 Nov 2026.
 | `/experience/projects/{slug}` | A project note | [Experience](../features/experience.md) |
 | `/experience/stories/{slug}` | A story | [Experience](../features/experience.md) |
 | `/experience/skills` | Skills inventory | [Experience](../features/experience.md) |
+| `/experience/skills/{skill}` | The roles and projects that list one skill | [Experience](../features/experience.md) |
 | `/search/direction` | Direction | [Direction and targets](../features/direction-and-targets.md) |
 | `/search/targets` | Targets | [Direction and targets](../features/direction-and-targets.md) |
 

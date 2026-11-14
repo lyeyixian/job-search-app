@@ -22,3 +22,4 @@ file that replaces it.
 | [0015](0015-api-reads-the-fit-analysis.md) | The API reads the fit analysis into data | Accepted |
 | [0016](0016-shortlist-from-the-company-indexes.md) | The shortlist comes from the company indexes | Accepted |
 | [0017](0017-company-pages-read-the-watchlist-and-the-sweep-log.md) | The company pages read the watchlist and the sweep log | Accepted |
+| [0018](0018-experience-pages-read-the-frontmatter-and-the-inventory.md) | The experience pages read the frontmatter and the skills inventory | Accepted |
