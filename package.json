@@ -2,9 +2,9 @@
   "name": "job-search-app",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.28.0",
+  "packageManager": "pnpm@12.18.0",
   "engines": {
-    "node": ">=22"
+    "node": ">=26"
   },
   "scripts": {
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
@@ -19,7 +19,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.6.7",
     "mermaid": "^12.3.0",
-    "playwright": "1.63.0",
-    "typescript": "^5.9.3"
+    "playwright": "^1.65.1",
+    "typescript": "^7.0.2"
   }
 }

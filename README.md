@@ -9,7 +9,7 @@ Web app for my job search. It shows a private markdown vault in a browser.
 
 ## Run it
 
-1. Install Node 24 and pnpm 10.
+1. Install Node 26 and pnpm 12.
 2. Run `pnpm install`.
 3. Run `pnpm dev`.
 4. Open `http://localhost:3000`.
