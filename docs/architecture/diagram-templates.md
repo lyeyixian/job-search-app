@@ -15,15 +15,24 @@ keep the `classDef` lines as they are, and change only the nodes and arrows.
 
 ### Node labels
 
-Each node has three lines.
+Each node has three lines. Mermaid wraps a long line, and a wrapped box is hard to read, so each
+line has a limit.
+
+| Line | Content | Format | Limit |
+|---|---|---|---|
+| 1 | The name | Bold, `<b>` | 25 characters |
+| 2 | The kind and the technology, in brackets | Normal | 28 characters |
+| 3 | What it does | Small, `<small>` | 28 characters |
 
 ```text
-Name
-[Kind: technology]
-What it does, in a few words
+"<b>Name</b><br/>[Kind: technology]<br/><small>What it does</small>"
 ```
 
-Leave out the technology when there is none, as in `[Person]`.
+- Do not put a `<br/>` inside a line. If the text does not fit, cut it. The table below the
+  diagram holds the full description.
+- Leave out the technology when there is none, as in `[Person]`.
+- Write `[External: technology]` for a system outside ours.
+- A subgraph has one line: the name, a comma, then the kind, as in `Home server, server`.
 
 ### Shapes and classes
 
@@ -42,11 +51,12 @@ Leave out the technology when there is none, as in `[Person]`.
 
 | Meaning | Arrow | Label |
 |---|---|---|
-| A call or a request | Solid `-->` | A verb, then the protocol: `"reads notes, HTTPS"` |
+| A call or a request | Solid `-->` | A verb, then the protocol if it matters: `"git pull, SSH"` |
 | A file mount, or data that one part is built from | Dotted `-.->` | A verb |
 | No access | Dotted with a cross `-.-x` | `"no route"` |
 
-Each arrow has a label. The arrow points from the part that starts the action.
+Each arrow has a label of at most 20 characters. The arrow points from the part that starts the
+action.
 
 ## Template 1: C4 level 1, system context
 
@@ -54,12 +64,12 @@ Question it answers: who uses the system, and which outside systems does it depe
 
 ```mermaid
 flowchart TB
-    user(["Person name<br/>[Person]<br/>What they do"]):::person
-    system["System name<br/>[Software system]<br/>What it does"]:::system
-    ext[("Outside system<br/>[External system: technology]<br/>What it holds")]:::external
+    user(["<b>Person name</b><br/>[Person]<br/><small>What they do</small>"]):::person
+    system["<b>System name</b><br/>[Software system]<br/><small>What it does</small>"]:::system
+    ext[("<b>Outside system</b><br/>[External: technology]<br/><small>What it holds</small>")]:::external
 
-    user -- "does something, protocol" --> system
-    system -- "does something, protocol" --> ext
+    user -- "verb, protocol" --> system
+    system -- "verb, protocol" --> ext
 
     classDef person fill:#08427b,stroke:#052e56,color:#ffffff
     classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
@@ -75,18 +85,18 @@ Question it answers: which parts that run or hold data make up the system, and h
 
 ```mermaid
 flowchart TB
-    user(["Person name<br/>[Person]<br/>What they do"]):::person
+    user(["<b>Person name</b><br/>[Person]<br/><small>What they do</small>"]):::person
 
     subgraph system["System name"]
-        app["Container name<br/>[Container: technology]<br/>What it does"]:::container
-        db[("Store name<br/>[Container: technology]<br/>What it holds")]:::store
+        app["<b>Container name</b><br/>[Container: technology]<br/><small>What it does</small>"]:::container
+        db[("<b>Store name</b><br/>[Container: technology]<br/><small>What it holds</small>")]:::store
     end
 
-    ext[("Outside system<br/>[External system: technology]<br/>What it holds")]:::external
+    ext[("<b>Outside system</b><br/>[External: technology]<br/><small>What it holds</small>")]:::external
 
-    user -- "does something, protocol" --> app
-    app -- "reads and writes, protocol" --> db
-    app -- "does something, protocol" --> ext
+    user -- "verb, protocol" --> app
+    app -- "verb, protocol" --> db
+    app -- "verb, protocol" --> ext
 
     classDef person fill:#08427b,stroke:#052e56,color:#ffffff
     classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
@@ -104,14 +114,14 @@ Question it answers: which parts make up one container, and which part may call 
 flowchart TB
     subgraph container["Container name"]
         subgraph groupA["Group name"]
-            a["Component name<br/>[Component: technology]<br/>What it does"]:::component
+            a["<b>Component name</b><br/>[Component: technology]<br/><small>What it does</small>"]:::component
         end
         subgraph groupB["Group name"]
-            b["Component name<br/>[Component: technology]<br/>What it does"]:::component
+            b["<b>Component name</b><br/>[Component: technology]<br/><small>What it does</small>"]:::component
         end
     end
 
-    store[("Store name<br/>[Container: technology]<br/>What it holds")]:::store
+    store[("<b>Store name</b><br/>[Container: technology]<br/><small>What it holds</small>")]:::store
 
     a -- "calls" --> b
     b -- "reads" --> store
@@ -133,24 +143,24 @@ inside its machine, such as Docker inside a server.
 
 ```mermaid
 flowchart TB
-    subgraph device["Device name<br/>[Device]"]
-        client["Client name<br/>[Container: technology]<br/>What it does"]:::container
+    subgraph device["Device name, device"]
+        client["<b>Client name</b><br/>[Container: technology]<br/><small>What it does</small>"]:::container
     end
 
-    subgraph server["Server name<br/>[Server: operating system]"]
-        subgraph runtime["Runtime name<br/>[Runtime]"]
-            app["Container name<br/>[Container: technology]<br/>What it does"]:::container
+    subgraph server["Server name, server"]
+        subgraph runtime["Runtime name, runtime"]
+            app["<b>Container name</b><br/>[Container: technology]<br/><small>What it does</small>"]:::container
         end
-        vol[("Store name<br/>[Volume]<br/>What it holds")]:::store
+        vol[("<b>Store name</b><br/>[Volume]<br/><small>What it holds</small>")]:::store
     end
 
-    subgraph cloud["Service name<br/>[External service]"]
-        ext[("Outside system<br/>[External system]<br/>What it holds")]:::external
+    subgraph cloud["Service name, external service"]
+        ext[("<b>Outside system</b><br/>[External]<br/><small>What it holds</small>")]:::external
     end
 
-    client -- "does something, protocol and port" --> app
-    vol -. "mounted at a path" .-> app
-    app -- "does something, protocol" --> ext
+    client -- "verb, protocol" --> app
+    vol -. "mounted" .-> app
+    app -- "verb, protocol" --> ext
 
     classDef person fill:#08427b,stroke:#052e56,color:#ffffff
     classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff

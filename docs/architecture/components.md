@@ -10,26 +10,26 @@ Which parts make up the Next.js app, and which part may call which?
 flowchart TB
     subgraph next["Next.js app"]
         subgraph ui["UI"]
-            pages["Pages<br/>[Component: server components]<br/>One per feature"]:::component
-            comps["Components<br/>[Component: shadcn/ui]<br/>Board, tables, tabs, filters,<br/>markdown view, PDF view"]:::component
-            routes["Route handlers<br/>[Component: Next.js]<br/>Refresh, resume file, health"]:::component
+            pages["<b>Pages</b><br/>[Component: React]<br/><small>One per feature</small>"]:::component
+            comps["<b>Components</b><br/>[Component: shadcn/ui]<br/><small>Shared UI parts</small>"]:::component
+            routes["<b>Route handlers</b><br/>[Component: Next.js]<br/><small>Endpoints that are not pages</small>"]:::component
         end
         subgraph vaultmod["Vault module, no Next.js code"]
-            queries["Queries<br/>[Component: TypeScript]<br/>Typed data for one page"]:::component
-            store["Index store<br/>[Component: TypeScript]<br/>Holds the index, swaps in a new one"]:::component
-            sync["Sync<br/>[Component: git]<br/>Runs git pull, records the time"]:::component
-            parser["Parser<br/>[Component: gray-matter, unified]<br/>Frontmatter and markdown body"]:::component
-            schema["Schema check<br/>[Component: Zod]<br/>The rules of the vault's SCHEMA.md"]:::component
-            links["Link resolver<br/>[Component: remark]<br/>Targets, missing targets, backlinks"]:::component
+            queries["<b>Queries</b><br/>[Component: TypeScript]<br/><small>Data for one page</small>"]:::component
+            store["<b>Index store</b><br/>[Component: TypeScript]<br/><small>Owns the one index</small>"]:::component
+            sync["<b>Sync</b><br/>[Component: git]<br/><small>Runs git pull</small>"]:::component
+            parser["<b>Parser</b><br/>[Component: unified]<br/><small>Reads each note</small>"]:::component
+            schema["<b>Schema check</b><br/>[Component: Zod]<br/><small>Checks frontmatter</small>"]:::component
+            links["<b>Link resolver</b><br/>[Component: remark]<br/><small>Targets and backlinks</small>"]:::component
         end
     end
 
-    clone[("Vault clone<br/>[Container: git working copy]<br/>The server's copy of the vault")]:::store
+    clone[("<b>Vault clone</b><br/>[Container: git clone]<br/><small>The server's copy</small>")]:::store
 
     pages -- "renders with" --> comps
     pages -- "calls" --> queries
     routes -- "calls" --> queries
-    routes -- "asks for a rebuild" --> store
+    routes -- "rebuilds" --> store
     queries -- "reads" --> store
     store -- "calls" --> sync
     store -- "calls" --> parser

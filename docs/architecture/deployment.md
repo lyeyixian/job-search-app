@@ -8,37 +8,37 @@ On which machine does each part run, and what connects the machines?
 
 ```mermaid
 flowchart TB
-    subgraph devices["Own devices<br/>[Device: on the tailnet]"]
-        browser["Browser<br/>[Container: phone or laptop]<br/>Shows the pages"]:::container
+    subgraph devices["Own devices, device"]
+        browser["<b>Browser</b><br/>[Container: web browser]<br/><small>Shows the pages</small>"]:::container
     end
 
-    other(["Any other device<br/>[Person]<br/>Not on the tailnet"]):::external
+    other(["<b>Any other device</b><br/>[Person]<br/><small>Not on the tailnet</small>"]):::external
 
-    subgraph home["Home server<br/>[Server]"]
-        ts["tailscale serve<br/>[External system: Tailscale]<br/>HTTPS :443 on the tailnet name"]:::external
-        subgraph compose["Docker Compose<br/>[Runtime]"]
-            c["Next.js app<br/>[Container: image from ghcr.io]<br/>Port on 127.0.0.1 only"]:::container
+    subgraph home["Home server, server"]
+        ts["<b>tailscale serve</b><br/>[External: Tailscale]<br/><small>HTTPS on the tailnet</small>"]:::external
+        subgraph compose["Docker Compose, runtime"]
+            c["<b>Next.js app</b><br/>[Container: Docker image]<br/><small>Port on 127.0.0.1 only</small>"]:::container
         end
-        vol[("Vault clone<br/>[Volume]<br/>Mounted at VAULT_PATH")]:::store
-        key[("Deploy key<br/>[File]<br/>Read-only SSH key")]:::store
+        vol[("<b>Vault clone</b><br/>[Volume]<br/><small>Mounted at VAULT_PATH</small>")]:::store
+        key[("<b>Deploy key</b><br/>[File]<br/><small>Read-only SSH key</small>")]:::store
     end
 
-    subgraph gh["GitHub<br/>[External service]"]
-        apprepo[("App repo<br/>[External system: git]<br/>Public app code")]:::external
-        actions["GitHub Actions<br/>[External system]<br/>Builds the image"]:::external
-        ghcr[("Container registry<br/>[External system: ghcr.io]<br/>Public image")]:::external
-        vaultrepo[("Vault repo<br/>[External system: git]<br/>Private notes")]:::external
+    subgraph gh["GitHub, external service"]
+        apprepo[("<b>App repo</b><br/>[External: git]<br/><small>Public app code</small>")]:::external
+        actions["<b>GitHub Actions</b><br/>[External]<br/><small>Builds the image</small>"]:::external
+        ghcr[("<b>Container registry</b><br/>[External: ghcr.io]<br/><small>Public image</small>")]:::external
+        vaultrepo[("<b>Vault repo</b><br/>[External: git]<br/><small>Private notes</small>")]:::external
     end
 
-    browser -- "opens pages, HTTPS over the tailnet" --> ts
+    browser -- "opens pages, HTTPS" --> ts
     other -. "no route" .-x ts
-    ts -- "forwards requests, HTTP on 127.0.0.1" --> c
-    vol -. "mounted at VAULT_PATH" .-> c
-    key -. "mounted read-only" .-> c
-    c -- "pulls the notes, git over SSH" --> vaultrepo
-    apprepo -- "starts a build on merge to main" --> actions
-    actions -- "pushes the image, HTTPS" --> ghcr
-    c -- "pulls the image, HTTPS" --> ghcr
+    ts -- "forwards, HTTP" --> c
+    vol -. "mounted" .-> c
+    key -. "mounted" .-> c
+    c -- "git pull, SSH" --> vaultrepo
+    apprepo -- "starts a build" --> actions
+    actions -- "pushes image" --> ghcr
+    c -- "pulls image" --> ghcr
 
     classDef person fill:#08427b,stroke:#052e56,color:#ffffff
     classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
