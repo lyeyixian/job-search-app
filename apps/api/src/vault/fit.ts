@@ -1,5 +1,6 @@
 import { findExperienceNote } from "./experience.js";
 import type { VaultIndex } from "./load.js";
+import { enumValue, table } from "./table.js";
 
 export const GRADES = ["met", "partial", "gap"] as const;
 export const REQUIREMENT_KINDS = ["must-have", "nice-to-have"] as const;
@@ -94,31 +95,6 @@ function sections(fit: string): Map<string, string> {
     }
   }
   return new Map([...result].map(([key, lines]) => [key, lines.join("\n").trim()]));
-}
-
-/** The cells of one table row. `\|` is a bar inside a cell. */
-function cells(line: string): string[] {
-  const inner = line.trim().replace(/^\|/, "").replace(/\|$/, "");
-  return inner.split(/(?<!\\)\|/).map((cell) => cell.replace(/\\\|/g, "|").trim());
-}
-
-const SEPARATOR = /^\|?[\s:|-]+\|?$/;
-
-/** Reads a markdown table. Each row is a map from the header in lower case to the cell. */
-function table(lines: string[]): Map<string, string>[] {
-  const rows = lines.filter((line) => line.trim().startsWith("|"));
-  const header = rows[0];
-  if (!header) return [];
-  const names = cells(header).map((name) => name.toLowerCase());
-  return rows
-    .slice(1)
-    .filter((line) => !SEPARATOR.test(line.trim()))
-    .map((line) => new Map(cells(line).map((cell, i) => [names[i] ?? String(i), cell])));
-}
-
-function enumValue<T extends string>(known: readonly T[], cell: string | undefined): T | null {
-  const value = (cell ?? "").replace(/[`*]/g, "").trim().toLowerCase();
-  return known.find((candidate) => candidate === value) ?? null;
 }
 
 function kindOf(cell: string | undefined): { kind: RequirementKind | null; kindNote: string | null } {

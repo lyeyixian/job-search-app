@@ -7,6 +7,7 @@ import { experienceRoutes } from "./experience.js";
 import { healthRoutes } from "./health.js";
 import { type AppEnv, problem } from "./problem.js";
 import { requestTrace } from "./request-trace.js";
+import { shortlistRoutes } from "./shortlist.js";
 
 export const openApiInfo = {
   openapi: "3.1.0",
@@ -25,6 +26,7 @@ export function createApp(store: VaultStore) {
   app.route("/", healthRoutes(store));
   app.route("/", applicationRoutes(store));
   app.route("/", experienceRoutes(store));
+  app.route("/", shortlistRoutes(store));
 
   app.doc31("/openapi.json", openApiInfo);
   app.get("/docs", Scalar({ url: "/api/openapi.json", pageTitle: "Job search API" }));

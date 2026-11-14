@@ -24,3 +24,12 @@ The applications also cover the cases of the application page:
 | `applications/pine-street-backend-engineer/posting.md` | No link, no source listing, no resume and no gaps |
 | `applications/quill-works-full-stack-engineer/posting.md` | The gaps as a table |
 | `applications/harbor-data-software-engineer/posting.md` | No fit analysis |
+
+The market scan covers the cases of the shortlist:
+
+| Note | Case |
+|---|---|
+| `search/market/example-co/index.md` | Two shortlisted listings first seen on the same day, one promoted |
+| `search/market/kestrel-pay/index.md` | Shortlisted listings first seen on three days, a closed listing with the triage `shortlist`, and a rejected listing |
+| `search/market/orchard-robotics/index.md` | Each shortlisted listing is promoted, and a listing with the triage `maybe` |
+| `search/market/marlow-freight/index.md` | No shortlisted listing |
