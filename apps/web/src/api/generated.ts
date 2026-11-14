@@ -202,6 +202,236 @@ export interface ApplicationList {
   choices: ApplicationListChoices;
 }
 
+/**
+ * The listing that the application came from.
+ * @nullable
+ */
+export type ApplicationListing = {
+  company: string;
+  slug: string;
+  /**
+     * `null` if the vault has no such listing.
+     * @nullable
+     */
+  title: string | null;
+} | null;
+
+/**
+ * @nullable
+ */
+export type RequirementKind = typeof RequirementKind[keyof typeof RequirementKind] | null;
+
+
+export const RequirementKind = {
+  'must-have': 'must-have',
+  'nice-to-have': 'nice-to-have',
+} as const;
+
+/**
+ * @nullable
+ */
+export type RequirementGrade = typeof RequirementGrade[keyof typeof RequirementGrade] | null;
+
+
+export const RequirementGrade = {
+  met: 'met',
+  partial: 'partial',
+  gap: 'gap',
+} as const;
+
+export type EvidenceTextType = typeof EvidenceTextType[keyof typeof EvidenceTextType];
+
+
+export const EvidenceTextType = {
+  text: 'text',
+} as const;
+
+export interface EvidenceText {
+  type: EvidenceTextType;
+  text: string;
+}
+
+export type EvidenceAchievementType = typeof EvidenceAchievementType[keyof typeof EvidenceAchievementType];
+
+
+export const EvidenceAchievementType = {
+  achievement: 'achievement',
+} as const;
+
+/**
+ * The kind of the note. `null` if no role note or project note has the slug.
+ * @nullable
+ */
+export type EvidenceAchievementNote = typeof EvidenceAchievementNote[keyof typeof EvidenceAchievementNote] | null;
+
+
+export const EvidenceAchievementNote = {
+  roles: 'roles',
+  projects: 'projects',
+} as const;
+
+export interface EvidenceAchievement {
+  type: EvidenceAchievementType;
+  /** The reference as the fit analysis writes it. */
+  ref: string;
+  slug: string;
+  anchor: string;
+  /**
+     * The kind of the note. `null` if no role note or project note has the slug.
+     * @nullable
+     */
+  note: EvidenceAchievementNote;
+  /** @nullable */
+  noteTitle: string | null;
+  /**
+     * The heading of the achievement. `null` if the note has no such achievement.
+     * @nullable
+     */
+  title: string | null;
+}
+
+/**
+ * A piece of an evidence cell: text, or a reference to an achievement.
+ */
+export type EvidencePart = EvidenceText | EvidenceAchievement;
+
+export interface Requirement {
+  /** Markdown. */
+  requirement: string;
+  /** @nullable */
+  kind: RequirementKind;
+  /**
+     * The rest of the kind cell, if it has more text.
+     * @nullable
+     */
+  kindNote: string | null;
+  /** Markdown. */
+  firmness: string;
+  /** @nullable */
+  grade: RequirementGrade;
+  evidence: EvidencePart[];
+}
+
+/**
+ * The group that lists the gap.
+ * @nullable
+ */
+export type GapKind = typeof GapKind[keyof typeof GapKind] | null;
+
+
+export const GapKind = {
+  'must-have': 'must-have',
+  'nice-to-have': 'nice-to-have',
+} as const;
+
+/**
+ * @nullable
+ */
+export type GapGrade = typeof GapGrade[keyof typeof GapGrade] | null;
+
+
+export const GapGrade = {
+  met: 'met',
+  partial: 'partial',
+  gap: 'gap',
+} as const;
+
+/**
+ * The bridging action.
+ * @nullable
+ */
+export type GapAction = typeof GapAction[keyof typeof GapAction] | null;
+
+
+export const GapAction = {
+  positioning: 'positioning',
+  learning: 'learning',
+} as const;
+
+export interface Gap {
+  /**
+     * The group that lists the gap.
+     * @nullable
+     */
+  kind: GapKind;
+  /**
+     * Markdown.
+     * @nullable
+     */
+  requirement: string | null;
+  /** @nullable */
+  grade: GapGrade;
+  /**
+     * The bridging action.
+     * @nullable
+     */
+  action: GapAction;
+  /** What to do. Markdown. */
+  text: string;
+}
+
+/**
+ * `null` if the note has no fit analysis.
+ * @nullable
+ */
+export type FitAnalysis = {
+  /** The reasons for the verdict. Markdown. */
+  verdict: string;
+  /** The reasons for the direction check. Markdown. */
+  direction: string;
+  requirements: Requirement[];
+  gaps: Gap[];
+  /** The text of the gaps part that is not a gap. Markdown. */
+  gapsNote: string;
+} | null;
+
+export type Application = ApplicationSummary & ({
+  /**
+     * The posting on the job board. `null` also if the field has a warning.
+     * @nullable
+     */
+  url: string | null;
+  /**
+     * The day of the last fit analysis. `null` also if the field has a warning.
+     * @nullable
+     */
+  analyzed: string | null;
+  /**
+     * The listing that the application came from.
+     * @nullable
+     */
+  listing: ApplicationListing;
+  /** The posting, without the fit analysis. Markdown. */
+  posting: string;
+  fit: FitAnalysis | null;
+});
+
+export type ExperienceNoteKind = typeof ExperienceNoteKind[keyof typeof ExperienceNoteKind];
+
+
+export const ExperienceNoteKind = {
+  roles: 'roles',
+  projects: 'projects',
+} as const;
+
+export type ExperienceNoteAchievementsItem = {
+  /** The name that a reference uses after `#`. */
+  anchor: string;
+  /** The `###` heading. */
+  title: string;
+};
+
+export interface ExperienceNote {
+  kind: ExperienceNoteKind;
+  /** The file name without `.md`. */
+  slug: string;
+  title: string;
+  /** The note without its title. Markdown. */
+  body: string;
+  /** The achievements of the note, in the order of the note. */
+  achievements: ExperienceNoteAchievementsItem[];
+}
+
 export type GetApplicationsParams = {
   /** Only applications of this company. */
   company?: string;
@@ -296,6 +526,152 @@ export const getGetApplicationsUrl = (params?: GetApplicationsParams,) => {
 export const getApplications = async (params?: GetApplicationsParams, options?: Parameters<typeof apiFetch>[1]): Promise<getApplicationsResponse> => {
 
   return apiFetch<getApplicationsResponse>(getGetApplicationsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getApplicationResponse200 = {
+  data: Application
+  status: 200
+}
+
+export type getApplicationResponse404 = {
+  data: Problem
+  status: 404
+}
+
+export type getApplicationResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getApplicationResponseSuccess = (getApplicationResponse200) & {
+  headers: Headers;
+};
+export type getApplicationResponseError = (getApplicationResponse404 | getApplicationResponse503) & {
+  headers: Headers;
+};
+
+export type getApplicationResponse = (getApplicationResponseSuccess | getApplicationResponseError)
+
+export const getGetApplicationUrl = (slug: string,) => {
+
+
+
+
+  return `/api/applications/${slug}`
+}
+
+/**
+ * @summary Get one application with its posting and its fit analysis
+ */
+export const getApplication = async (slug: string, options?: Parameters<typeof apiFetch>[1]): Promise<getApplicationResponse> => {
+
+  return apiFetch<getApplicationResponse>(getGetApplicationUrl(slug),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getApplicationResumeResponse200 = {
+  data: Blob
+  status: 200
+}
+
+export type getApplicationResumeResponse404 = {
+  data: Problem
+  status: 404
+}
+
+export type getApplicationResumeResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getApplicationResumeResponseSuccess = (getApplicationResumeResponse200) & {
+  headers: Headers;
+};
+export type getApplicationResumeResponseError = (getApplicationResumeResponse404 | getApplicationResumeResponse503) & {
+  headers: Headers;
+};
+
+export type getApplicationResumeResponse = (getApplicationResumeResponseSuccess | getApplicationResumeResponseError)
+
+export const getGetApplicationResumeUrl = (slug: string,) => {
+
+
+
+
+  return `/api/applications/${slug}/resume.pdf`
+}
+
+/**
+ * @summary Get the tailored resume PDF of an application
+ */
+export const getApplicationResume = async (slug: string, options?: Parameters<typeof apiFetch>[1]): Promise<getApplicationResumeResponse> => {
+
+  return apiFetch<getApplicationResumeResponse>(getGetApplicationResumeUrl(slug),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getExperienceNoteResponse200 = {
+  data: ExperienceNote
+  status: 200
+}
+
+export type getExperienceNoteResponse404 = {
+  data: Problem
+  status: 404
+}
+
+export type getExperienceNoteResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getExperienceNoteResponseSuccess = (getExperienceNoteResponse200) & {
+  headers: Headers;
+};
+export type getExperienceNoteResponseError = (getExperienceNoteResponse404 | getExperienceNoteResponse503) & {
+  headers: Headers;
+};
+
+export type getExperienceNoteResponse = (getExperienceNoteResponseSuccess | getExperienceNoteResponseError)
+
+export const getGetExperienceNoteUrl = (kind: 'roles' | 'projects',
+    slug: string,) => {
+
+
+
+
+  return `/api/experience/${kind}/${slug}`
+}
+
+/**
+ * @summary Get a role note or a project note
+ */
+export const getExperienceNote = async (kind: 'roles' | 'projects',
+    slug: string, options?: Parameters<typeof apiFetch>[1]): Promise<getExperienceNoteResponse> => {
+
+  return apiFetch<getExperienceNoteResponse>(getGetExperienceNoteUrl(kind,slug),
   {
     ...options,
     method: 'GET'

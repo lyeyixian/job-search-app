@@ -2,26 +2,7 @@ import Link from "next/link";
 import type { ApplicationSummary } from "@/api/client";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { DIRECTION_LABEL, REGION_LABEL, VERDICT_LABEL } from "./labels";
-
-const VERDICT_STYLE = {
-  "strong-fit": "border-transparent bg-emerald-700 text-white",
-  "good-fit": "border-transparent bg-emerald-100 text-emerald-900",
-  stretch: "border-transparent bg-amber-100 text-amber-900",
-  skip: "border-transparent bg-secondary text-muted-foreground",
-} as const;
-
-const DIRECTION_STYLE = {
-  aligned: "text-foreground",
-  caution: "border-amber-500 text-amber-900",
-  conflict: "border-destructive text-destructive",
-} as const;
-
-function warningText(warning: ApplicationSummary["warnings"][number]): string {
-  return warning.problem === "missing"
-    ? `The note has no ${warning.field}.`
-    : `The note has a ${warning.field} that the vault's rules do not permit.`;
-}
+import { DIRECTION_LABEL, DIRECTION_STYLE, REGION_LABEL, VERDICT_LABEL, VERDICT_STYLE, warningText } from "./labels";
 
 /** One application on the board. The whole card is a link to the page of the application. */
 export function ApplicationCard({ application }: { application: ApplicationSummary }) {

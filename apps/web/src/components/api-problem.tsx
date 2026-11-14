@@ -5,6 +5,8 @@ function problemText(code: string): string {
   switch (code) {
     case "index_not_ready":
       return "The app is starting.";
+    case "note_not_found":
+      return "The vault has no such note.";
     case "api_unreachable":
       return "The API cannot be reached.";
     default:
