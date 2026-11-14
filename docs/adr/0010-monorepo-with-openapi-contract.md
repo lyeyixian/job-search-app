@@ -13,8 +13,8 @@ a shared package.
 ## Decision
 
 One repo with pnpm workspaces, `apps/web` and `apps/api`. The two apps share no code. The API
-writes `docs/api/openapi.json`. Web generates its types from that file with `openapi-typescript`
-and calls the API with `openapi-fetch`.
+writes `docs/api/openapi.json`. Web generates its types and its client from that file. Since
+[ADR-0014](0014-orval-generates-the-web-client.md) the generator is Orval.
 
 Inside the API, `src/vault/` never imports from `src/http/`.
 

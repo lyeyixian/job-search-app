@@ -3,7 +3,7 @@ FROM node:26-slim AS build
 # Keep this version the same as "packageManager" in package.json.
 RUN npm install --global pnpm@12.18.0
 WORKDIR /repo
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .pnpmfile.cjs ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json apps/web/
 RUN pnpm install --frozen-lockfile --filter @job-search/web...
 COPY apps/web apps/web

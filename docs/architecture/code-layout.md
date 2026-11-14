@@ -35,7 +35,7 @@ flowchart TB
     subgraph web["apps/web"]
         app["<b>app</b><br/>[Component: React]<br/><small>Pages</small>"]:::component
         comps["<b>components</b><br/>[Component: shadcn/ui]<br/><small>Shared UI parts</small>"]:::component
-        client["<b>api</b><br/>[Component: openapi-fetch]<br/><small>Generated types and client</small>"]:::component
+        client["<b>api</b><br/>[Component: Orval output]<br/><small>Generated types and client</small>"]:::component
     end
 
     doc[("<b>openapi.json</b><br/>[File: OpenAPI]<br/><small>The contract</small>")]:::store

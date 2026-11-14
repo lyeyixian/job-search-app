@@ -52,7 +52,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm openapi
       - name: Fail if the committed files differ from the generated files
-        run: git diff --exit-code -- docs/api/openapi.json apps/web/src/api/schema.d.ts
+        run: git diff --exit-code -- docs/api/openapi.json apps/web/src/api/generated.ts
 
   e2e:
     name: Browser tests
