@@ -25,7 +25,7 @@ The address of each page. Agreed on 14 Nov 2026.
   folder name for an application.
 - An achievement is an anchor on its role page or project page:
   `/experience/roles/{slug}#{achievement}`.
-- Filters live in the query string, as in `/applications?verdict=strong`. Back then returns to the
+- Filters live in the query string, as in `/applications?verdict=strong-fit`. Back then returns to the
   same filters, and a filtered view can be bookmarked.
 - The API uses the same nouns under `/api`. The page `/applications/{slug}` reads from
   `/api/applications/{slug}`.

@@ -38,6 +38,181 @@ export interface Problem {
   traceId: string;
 }
 
+export type ApplicationListChoicesRegionsItem = typeof ApplicationListChoicesRegionsItem[keyof typeof ApplicationListChoicesRegionsItem];
+
+
+export const ApplicationListChoicesRegionsItem = {
+  sg: 'sg',
+  remote: 'remote',
+} as const;
+
+export type ApplicationListChoicesVerdictsItem = typeof ApplicationListChoicesVerdictsItem[keyof typeof ApplicationListChoicesVerdictsItem];
+
+
+export const ApplicationListChoicesVerdictsItem = {
+  'strong-fit': 'strong-fit',
+  'good-fit': 'good-fit',
+  stretch: 'stretch',
+  skip: 'skip',
+} as const;
+
+export type ApplicationListChoicesDirectionsItem = typeof ApplicationListChoicesDirectionsItem[keyof typeof ApplicationListChoicesDirectionsItem];
+
+
+export const ApplicationListChoicesDirectionsItem = {
+  aligned: 'aligned',
+  caution: 'caution',
+  conflict: 'conflict',
+} as const;
+
+/**
+ * The values that at least one application has. The query does not change them.
+ */
+export type ApplicationListChoices = {
+  companies: string[];
+  regions: ApplicationListChoicesRegionsItem[];
+  verdicts: ApplicationListChoicesVerdictsItem[];
+  directions: ApplicationListChoicesDirectionsItem[];
+};
+
+/**
+ * `null` also if the field has a warning.
+ * @nullable
+ */
+export type ApplicationSummaryRegion = typeof ApplicationSummaryRegion[keyof typeof ApplicationSummaryRegion] | null;
+
+
+export const ApplicationSummaryRegion = {
+  sg: 'sg',
+  remote: 'remote',
+} as const;
+
+/**
+ * `null` also if the field has a warning.
+ * @nullable
+ */
+export type ApplicationSummaryStatus = typeof ApplicationSummaryStatus[keyof typeof ApplicationSummaryStatus] | null;
+
+
+export const ApplicationSummaryStatus = {
+  analyzed: 'analyzed',
+  applied: 'applied',
+  interviewing: 'interviewing',
+  offer: 'offer',
+  accepted: 'accepted',
+  rejected: 'rejected',
+  dropped: 'dropped',
+} as const;
+
+/**
+ * `null` before the first fit analysis. `null` also if the field has a warning.
+ * @nullable
+ */
+export type ApplicationSummaryVerdict = typeof ApplicationSummaryVerdict[keyof typeof ApplicationSummaryVerdict] | null;
+
+
+export const ApplicationSummaryVerdict = {
+  'strong-fit': 'strong-fit',
+  'good-fit': 'good-fit',
+  stretch: 'stretch',
+  skip: 'skip',
+} as const;
+
+/**
+ * The direction check. `null` before the first fit analysis. `null` also if the field has a warning.
+ * @nullable
+ */
+export type ApplicationSummaryDirection = typeof ApplicationSummaryDirection[keyof typeof ApplicationSummaryDirection] | null;
+
+
+export const ApplicationSummaryDirection = {
+  aligned: 'aligned',
+  caution: 'caution',
+  conflict: 'conflict',
+} as const;
+
+/**
+ * `missing` if the note does not have the key. `invalid` if the vault's rules do not permit the value.
+ */
+export type WarningProblem = typeof WarningProblem[keyof typeof WarningProblem];
+
+
+export const WarningProblem = {
+  missing: 'missing',
+  invalid: 'invalid',
+} as const;
+
+/**
+ * A field of a note that breaks the vault's rules.
+ */
+export interface Warning {
+  /** The frontmatter key. */
+  field: string;
+  /** `missing` if the note does not have the key. `invalid` if the vault's rules do not permit the value. */
+  problem: WarningProblem;
+}
+
+export interface ApplicationSummary {
+  /** The name of the application's folder. */
+  slug: string;
+  /**
+     * `null` also if the field has a warning.
+     * @nullable
+     */
+  company: string | null;
+  /**
+     * `null` also if the field has a warning.
+     * @nullable
+     */
+  title: string | null;
+  /**
+     * `null` also if the field has a warning.
+     * @nullable
+     */
+  region: ApplicationSummaryRegion;
+  /**
+     * `null` also if the field has a warning.
+     * @nullable
+     */
+  status: ApplicationSummaryStatus;
+  /**
+     * The day that the application was made. `null` also if the field has a warning.
+     * @nullable
+     */
+  captured: string | null;
+  /**
+     * `null` before the first fit analysis. `null` also if the field has a warning.
+     * @nullable
+     */
+  verdict: ApplicationSummaryVerdict;
+  /**
+     * The direction check. `null` before the first fit analysis. `null` also if the field has a warning.
+     * @nullable
+     */
+  direction: ApplicationSummaryDirection;
+  /** True if the application has a tailored resume PDF. */
+  hasResume: boolean;
+  warnings: Warning[];
+}
+
+export interface ApplicationList {
+  /** The applications that match the query. The order is `strong-fit`, `good-fit`, `stretch`, `skip`, then no verdict. With the same verdict, the newest application is first. */
+  applications: ApplicationSummary[];
+  /** The values that at least one application has. The query does not change them. */
+  choices: ApplicationListChoices;
+}
+
+export type GetApplicationsParams = {
+  /** Only applications of this company. */
+  company?: string;
+  /** Only applications in this region. */
+  region?: string;
+  /** Only applications with this verdict. */
+  verdict?: string;
+  /** Only applications with this direction check. */
+  direction?: string;
+};
+
 export type getHealthResponse200 = {
   data: Health
   status: 200
@@ -71,6 +246,56 @@ export const getGetHealthUrl = () => {
 export const getHealth = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getHealthResponse> => {
 
   return apiFetch<getHealthResponse>(getGetHealthUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getApplicationsResponse200 = {
+  data: ApplicationList
+  status: 200
+}
+
+export type getApplicationsResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getApplicationsResponseSuccess = (getApplicationsResponse200) & {
+  headers: Headers;
+};
+export type getApplicationsResponseError = (getApplicationsResponse503) & {
+  headers: Headers;
+};
+
+export type getApplicationsResponse = (getApplicationsResponseSuccess | getApplicationsResponseError)
+
+export const getGetApplicationsUrl = (params?: GetApplicationsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/applications?${stringifiedParams}` : `/api/applications`
+}
+
+/**
+ * @summary List the applications, best fit first
+ */
+export const getApplications = async (params?: GetApplicationsParams, options?: Parameters<typeof apiFetch>[1]): Promise<getApplicationsResponse> => {
+
+  return apiFetch<getApplicationsResponse>(getGetApplicationsUrl(params),
   {
     ...options,
     method: 'GET'

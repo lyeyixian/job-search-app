@@ -81,6 +81,209 @@
           "traceId"
         ],
         "description": "An RFC 9457 Problem Details object with a `code`."
+      },
+      "ApplicationList": {
+        "type": "object",
+        "properties": {
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationSummary"
+            },
+            "description": "The applications that match the query. The order is `strong-fit`, `good-fit`, `stretch`, `skip`, then no verdict. With the same verdict, the newest application is first."
+          },
+          "choices": {
+            "type": "object",
+            "properties": {
+              "companies": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "regions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "sg",
+                    "remote"
+                  ]
+                }
+              },
+              "verdicts": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "strong-fit",
+                    "good-fit",
+                    "stretch",
+                    "skip"
+                  ]
+                }
+              },
+              "directions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "aligned",
+                    "caution",
+                    "conflict"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "companies",
+              "regions",
+              "verdicts",
+              "directions"
+            ],
+            "description": "The values that at least one application has. The query does not change them."
+          }
+        },
+        "required": [
+          "applications",
+          "choices"
+        ]
+      },
+      "ApplicationSummary": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "The name of the application's folder.",
+            "example": "example-co-backend-engineer"
+          },
+          "company": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "`null` also if the field has a warning.",
+            "example": "Example Co"
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "`null` also if the field has a warning.",
+            "example": "Backend Engineer"
+          },
+          "region": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "sg",
+              "remote",
+              null
+            ],
+            "description": "`null` also if the field has a warning."
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "analyzed",
+              "applied",
+              "interviewing",
+              "offer",
+              "accepted",
+              "rejected",
+              "dropped",
+              null
+            ],
+            "description": "`null` also if the field has a warning."
+          },
+          "captured": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "description": "The day that the application was made. `null` also if the field has a warning.",
+            "example": "2026-10-05"
+          },
+          "verdict": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "strong-fit",
+              "good-fit",
+              "stretch",
+              "skip",
+              null
+            ],
+            "description": "`null` before the first fit analysis. `null` also if the field has a warning."
+          },
+          "direction": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "aligned",
+              "caution",
+              "conflict",
+              null
+            ],
+            "description": "The direction check. `null` before the first fit analysis. `null` also if the field has a warning."
+          },
+          "hasResume": {
+            "type": "boolean",
+            "description": "True if the application has a tailored resume PDF."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            }
+          }
+        },
+        "required": [
+          "slug",
+          "company",
+          "title",
+          "region",
+          "status",
+          "captured",
+          "verdict",
+          "direction",
+          "hasResume",
+          "warnings"
+        ]
+      },
+      "Warning": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "The frontmatter key.",
+            "example": "verdict"
+          },
+          "problem": {
+            "type": "string",
+            "enum": [
+              "missing",
+              "invalid"
+            ],
+            "description": "`missing` if the note does not have the key. `invalid` if the vault's rules do not permit the value."
+          }
+        },
+        "required": [
+          "field",
+          "problem"
+        ],
+        "description": "A field of a note that breaks the vault's rules."
       }
     },
     "parameters": {}
@@ -100,6 +303,83 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications": {
+      "get": {
+        "operationId": "getApplications",
+        "summary": "List the applications, best fit first",
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Only applications of this company.",
+              "example": "Example Co"
+            },
+            "required": false,
+            "description": "Only applications of this company.",
+            "name": "company",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Only applications in this region.",
+              "example": "sg"
+            },
+            "required": false,
+            "description": "Only applications in this region.",
+            "name": "region",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Only applications with this verdict.",
+              "example": "good-fit"
+            },
+            "required": false,
+            "description": "Only applications with this verdict.",
+            "name": "verdict",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Only applications with this direction check.",
+              "example": "aligned"
+            },
+            "required": false,
+            "description": "Only applications with this direction check.",
+            "name": "direction",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The applications that match every query parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationList"
                 }
               }
             }

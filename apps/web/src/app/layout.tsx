@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Job search",
+  title: { default: "Job search", template: "%s · Job search" },
   description: "Shows a private markdown vault in a browser.",
 };
 
