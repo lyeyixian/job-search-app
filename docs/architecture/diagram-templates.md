@@ -39,18 +39,20 @@ line has a limit.
 
 | Element | Shape | Class | Look |
 |---|---|---|---|
-| Person | Stadium `([ ])` | `person` | Dark blue, white text |
-| This system, on level 1 | Rectangle `[ ]` | `system` | Blue, white text |
-| Container | Rectangle `[ ]` | `container` | Pale blue, dark text |
-| Component | Rectangle `[ ]` | `component` | Pale blue, dark text |
-| Data store | Cylinder `[( )]` | `store` | Pale blue, dark text |
-| System or person outside ours | Rectangle, stadium or cylinder | `external` | Grey, dashed outline |
-| Server, device or boundary | Subgraph | none | Light grey box |
+| Person | Stadium `([ ])` | `person` | Bright blue, white text |
+| This system, on level 1 | Rectangle `[ ]` | `system` | Bright blue, white text |
+| Container | Rectangle `[ ]` | `container` | Dark blue, light text |
+| Component | Rectangle `[ ]` | `component` | Dark blue, light text |
+| Data store | Cylinder `[( )]` | `store` | Dark blue, light text |
+| System or person outside ours | Rectangle, stadium or cylinder | `external` | Dark grey, dashed outline |
+| Server, device or boundary | Subgraph | none | Near-black box |
 
 ### Theme
 
 The first line of each flowchart is the `%%{init}%%` block from the templates. It sets the font,
-the line colour, straight lines, and the light grey background of a subgraph. Sequence diagrams
+the line colour, straight lines, and the dark background of a subgraph. The colours are made
+for GitHub's dark mode. Each box and label has its own dark background, so the diagrams also
+read on a light page. Sequence diagrams
 use Mermaid's default look and have no `init` line.
 
 ### Arrows
@@ -69,7 +71,7 @@ action.
 Question it answers: who uses the system, and which outside systems does it depend on?
 
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"fontFamily":"system-ui, sans-serif","fontSize":"14px","lineColor":"#57606a","clusterBkg":"#f6f8fa","clusterBorder":"#d0d7de","edgeLabelBackground":"#ffffff","primaryTextColor":"#1f2328"},"flowchart":{"curve":"linear","nodeSpacing":40,"rankSpacing":50}}}%%
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"system-ui, sans-serif","fontSize":"14px","lineColor":"#8b949e","clusterBkg":"#161b22","clusterBorder":"#30363d","edgeLabelBackground":"#0d1117","primaryTextColor":"#e6edf3","titleColor":"#e6edf3"},"flowchart":{"curve":"linear","nodeSpacing":40,"rankSpacing":50}}}%%
 flowchart TB
     user(["<b>Person name</b><br/>[Person]<br/><small>What they do</small>"]):::person
     system["<b>System name</b><br/>[Software system]<br/><small>What it does</small>"]:::system
@@ -78,12 +80,12 @@ flowchart TB
     user -- "verb, protocol" --> system
     system -- "verb, protocol" --> ext
 
-    classDef person fill:#0b3d6b,stroke:#0b3d6b,color:#ffffff,rx:8,ry:8
-    classDef system fill:#1f6feb,stroke:#1a5fcc,color:#ffffff,rx:8,ry:8
-    classDef container fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
-    classDef component fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
-    classDef store fill:#ddf4ff,stroke:#54aeff,color:#0a3069
-    classDef external fill:#f6f8fa,stroke:#8c959f,color:#424a53,stroke-dasharray:4 3,rx:8,ry:8
+    classDef person fill:#1f6feb,stroke:#58a6ff,color:#ffffff,rx:8,ry:8
+    classDef system fill:#1f6feb,stroke:#58a6ff,color:#ffffff,rx:8,ry:8
+    classDef container fill:#0c2d6b,stroke:#388bfd,color:#e6edf3,rx:8,ry:8
+    classDef component fill:#0c2d6b,stroke:#388bfd,color:#e6edf3,rx:8,ry:8
+    classDef store fill:#0c2d6b,stroke:#388bfd,color:#e6edf3
+    classDef external fill:#21262d,stroke:#8b949e,color:#c9d1d9,stroke-dasharray:4 3,rx:8,ry:8
 ```
 
 ## Template 2: C4 level 2, containers
@@ -91,7 +93,7 @@ flowchart TB
 Question it answers: which parts that run or hold data make up the system, and how do they talk?
 
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"fontFamily":"system-ui, sans-serif","fontSize":"14px","lineColor":"#57606a","clusterBkg":"#f6f8fa","clusterBorder":"#d0d7de","edgeLabelBackground":"#ffffff","primaryTextColor":"#1f2328"},"flowchart":{"curve":"linear","nodeSpacing":40,"rankSpacing":50}}}%%
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"system-ui, sans-serif","fontSize":"14px","lineColor":"#8b949e","clusterBkg":"#161b22","clusterBorder":"#30363d","edgeLabelBackground":"#0d1117","primaryTextColor":"#e6edf3","titleColor":"#e6edf3"},"flowchart":{"curve":"linear","nodeSpacing":40,"rankSpacing":50}}}%%
 flowchart TB
     user(["<b>Person name</b><br/>[Person]<br/><small>What they do</small>"]):::person
 
@@ -106,12 +108,12 @@ flowchart TB
     app -- "verb, protocol" --> db
     app -- "verb, protocol" --> ext
 
-    classDef person fill:#0b3d6b,stroke:#0b3d6b,color:#ffffff,rx:8,ry:8
-    classDef system fill:#1f6feb,stroke:#1a5fcc,color:#ffffff,rx:8,ry:8
-    classDef container fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
-    classDef component fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
-    classDef store fill:#ddf4ff,stroke:#54aeff,color:#0a3069
-    classDef external fill:#f6f8fa,stroke:#8c959f,color:#424a53,stroke-dasharray:4 3,rx:8,ry:8
+    classDef person fill:#1f6feb,stroke:#58a6ff,color:#ffffff,rx:8,ry:8
+    classDef system fill:#1f6feb,stroke:#58a6ff,color:#ffffff,rx:8,ry:8
+    classDef container fill:#0c2d6b,stroke:#388bfd,color:#e6edf3,rx:8,ry:8
+    classDef component fill:#0c2d6b,stroke:#388bfd,color:#e6edf3,rx:8,ry:8
+    classDef store fill:#0c2d6b,stroke:#388bfd,color:#e6edf3
+    classDef external fill:#21262d,stroke:#8b949e,color:#c9d1d9,stroke-dasharray:4 3,rx:8,ry:8
 ```
 
 ## Template 3: C4 level 3, components
@@ -119,7 +121,7 @@ flowchart TB
 Question it answers: which parts make up one container, and which part may call which?
 
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"fontFamily":"system-ui, sans-serif","fontSize":"14px","lineColor":"#57606a","clusterBkg":"#f6f8fa","clusterBorder":"#d0d7de","edgeLabelBackground":"#ffffff","primaryTextColor":"#1f2328"},"flowchart":{"curve":"linear","nodeSpacing":40,"rankSpacing":50}}}%%
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"system-ui, sans-serif","fontSize":"14px","lineColor":"#8b949e","clusterBkg":"#161b22","clusterBorder":"#30363d","edgeLabelBackground":"#0d1117","primaryTextColor":"#e6edf3","titleColor":"#e6edf3"},"flowchart":{"curve":"linear","nodeSpacing":40,"rankSpacing":50}}}%%
 flowchart TB
     subgraph container["Container name"]
         subgraph groupA["Group name"]
@@ -135,12 +137,12 @@ flowchart TB
     a -- "calls" --> b
     b -- "reads" --> store
 
-    classDef person fill:#0b3d6b,stroke:#0b3d6b,color:#ffffff,rx:8,ry:8
-    classDef system fill:#1f6feb,stroke:#1a5fcc,color:#ffffff,rx:8,ry:8
-    classDef container fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
-    classDef component fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
-    classDef store fill:#ddf4ff,stroke:#54aeff,color:#0a3069
-    classDef external fill:#f6f8fa,stroke:#8c959f,color:#424a53,stroke-dasharray:4 3,rx:8,ry:8
+    classDef person fill:#1f6feb,stroke:#58a6ff,color:#ffffff,rx:8,ry:8
+    classDef system fill:#1f6feb,stroke:#58a6ff,color:#ffffff,rx:8,ry:8
+    classDef container fill:#0c2d6b,stroke:#388bfd,color:#e6edf3,rx:8,ry:8
+    classDef component fill:#0c2d6b,stroke:#388bfd,color:#e6edf3,rx:8,ry:8
+    classDef store fill:#0c2d6b,stroke:#388bfd,color:#e6edf3
+    classDef external fill:#21262d,stroke:#8b949e,color:#c9d1d9,stroke-dasharray:4 3,rx:8,ry:8
 ```
 
 ## Template 4: deployment
@@ -151,7 +153,7 @@ A subgraph is a machine, a device or a service that runs things. Nest a subgraph
 inside its machine, such as Docker inside a server.
 
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"fontFamily":"system-ui, sans-serif","fontSize":"14px","lineColor":"#57606a","clusterBkg":"#f6f8fa","clusterBorder":"#d0d7de","edgeLabelBackground":"#ffffff","primaryTextColor":"#1f2328"},"flowchart":{"curve":"linear","nodeSpacing":40,"rankSpacing":50}}}%%
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"system-ui, sans-serif","fontSize":"14px","lineColor":"#8b949e","clusterBkg":"#161b22","clusterBorder":"#30363d","edgeLabelBackground":"#0d1117","primaryTextColor":"#e6edf3","titleColor":"#e6edf3"},"flowchart":{"curve":"linear","nodeSpacing":40,"rankSpacing":50}}}%%
 flowchart TB
     subgraph device["Device name, device"]
         client["<b>Client name</b><br/>[Container: technology]<br/><small>What it does</small>"]:::container
@@ -172,12 +174,12 @@ flowchart TB
     vol -. "mounted" .-> app
     app -- "verb, protocol" --> ext
 
-    classDef person fill:#0b3d6b,stroke:#0b3d6b,color:#ffffff,rx:8,ry:8
-    classDef system fill:#1f6feb,stroke:#1a5fcc,color:#ffffff,rx:8,ry:8
-    classDef container fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
-    classDef component fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
-    classDef store fill:#ddf4ff,stroke:#54aeff,color:#0a3069
-    classDef external fill:#f6f8fa,stroke:#8c959f,color:#424a53,stroke-dasharray:4 3,rx:8,ry:8
+    classDef person fill:#1f6feb,stroke:#58a6ff,color:#ffffff,rx:8,ry:8
+    classDef system fill:#1f6feb,stroke:#58a6ff,color:#ffffff,rx:8,ry:8
+    classDef container fill:#0c2d6b,stroke:#388bfd,color:#e6edf3,rx:8,ry:8
+    classDef component fill:#0c2d6b,stroke:#388bfd,color:#e6edf3,rx:8,ry:8
+    classDef store fill:#0c2d6b,stroke:#388bfd,color:#e6edf3
+    classDef external fill:#21262d,stroke:#8b949e,color:#c9d1d9,stroke-dasharray:4 3,rx:8,ry:8
 ```
 
 ## Template 5: sequence
