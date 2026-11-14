@@ -26,4 +26,8 @@ The Developer Tools team owns the build pipeline and the internal service catalo
 
 - **Situation:** Nobody knew which team owned which service.
 - **Action:** Built a catalogue that reads the owner from each repository.
-- **Result:** 140 services have a named owner.
+- **Result:** 140 services have a named owner. The count after the next audit is not known #revisit.
+
+## Reflections
+
+Small tools that remove a daily question are worth more than they look.

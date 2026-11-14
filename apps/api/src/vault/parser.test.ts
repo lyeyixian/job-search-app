@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findLinks, parseNote } from "./parser.js";
+import { findLinks, findRevisits, parseNote } from "./parser.js";
 
 describe("parseNote", () => {
   it("splits the frontmatter from the body", () => {
@@ -28,5 +28,21 @@ describe("findLinks", () => {
 
   it("skips a wikilink in code", () => {
     expect(findLinks("Write `[[slug]]` to link.\n\n```\n[[other]]\n```\n")).toEqual([]);
+  });
+});
+
+describe("findRevisits", () => {
+  it("finds each key whose comment has the tag, and returns the comment without the tag", () => {
+    const frontmatter = "type: project\nstart: 2020-01    # semester 2 #revisit exact months\nend: 2020-05 # checked\n";
+
+    expect(findRevisits(frontmatter)).toEqual([{ field: "start", text: "semester 2 exact months" }]);
+  });
+
+  it("finds a comment that is only the tag", () => {
+    expect(findRevisits("end: 2020-05 #revisit")).toEqual([{ field: "end", text: "" }]);
+  });
+
+  it("does not read a tag in a value as a comment", () => {
+    expect(findRevisits('team: "the#revisit team"')).toEqual([]);
   });
 });

@@ -612,14 +612,260 @@
           "text"
         ]
       },
-      "ExperienceNote": {
+      "ExperienceOverview": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "body": {
+                "type": "string",
+                "description": "The profile without its title. Markdown."
+              },
+              "updated": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The month or the day of the last change to the note.",
+                "example": "2026-10"
+              }
+            },
+            "required": [
+              "body",
+              "updated"
+            ],
+            "description": "`null` if the vault has no profile."
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoleEntry"
+            },
+            "description": "The role notes, newest first. A stint of a programme is in `stints` of the programme and not in this list."
+          },
+          "projects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectSummary"
+            },
+            "description": "The project notes, newest first."
+          },
+          "stories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StorySummary"
+            },
+            "description": "The stories, in the order of the titles."
+          }
+        },
+        "required": [
+          "profile",
+          "roles",
+          "projects",
+          "stories"
+        ]
+      },
+      "RoleEntry": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RoleSummary"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "stints": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RoleSummary"
+                },
+                "description": "The stints of the programme, newest first. Empty if the role is not a programme."
+              }
+            },
+            "required": [
+              "stints"
+            ]
+          }
+        ]
+      },
+      "RoleSummary": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "northwind-software-engineer"
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the note.",
+            "example": "Software Engineer, Northwind Traders"
+          },
+          "company": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "Northwind Traders"
+          },
+          "jobTitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The `title` key of the note.",
+            "example": "Software Engineer"
+          },
+          "team": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "Developer Tools"
+          },
+          "start": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}$",
+            "description": "The first month, as `YYYY-MM`.",
+            "example": "2023-07"
+          },
+          "end": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}$",
+            "description": "The last month. `null` for the current role.",
+            "example": "2024-10"
+          },
+          "programme": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The slug of the role note for the programme that this stint is part of.",
+            "example": "northwind-graduate-programme"
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "company",
+          "jobTitle",
+          "team",
+          "start",
+          "end",
+          "programme"
+        ]
+      },
+      "ProjectSummary": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "recipe-box"
+          },
+          "title": {
+            "type": "string",
+            "example": "Recipe box"
+          },
+          "kind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "open-source",
+              "coursework",
+              "hackathon",
+              "side-project",
+              null
+            ],
+            "description": "`null` if the note has a value that the vault's rules do not permit.",
+            "example": "side-project"
+          },
+          "start": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}$",
+            "description": "The first month, as `YYYY-MM`.",
+            "example": "2023-07"
+          },
+          "end": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}$",
+            "description": "The last month. `null` for a project that continues.",
+            "example": "2024-06"
+          },
+          "onProfile": {
+            "type": "boolean",
+            "description": "`true` if the project can go on a resume."
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "kind",
+          "start",
+          "end",
+          "onProfile"
+        ]
+      },
+      "StorySummary": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "slow-build"
+          },
+          "title": {
+            "type": "string",
+            "example": "The slow build"
+          },
+          "competencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "ownership",
+              "technical-depth"
+            ]
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteRef"
+            },
+            "description": "The role notes that the story comes from. A slug with no role note is not here."
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "competencies",
+          "roles"
+        ]
+      },
+      "NoteRef": {
         "type": "object",
         "properties": {
           "kind": {
             "type": "string",
             "enum": [
               "roles",
-              "projects"
+              "projects",
+              "stories"
             ]
           },
           "slug": {
@@ -629,6 +875,190 @@
           },
           "title": {
             "type": "string",
+            "example": "Software Engineer, Northwind Traders"
+          }
+        },
+        "required": [
+          "kind",
+          "slug",
+          "title"
+        ],
+        "description": "A note that a different note names."
+      },
+      "SkillsInventory": {
+        "type": "object",
+        "properties": {
+          "updated": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The month or the day of the last change to the note.",
+            "example": "2026-10"
+          },
+          "pinned": {
+            "type": "string",
+            "description": "The `Pinned` section of the inventory, as markdown. Can be empty."
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The `##` heading.",
+                  "example": "Languages"
+                },
+                "skills": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InventorySkill"
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "skills"
+              ]
+            },
+            "description": "The categories in the order of the inventory."
+          },
+          "unlisted": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InventorySkill"
+            },
+            "description": "The skills that a note lists and the inventory does not have."
+          }
+        },
+        "required": [
+          "updated",
+          "pinned",
+          "categories",
+          "unlisted"
+        ]
+      },
+      "InventorySkill": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Skill"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "uses": {
+                "type": "integer",
+                "description": "The number of role notes and project notes that list the skill.",
+                "example": 2
+              }
+            },
+            "required": [
+              "uses"
+            ]
+          }
+        ]
+      },
+      "Skill": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "postgres"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name in the skills inventory. The slug if the inventory does not have the skill.",
+            "example": "PostgreSQL"
+          }
+        },
+        "required": [
+          "slug",
+          "name"
+        ]
+      },
+      "SkillUse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Skill"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The category in the inventory. `null` if the inventory does not have the skill.",
+                "example": "Tools"
+              },
+              "notes": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/NoteRef"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "pattern": "^\\d{4}-\\d{2}$",
+                          "description": "The first month, as `YYYY-MM`.",
+                          "example": "2023-07"
+                        },
+                        "end": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "pattern": "^\\d{4}-\\d{2}$",
+                          "description": "The last month. `null` if the work continues.",
+                          "example": "2024-10"
+                        }
+                      },
+                      "required": [
+                        "start",
+                        "end"
+                      ]
+                    }
+                  ],
+                  "description": "A note that a different note names."
+                },
+                "description": "Each role note and project note that lists the skill, newest first."
+              }
+            },
+            "required": [
+              "category",
+              "notes"
+            ]
+          }
+        ]
+      },
+      "ExperienceNote": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "roles",
+              "projects",
+              "stories"
+            ]
+          },
+          "slug": {
+            "type": "string",
+            "description": "The file name without `.md`.",
+            "example": "northwind-software-engineer"
+          },
+          "title": {
+            "type": "string",
+            "description": "The first `#` heading. If the note has none, a role note has its job title, its company and its team, and each other note has its slug as words.",
             "example": "Software Engineer, Northwind Traders"
           },
           "body": {
@@ -656,7 +1086,233 @@
                 "title"
               ]
             },
-            "description": "The achievements of the note, in the order of the note."
+            "description": "The achievements of the note, in the order of the note. Empty for a story."
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Skill"
+            },
+            "description": "The skills that the note lists. Empty for a story."
+          },
+          "revisits": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "The frontmatter key.",
+                  "example": "start"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "The comment without the tag. Can be empty.",
+                  "example": "exact month"
+                }
+              },
+              "required": [
+                "field",
+                "text"
+              ]
+            },
+            "description": "Each frontmatter key whose line has a comment with the tag `#revisit`. A tag in the text of the note stays in `body`."
+          },
+          "role": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "company": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "example": "Northwind Traders"
+              },
+              "jobTitle": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The `title` key of the note.",
+                "example": "Software Engineer"
+              },
+              "team": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "example": "Developer Tools"
+              },
+              "start": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\d{4}-\\d{2}$",
+                "description": "The first month, as `YYYY-MM`.",
+                "example": "2023-07"
+              },
+              "end": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\d{4}-\\d{2}$",
+                "description": "The last month. `null` for the current role.",
+                "example": "2024-10"
+              },
+              "programme": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "roles",
+                      "projects",
+                      "stories"
+                    ]
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "The file name without `.md`.",
+                    "example": "northwind-software-engineer"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Software Engineer, Northwind Traders"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "slug",
+                  "title"
+                ],
+                "description": "The programme that this stint is part of. `null` if the vault has no role note for it."
+              },
+              "stints": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RoleSummary"
+                },
+                "description": "The stints of the programme, newest first. Empty if the role is not a programme."
+              },
+              "stories": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/NoteRef"
+                },
+                "description": "The stories that come from the role."
+              }
+            },
+            "required": [
+              "company",
+              "jobTitle",
+              "team",
+              "start",
+              "end",
+              "programme",
+              "stints",
+              "stories"
+            ],
+            "description": "The facts of a role note. `null` for each other kind."
+          },
+          "project": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "kind": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "open-source",
+                  "coursework",
+                  "hackathon",
+                  "side-project",
+                  null
+                ],
+                "description": "`null` if the note has a value that the vault's rules do not permit.",
+                "example": "side-project"
+              },
+              "start": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\d{4}-\\d{2}$",
+                "description": "The first month, as `YYYY-MM`.",
+                "example": "2023-07"
+              },
+              "end": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\d{4}-\\d{2}$",
+                "description": "The last month. `null` for a project that continues.",
+                "example": "2024-06"
+              },
+              "onProfile": {
+                "type": "boolean",
+                "description": "`true` if the project can go on a resume."
+              },
+              "link": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri",
+                "description": "The web address of the project.",
+                "example": "https://example.com/recipe-box"
+              }
+            },
+            "required": [
+              "kind",
+              "start",
+              "end",
+              "onProfile",
+              "link"
+            ],
+            "description": "The facts of a project note. `null` for each other kind."
+          },
+          "story": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "competencies": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": [
+                  "ownership",
+                  "technical-depth"
+                ]
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/NoteRef"
+                },
+                "description": "The role notes that the story comes from. A slug with no role note is not here."
+              }
+            },
+            "required": [
+              "competencies",
+              "roles"
+            ],
+            "description": "The facts of a story. `null` for each other kind."
           }
         },
         "required": [
@@ -664,7 +1320,12 @@
           "slug",
           "title",
           "body",
-          "achievements"
+          "achievements",
+          "skills",
+          "revisits",
+          "role",
+          "project",
+          "story"
         ]
       },
       "Shortlist": {
@@ -1408,10 +2069,124 @@
         }
       }
     },
+    "/api/experience": {
+      "get": {
+        "operationId": "getExperience",
+        "summary": "Get the profile and the lists of role notes, project notes and stories",
+        "tags": [
+          "Experience"
+        ],
+        "responses": {
+          "200": {
+            "description": "The overview.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperienceOverview"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experience/skills": {
+      "get": {
+        "operationId": "getSkills",
+        "summary": "Get the skills inventory",
+        "tags": [
+          "Experience"
+        ],
+        "responses": {
+          "200": {
+            "description": "The inventory.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillsInventory"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experience/skills/{skill}": {
+      "get": {
+        "operationId": "getSkill",
+        "summary": "Get one skill with each role note and project note that lists it",
+        "tags": [
+          "Experience"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "postgres"
+            },
+            "required": true,
+            "name": "skill",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The skill.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillUse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The inventory does not have the skill, and no note lists it. Code `note_not_found`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/experience/{kind}/{slug}": {
       "get": {
         "operationId": "getExperienceNote",
-        "summary": "Get a role note or a project note",
+        "summary": "Get a role note, a project note or a story",
         "tags": [
           "Experience"
         ],
@@ -1421,7 +2196,8 @@
               "type": "string",
               "enum": [
                 "roles",
-                "projects"
+                "projects",
+                "stories"
               ]
             },
             "required": true,
