@@ -3,6 +3,7 @@ import { Scalar } from "@scalar/hono-api-reference";
 import { logger } from "../logger.js";
 import type { VaultStore } from "../vault/store.js";
 import { applicationRoutes } from "./applications.js";
+import { experienceRoutes } from "./experience.js";
 import { healthRoutes } from "./health.js";
 import { type AppEnv, problem } from "./problem.js";
 import { requestTrace } from "./request-trace.js";
@@ -23,6 +24,7 @@ export function createApp(store: VaultStore) {
 
   app.route("/", healthRoutes(store));
   app.route("/", applicationRoutes(store));
+  app.route("/", experienceRoutes(store));
 
   app.doc31("/openapi.json", openApiInfo);
   app.get("/docs", Scalar({ url: "/api/openapi.json", pageTitle: "Job search API" }));

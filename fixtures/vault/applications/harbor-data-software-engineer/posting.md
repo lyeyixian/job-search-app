@@ -19,9 +19,3 @@ Harbor Data is a made-up company. This posting is not real.
 
 - Three years of backend work
 - TypeScript or Python
-
-## Fit analysis
-
-### Verdict
-
-Meets both requirements. See [[northwind-software-engineer#cut-build-time]].

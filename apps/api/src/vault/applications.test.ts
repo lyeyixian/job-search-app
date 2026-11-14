@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
-import { listApplications } from "./applications.js";
+import { getApplication, listApplications, readResume } from "./applications.js";
 import { loadVault, type VaultIndex } from "./load.js";
 
 const fixtureVault = fileURLToPath(new URL("../../../../fixtures/vault", import.meta.url));
@@ -64,5 +64,50 @@ describe("listApplications", () => {
     expect(choices.regions).toEqual(["sg", "remote"]);
     expect(choices.verdicts).toEqual(["strong-fit", "good-fit", "stretch", "skip"]);
     expect(choices.directions).toEqual(["aligned", "caution", "conflict"]);
+  });
+});
+
+describe("getApplication", () => {
+  it("returns the facts, the posting without the fit analysis, and the fit analysis", () => {
+    const application = getApplication(index, "example-co-backend-engineer");
+
+    expect(application).toMatchObject({
+      company: "Example Co",
+      url: "https://example.com/careers/1001",
+      captured: "2026-10-05",
+      analyzed: "2026-10-07",
+      listing: { company: "example-co", slug: "backend-engineer-1001", title: "Backend Engineer" },
+      hasResume: true,
+      warnings: [],
+    });
+    expect(application?.posting.startsWith("Example Co is a made-up company.")).toBe(true);
+    expect(application?.posting).not.toContain("Fit analysis");
+    expect(application?.fit?.requirements).toHaveLength(6);
+    expect(application?.fit?.gaps.map((gap) => gap.action)).toEqual(["positioning", "learning", "learning"]);
+  });
+
+  it("returns a null link and a null listing for an application that has none", () => {
+    expect(getApplication(index, "pine-street-backend-engineer")).toMatchObject({ url: null, listing: null });
+  });
+
+  it("returns a null fit analysis for a note that has none", () => {
+    expect(getApplication(index, "harbor-data-software-engineer")?.fit).toBeNull();
+  });
+
+  it("returns null for a slug that no application has", () => {
+    expect(getApplication(index, "no-such-application")).toBeNull();
+  });
+});
+
+describe("readResume", () => {
+  it("returns the PDF of an application that has one", async () => {
+    const pdf = await readResume(fixtureVault, index, "example-co-backend-engineer");
+
+    expect(new TextDecoder().decode(pdf?.slice(0, 5))).toBe("%PDF-");
+  });
+
+  it("returns null for an application with no resume, and for a path outside the vault", async () => {
+    expect(await readResume(fixtureVault, index, "pine-street-backend-engineer")).toBeNull();
+    expect(await readResume(fixtureVault, index, "../../..")).toBeNull();
   });
 });

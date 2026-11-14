@@ -284,6 +284,388 @@
           "problem"
         ],
         "description": "A field of a note that breaks the vault's rules."
+      },
+      "Application": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApplicationSummary"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri",
+                "description": "The posting on the job board. `null` also if the field has a warning.",
+                "example": "https://example.com/careers/1001"
+              },
+              "analyzed": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date",
+                "description": "The day of the last fit analysis. `null` also if the field has a warning.",
+                "example": "2026-10-05"
+              },
+              "listing": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "company": {
+                    "type": "string",
+                    "example": "example-co"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "example": "backend-engineer-1001"
+                  },
+                  "title": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "`null` if the vault has no such listing."
+                  }
+                },
+                "required": [
+                  "company",
+                  "slug",
+                  "title"
+                ],
+                "description": "The listing that the application came from."
+              },
+              "posting": {
+                "type": "string",
+                "description": "The posting, without the fit analysis. Markdown."
+              },
+              "fit": {
+                "$ref": "#/components/schemas/FitAnalysis"
+              }
+            },
+            "required": [
+              "url",
+              "analyzed",
+              "listing",
+              "posting",
+              "fit"
+            ]
+          }
+        ]
+      },
+      "FitAnalysis": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "verdict": {
+            "type": "string",
+            "description": "The reasons for the verdict. Markdown."
+          },
+          "direction": {
+            "type": "string",
+            "description": "The reasons for the direction check. Markdown."
+          },
+          "requirements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Requirement"
+            }
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Gap"
+            }
+          },
+          "gapsNote": {
+            "type": "string",
+            "description": "The text of the gaps part that is not a gap. Markdown.",
+            "example": "No gaps."
+          }
+        },
+        "required": [
+          "verdict",
+          "direction",
+          "requirements",
+          "gaps",
+          "gapsNote"
+        ],
+        "description": "`null` if the note has no fit analysis."
+      },
+      "Requirement": {
+        "type": "object",
+        "properties": {
+          "requirement": {
+            "type": "string",
+            "description": "Markdown."
+          },
+          "kind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "must-have",
+              "nice-to-have",
+              null
+            ]
+          },
+          "kindNote": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The rest of the kind cell, if it has more text."
+          },
+          "firmness": {
+            "type": "string",
+            "description": "Markdown.",
+            "example": "likely-flexible: a years number"
+          },
+          "grade": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "met",
+              "partial",
+              "gap",
+              null
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EvidencePart"
+            }
+          }
+        },
+        "required": [
+          "requirement",
+          "kind",
+          "kindNote",
+          "firmness",
+          "grade",
+          "evidence"
+        ]
+      },
+      "EvidencePart": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/EvidenceText"
+          },
+          {
+            "$ref": "#/components/schemas/EvidenceAchievement"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "text": "#/components/schemas/EvidenceText",
+            "achievement": "#/components/schemas/EvidenceAchievement"
+          }
+        },
+        "description": "A piece of an evidence cell: text, or a reference to an achievement."
+      },
+      "EvidenceText": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "text"
+            ]
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "text"
+        ]
+      },
+      "EvidenceAchievement": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "achievement"
+            ]
+          },
+          "ref": {
+            "type": "string",
+            "description": "The reference as the fit analysis writes it.",
+            "example": "northwind-software-engineer#cut-build-time"
+          },
+          "slug": {
+            "type": "string",
+            "example": "northwind-software-engineer"
+          },
+          "anchor": {
+            "type": "string",
+            "example": "cut-build-time"
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "roles",
+              "projects",
+              null
+            ],
+            "description": "The kind of the note. `null` if no role note or project note has the slug."
+          },
+          "noteTitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "Software Engineer, Northwind Traders"
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The heading of the achievement. `null` if the note has no such achievement.",
+            "example": "Cut build time"
+          }
+        },
+        "required": [
+          "type",
+          "ref",
+          "slug",
+          "anchor",
+          "note",
+          "noteTitle",
+          "title"
+        ]
+      },
+      "Gap": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "must-have",
+              "nice-to-have",
+              null
+            ],
+            "description": "The group that lists the gap."
+          },
+          "requirement": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Markdown."
+          },
+          "grade": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "met",
+              "partial",
+              "gap",
+              null
+            ]
+          },
+          "action": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "positioning",
+              "learning",
+              null
+            ],
+            "description": "The bridging action."
+          },
+          "text": {
+            "type": "string",
+            "description": "What to do. Markdown."
+          }
+        },
+        "required": [
+          "kind",
+          "requirement",
+          "grade",
+          "action",
+          "text"
+        ]
+      },
+      "ExperienceNote": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "roles",
+              "projects"
+            ]
+          },
+          "slug": {
+            "type": "string",
+            "description": "The file name without `.md`.",
+            "example": "northwind-software-engineer"
+          },
+          "title": {
+            "type": "string",
+            "example": "Software Engineer, Northwind Traders"
+          },
+          "body": {
+            "type": "string",
+            "description": "The note without its title. Markdown."
+          },
+          "achievements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "anchor": {
+                  "type": "string",
+                  "description": "The name that a reference uses after `#`.",
+                  "example": "cut-build-time"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "The `###` heading.",
+                  "example": "Cut build time"
+                }
+              },
+              "required": [
+                "anchor",
+                "title"
+              ]
+            },
+            "description": "The achievements of the note, in the order of the note."
+          }
+        },
+        "required": [
+          "kind",
+          "slug",
+          "title",
+          "body",
+          "achievements"
+        ]
       }
     },
     "parameters": {}
@@ -380,6 +762,179 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApplicationList"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{slug}": {
+      "get": {
+        "operationId": "getApplication",
+        "summary": "Get one application with its posting and its fit analysis",
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The name of the application's folder.",
+              "example": "example-co-backend-engineer"
+            },
+            "required": true,
+            "description": "The name of the application's folder.",
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The application.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Application"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No application has the slug. Code `note_not_found`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{slug}/resume.pdf": {
+      "get": {
+        "operationId": "getApplicationResume",
+        "summary": "Get the tailored resume PDF of an application",
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The name of the application's folder.",
+              "example": "example-co-backend-engineer"
+            },
+            "required": true,
+            "description": "The name of the application's folder.",
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The PDF file as the vault holds it.",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Code `note_not_found` if no application has the slug. Code `resume_not_found` if the application has no resume.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experience/{kind}/{slug}": {
+      "get": {
+        "operationId": "getExperienceNote",
+        "summary": "Get a role note or a project note",
+        "tags": [
+          "Experience"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "roles",
+                "projects"
+              ]
+            },
+            "required": true,
+            "name": "kind",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "northwind-software-engineer"
+            },
+            "required": true,
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The note.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperienceNote"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No note of that kind has the slug. Code `note_not_found`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }

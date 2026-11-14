@@ -23,6 +23,21 @@ Pine Street is a made-up company. This posting is not real.
 
 ## Fit analysis
 
-### Verdict
+### Verdict: good-fit
 
-Meets both requirements. See [[northwind-software-engineer#cut-build-time]].
+Meets both requirements, with evidence from the current role.
+
+### Direction: aligned
+
+- **Aligned:** a small team that owns its services end to end.
+
+### Requirements
+
+| Requirement | Kind | Firmness | Grade | Evidence |
+|---|---|---|---|---|
+| Three years of backend work | must-have | likely-flexible (a years number) | met | northwind-software-engineer#cut-build-time: three years on the build pipeline |
+| TypeScript or Python | must-have | likely-firm | met | northwind-software-engineer#service-catalogue: TypeScript in production |
+
+### Gaps & bridging actions
+
+No gaps.

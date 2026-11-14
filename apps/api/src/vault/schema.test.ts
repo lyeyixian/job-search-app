@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkApplication } from "./schema.js";
+import { checkApplication, checkApplicationDetail } from "./schema.js";
 
 const valid = {
   company: "Example Co",
@@ -44,5 +44,40 @@ describe("checkApplication", () => {
     ]);
     expect(fields.status).toBeNull();
     expect(fields.region).toBeNull();
+  });
+});
+
+describe("checkApplicationDetail", () => {
+  it("returns the link, the listing and the day of the fit analysis", () => {
+    const { fields, warnings } = checkApplicationDetail({
+      url: "https://example.com/careers/1001",
+      "source-listing": "example-co/backend-engineer-1001",
+      analyzed: new Date("2026-10-07"),
+    });
+
+    expect(warnings).toEqual([]);
+    expect(fields).toEqual({
+      url: "https://example.com/careers/1001",
+      "source-listing": "example-co/backend-engineer-1001",
+      analyzed: "2026-10-07",
+    });
+  });
+
+  it("permits null for each field", () => {
+    expect(checkApplicationDetail({ url: null, "source-listing": null, analyzed: null }).warnings).toEqual([]);
+  });
+
+  it("gives a warning for a link that is not a web address", () => {
+    const { fields, warnings } = checkApplicationDetail({
+      url: "javascript:alert(1)",
+      "source-listing": "no-company",
+      analyzed: null,
+    });
+
+    expect(fields.url).toBeNull();
+    expect(warnings).toEqual([
+      { field: "url", problem: "invalid" },
+      { field: "source-listing", problem: "invalid" },
+    ]);
   });
 });

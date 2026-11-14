@@ -39,17 +39,28 @@ export type ApplicationFrontmatter = {
   [K in keyof typeof applicationFields]: z.infer<(typeof applicationFields)[K]> | null;
 };
 
-/**
- * Checks the frontmatter of an application. Never throws. A field that is missing or has a
- * value that the rules do not permit becomes `null` and gets a warning.
- */
-export function checkApplication(frontmatter: Record<string, unknown>): {
-  fields: ApplicationFrontmatter;
-  warnings: Warning[];
-} {
+/** The keys that only the page of one application reads. */
+const applicationDetailFields = {
+  // Only a web address can become a link on the page.
+  url: z.url({ protocol: /^https?$/ }).nullable(),
+  // `<company>/<listing-slug>` of the listing that the application came from.
+  "source-listing": z
+    .string()
+    .regex(/^[^/\s]+\/[^/\s]+$/)
+    .nullable(),
+  // `null` before the first fit analysis.
+  analyzed: day.nullable(),
+};
+
+export type ApplicationDetailFrontmatter = {
+  [K in keyof typeof applicationDetailFields]: z.infer<(typeof applicationDetailFields)[K]> | null;
+};
+
+/** Never throws. A field that is missing or has a value that the rules do not permit becomes `null` and gets a warning. */
+function check<F>(schemas: Record<string, z.ZodType>, frontmatter: Record<string, unknown>) {
   const fields: Record<string, unknown> = {};
   const warnings: Warning[] = [];
-  for (const [field, schema] of Object.entries(applicationFields)) {
+  for (const [field, schema] of Object.entries(schemas)) {
     if (!(field in frontmatter)) {
       fields[field] = null;
       warnings.push({ field, problem: "missing" });
@@ -59,5 +70,21 @@ export function checkApplication(frontmatter: Record<string, unknown>): {
     fields[field] = result.success ? result.data : null;
     if (!result.success) warnings.push({ field, problem: "invalid" });
   }
-  return { fields: fields as ApplicationFrontmatter, warnings };
+  return { fields: fields as F, warnings };
+}
+
+/** Checks the keys of an application that each view of it reads. */
+export function checkApplication(frontmatter: Record<string, unknown>): {
+  fields: ApplicationFrontmatter;
+  warnings: Warning[];
+} {
+  return check<ApplicationFrontmatter>(applicationFields, frontmatter);
+}
+
+/** Checks the keys that only the page of one application reads. */
+export function checkApplicationDetail(frontmatter: Record<string, unknown>): {
+  fields: ApplicationDetailFrontmatter;
+  warnings: Warning[];
+} {
+  return check<ApplicationDetailFrontmatter>(applicationDetailFields, frontmatter);
 }
