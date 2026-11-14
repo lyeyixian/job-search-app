@@ -40,3 +40,6 @@ It has at least one note for each case that a criterion names:
   action, and an application with none of these
 - an application with no fit analysis, and a fit analysis that writes its gaps as a table
 - a company with open, closed, rejected and promoted listings
+- three companies with shortlisted listings, one of them with listings first seen on different
+  days, and a company with no shortlisted listing
+- a closed listing with the triage `shortlist`
