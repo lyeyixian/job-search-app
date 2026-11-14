@@ -406,12 +406,202 @@ export type Application = ApplicationSummary & ({
   fit: FitAnalysis | null;
 });
 
+/**
+ * `null` if the vault has no profile.
+ * @nullable
+ */
+export type ExperienceOverviewProfile = {
+  /** The profile without its title. Markdown. */
+  body: string;
+  /**
+     * The month or the day of the last change to the note.
+     * @nullable
+     */
+  updated: string | null;
+} | null;
+
+export interface RoleSummary {
+  slug: string;
+  /** The title of the note. */
+  title: string;
+  /** @nullable */
+  company: string | null;
+  /**
+     * The `title` key of the note.
+     * @nullable
+     */
+  jobTitle: string | null;
+  /** @nullable */
+  team: string | null;
+  /**
+     * The first month, as `YYYY-MM`.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  start: string | null;
+  /**
+     * The last month. `null` for the current role.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  end: string | null;
+  /**
+     * The slug of the role note for the programme that this stint is part of.
+     * @nullable
+     */
+  programme: string | null;
+}
+
+export type RoleEntry = RoleSummary & {
+  /** The stints of the programme, newest first. Empty if the role is not a programme. */
+  stints: RoleSummary[];
+};
+
+/**
+ * `null` if the note has a value that the vault's rules do not permit.
+ * @nullable
+ */
+export type ProjectSummaryKind = typeof ProjectSummaryKind[keyof typeof ProjectSummaryKind] | null;
+
+
+export const ProjectSummaryKind = {
+  'open-source': 'open-source',
+  coursework: 'coursework',
+  hackathon: 'hackathon',
+  'side-project': 'side-project',
+} as const;
+
+export interface ProjectSummary {
+  slug: string;
+  title: string;
+  /**
+     * `null` if the note has a value that the vault's rules do not permit.
+     * @nullable
+     */
+  kind: ProjectSummaryKind;
+  /**
+     * The first month, as `YYYY-MM`.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  start: string | null;
+  /**
+     * The last month. `null` for a project that continues.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  end: string | null;
+  /** `true` if the project can go on a resume. */
+  onProfile: boolean;
+}
+
+export type NoteRefKind = typeof NoteRefKind[keyof typeof NoteRefKind];
+
+
+export const NoteRefKind = {
+  roles: 'roles',
+  projects: 'projects',
+  stories: 'stories',
+} as const;
+
+/**
+ * A note that a different note names.
+ */
+export interface NoteRef {
+  kind: NoteRefKind;
+  /** The file name without `.md`. */
+  slug: string;
+  title: string;
+}
+
+export interface StorySummary {
+  slug: string;
+  title: string;
+  competencies: string[];
+  /** The role notes that the story comes from. A slug with no role note is not here. */
+  roles: NoteRef[];
+}
+
+export interface ExperienceOverview {
+  /**
+     * `null` if the vault has no profile.
+     * @nullable
+     */
+  profile: ExperienceOverviewProfile;
+  /** The role notes, newest first. A stint of a programme is in `stints` of the programme and not in this list. */
+  roles: RoleEntry[];
+  /** The project notes, newest first. */
+  projects: ProjectSummary[];
+  /** The stories, in the order of the titles. */
+  stories: StorySummary[];
+}
+
+export interface Skill {
+  slug: string;
+  /** The name in the skills inventory. The slug if the inventory does not have the skill. */
+  name: string;
+}
+
+export type InventorySkill = Skill & {
+  /** The number of role notes and project notes that list the skill. */
+  uses: number;
+};
+
+export type SkillsInventoryCategoriesItem = {
+  /** The `##` heading. */
+  name: string;
+  skills: InventorySkill[];
+};
+
+export interface SkillsInventory {
+  /**
+     * The month or the day of the last change to the note.
+     * @nullable
+     */
+  updated: string | null;
+  /** The `Pinned` section of the inventory, as markdown. Can be empty. */
+  pinned: string;
+  /** The categories in the order of the inventory. */
+  categories: SkillsInventoryCategoriesItem[];
+  /** The skills that a note lists and the inventory does not have. */
+  unlisted: InventorySkill[];
+}
+
+/**
+ * A note that a different note names.
+ */
+export type SkillUseNotesItem = NoteRef & ({
+  /**
+     * The first month, as `YYYY-MM`.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  start: string | null;
+  /**
+     * The last month. `null` if the work continues.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  end: string | null;
+});
+
+export type SkillUse = Skill & ({
+  /**
+     * The category in the inventory. `null` if the inventory does not have the skill.
+     * @nullable
+     */
+  category: string | null;
+  /** Each role note and project note that lists the skill, newest first. */
+  notes: SkillUseNotesItem[];
+});
+
 export type ExperienceNoteKind = typeof ExperienceNoteKind[keyof typeof ExperienceNoteKind];
 
 
 export const ExperienceNoteKind = {
   roles: 'roles',
   projects: 'projects',
+  stories: 'stories',
 } as const;
 
 export type ExperienceNoteAchievementsItem = {
@@ -421,15 +611,154 @@ export type ExperienceNoteAchievementsItem = {
   title: string;
 };
 
+export type ExperienceNoteRevisitsItem = {
+  /** The frontmatter key. */
+  field: string;
+  /** The comment without the tag. Can be empty. */
+  text: string;
+};
+
+export type ExperienceNoteRoleProgrammeKind = typeof ExperienceNoteRoleProgrammeKind[keyof typeof ExperienceNoteRoleProgrammeKind];
+
+
+export const ExperienceNoteRoleProgrammeKind = {
+  roles: 'roles',
+  projects: 'projects',
+  stories: 'stories',
+} as const;
+
+/**
+ * The programme that this stint is part of. `null` if the vault has no role note for it.
+ * @nullable
+ */
+export type ExperienceNoteRoleProgramme = {
+  kind: ExperienceNoteRoleProgrammeKind;
+  /** The file name without `.md`. */
+  slug: string;
+  title: string;
+} | null;
+
+/**
+ * The facts of a role note. `null` for each other kind.
+ * @nullable
+ */
+export type ExperienceNoteRole = {
+  /** @nullable */
+  company: string | null;
+  /**
+     * The `title` key of the note.
+     * @nullable
+     */
+  jobTitle: string | null;
+  /** @nullable */
+  team: string | null;
+  /**
+     * The first month, as `YYYY-MM`.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  start: string | null;
+  /**
+     * The last month. `null` for the current role.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  end: string | null;
+  /**
+     * The programme that this stint is part of. `null` if the vault has no role note for it.
+     * @nullable
+     */
+  programme: ExperienceNoteRoleProgramme;
+  /** The stints of the programme, newest first. Empty if the role is not a programme. */
+  stints: RoleSummary[];
+  /** The stories that come from the role. */
+  stories: NoteRef[];
+} | null;
+
+/**
+ * `null` if the note has a value that the vault's rules do not permit.
+ * @nullable
+ */
+export type ExperienceNoteProjectKind = typeof ExperienceNoteProjectKind[keyof typeof ExperienceNoteProjectKind] | null;
+
+
+export const ExperienceNoteProjectKind = {
+  'open-source': 'open-source',
+  coursework: 'coursework',
+  hackathon: 'hackathon',
+  'side-project': 'side-project',
+} as const;
+
+/**
+ * The facts of a project note. `null` for each other kind.
+ * @nullable
+ */
+export type ExperienceNoteProject = {
+  /**
+     * `null` if the note has a value that the vault's rules do not permit.
+     * @nullable
+     */
+  kind: ExperienceNoteProjectKind;
+  /**
+     * The first month, as `YYYY-MM`.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  start: string | null;
+  /**
+     * The last month. `null` for a project that continues.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}$
+     */
+  end: string | null;
+  /** `true` if the project can go on a resume. */
+  onProfile: boolean;
+  /**
+     * The web address of the project.
+     * @nullable
+     */
+  link: string | null;
+} | null;
+
+/**
+ * The facts of a story. `null` for each other kind.
+ * @nullable
+ */
+export type ExperienceNoteStory = {
+  competencies: string[];
+  /** The role notes that the story comes from. A slug with no role note is not here. */
+  roles: NoteRef[];
+} | null;
+
 export interface ExperienceNote {
   kind: ExperienceNoteKind;
   /** The file name without `.md`. */
   slug: string;
+  /** The first `#` heading. If the note has none, a role note has its job title, its company and its team, and each other note has its slug as words. */
   title: string;
   /** The note without its title. Markdown. */
   body: string;
-  /** The achievements of the note, in the order of the note. */
+  /** The achievements of the note, in the order of the note. Empty for a story. */
   achievements: ExperienceNoteAchievementsItem[];
+  /** The skills that the note lists. Empty for a story. */
+  skills: Skill[];
+  /** Each frontmatter key whose line has a comment with the tag `#revisit`. A tag in the text of the note stays in `body`. */
+  revisits: ExperienceNoteRevisitsItem[];
+  /**
+     * The facts of a role note. `null` for each other kind.
+     * @nullable
+     */
+  role: ExperienceNoteRole;
+  /**
+     * The facts of a project note. `null` for each other kind.
+     * @nullable
+     */
+  project: ExperienceNoteProject;
+  /**
+     * The facts of a story. `null` for each other kind.
+     * @nullable
+     */
+  story: ExperienceNoteStory;
 }
 
 export type ShortlistCompaniesItem = {
@@ -952,6 +1281,140 @@ export const getApplicationResume = async (slug: string, options?: Parameters<ty
 
 
 
+export type getExperienceResponse200 = {
+  data: ExperienceOverview
+  status: 200
+}
+
+export type getExperienceResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getExperienceResponseSuccess = (getExperienceResponse200) & {
+  headers: Headers;
+};
+export type getExperienceResponseError = (getExperienceResponse503) & {
+  headers: Headers;
+};
+
+export type getExperienceResponse = (getExperienceResponseSuccess | getExperienceResponseError)
+
+export const getGetExperienceUrl = () => {
+
+
+
+
+  return `/api/experience`
+}
+
+/**
+ * @summary Get the profile and the lists of role notes, project notes and stories
+ */
+export const getExperience = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getExperienceResponse> => {
+
+  return apiFetch<getExperienceResponse>(getGetExperienceUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getSkillsResponse200 = {
+  data: SkillsInventory
+  status: 200
+}
+
+export type getSkillsResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getSkillsResponseSuccess = (getSkillsResponse200) & {
+  headers: Headers;
+};
+export type getSkillsResponseError = (getSkillsResponse503) & {
+  headers: Headers;
+};
+
+export type getSkillsResponse = (getSkillsResponseSuccess | getSkillsResponseError)
+
+export const getGetSkillsUrl = () => {
+
+
+
+
+  return `/api/experience/skills`
+}
+
+/**
+ * @summary Get the skills inventory
+ */
+export const getSkills = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getSkillsResponse> => {
+
+  return apiFetch<getSkillsResponse>(getGetSkillsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getSkillResponse200 = {
+  data: SkillUse
+  status: 200
+}
+
+export type getSkillResponse404 = {
+  data: Problem
+  status: 404
+}
+
+export type getSkillResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getSkillResponseSuccess = (getSkillResponse200) & {
+  headers: Headers;
+};
+export type getSkillResponseError = (getSkillResponse404 | getSkillResponse503) & {
+  headers: Headers;
+};
+
+export type getSkillResponse = (getSkillResponseSuccess | getSkillResponseError)
+
+export const getGetSkillUrl = (skill: string,) => {
+
+
+
+
+  return `/api/experience/skills/${skill}`
+}
+
+/**
+ * @summary Get one skill with each role note and project note that lists it
+ */
+export const getSkill = async (skill: string, options?: Parameters<typeof apiFetch>[1]): Promise<getSkillResponse> => {
+
+  return apiFetch<getSkillResponse>(getGetSkillUrl(skill),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export type getExperienceNoteResponse200 = {
   data: ExperienceNote
   status: 200
@@ -976,7 +1439,7 @@ export type getExperienceNoteResponseError = (getExperienceNoteResponse404 | get
 
 export type getExperienceNoteResponse = (getExperienceNoteResponseSuccess | getExperienceNoteResponseError)
 
-export const getGetExperienceNoteUrl = (kind: 'roles' | 'projects',
+export const getGetExperienceNoteUrl = (kind: 'roles' | 'projects' | 'stories',
     slug: string,) => {
 
 
@@ -986,9 +1449,9 @@ export const getGetExperienceNoteUrl = (kind: 'roles' | 'projects',
 }
 
 /**
- * @summary Get a role note or a project note
+ * @summary Get a role note, a project note or a story
  */
-export const getExperienceNote = async (kind: 'roles' | 'projects',
+export const getExperienceNote = async (kind: 'roles' | 'projects' | 'stories',
     slug: string, options?: Parameters<typeof apiFetch>[1]): Promise<getExperienceNoteResponse> => {
 
   return apiFetch<getExperienceNoteResponse>(getGetExperienceNoteUrl(kind,slug),

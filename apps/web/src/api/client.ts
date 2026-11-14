@@ -9,24 +9,34 @@ import {
   type EvidencePart,
   type ExperienceNote,
   type ExperienceNoteKind,
+  type ExperienceOverview,
   type FitAnalysis,
   getApplication as fetchApplication,
   getApplications as fetchApplications,
   getCompanies as fetchCompanies,
   getCompany as fetchCompany,
+  getExperience as fetchExperience,
   getExperienceNote as fetchExperienceNote,
   getHealth as fetchHealth,
   getListing as fetchListing,
   getShortlist as fetchShortlist,
+  getSkill as fetchSkill,
+  getSkills as fetchSkills,
   type Gap,
   type GetApplicationsParams,
   type GetShortlistParams,
   type Health,
   type Listing,
   type Problem,
+  type ProjectSummary,
   type Requirement,
+  type RoleEntry,
+  type RoleSummary,
   type Shortlist,
   type ShortlistListing,
+  type SkillsInventory,
+  type SkillUse,
+  type StorySummary,
 } from "./generated";
 
 export type {
@@ -40,15 +50,22 @@ export type {
   EvidencePart,
   ExperienceNote,
   ExperienceNoteKind,
+  ExperienceOverview,
   FitAnalysis,
   Gap,
   GetApplicationsParams,
   GetShortlistParams,
   Health,
   Listing,
+  ProjectSummary,
   Requirement,
+  RoleEntry,
+  RoleSummary,
   Shortlist,
   ShortlistListing,
+  SkillsInventory,
+  SkillUse,
+  StorySummary,
 };
 
 /**
@@ -84,6 +101,18 @@ export function getApplication(slug: string): Promise<ApiResult<Application>> {
 
 export function getExperienceNote(kind: ExperienceNoteKind, slug: string): Promise<ApiResult<ExperienceNote>> {
   return result(() => fetchExperienceNote(kind, slug));
+}
+
+export function getExperience(): Promise<ApiResult<ExperienceOverview>> {
+  return result(() => fetchExperience());
+}
+
+export function getSkills(): Promise<ApiResult<SkillsInventory>> {
+  return result(() => fetchSkills());
+}
+
+export function getSkill(skill: string): Promise<ApiResult<SkillUse>> {
+  return result(() => fetchSkill(skill));
 }
 
 export function getShortlist(params?: GetShortlistParams): Promise<ApiResult<Shortlist>> {
