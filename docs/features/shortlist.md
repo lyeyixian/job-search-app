@@ -30,6 +30,7 @@ between companies before you promote one.
 - **When** I look at its row
 - **Then** the row shows the status of the application
 - **And** I can go to the application page with one selection
+- **And** a row with no application says that the listing is not promoted
 
 ### 4. Show only the listings that I did not promote
 
@@ -49,6 +50,7 @@ between companies before you promote one.
 - **Given** the shortlist has more than one listing
 - **When** I open the shortlist
 - **Then** the listings of one company are together
+- **And** the companies are in the order of their names
 - **And** in each company the listing first seen most recently comes first
 
 ### 7. Open a listing
@@ -78,5 +80,11 @@ between companies before you promote one.
 
 - **Grouped by company.** Application slots are counted for each company, so you compare the
   listings of one company first.
+- **The choices live in the address.** A narrowed shortlist can be bookmarked, and Back returns
+  to it.
+- **The pages of a listing and of a company come with the company listings feature.** Until
+  then, criteria 7 and 8 lead to an address with no page.
+- **No browser test for criterion 9.** The browser tests run on one made-up vault, and that vault
+  has shortlisted listings. A unit test and an API test cover a vault with none.
 - **The shortlist does not start a sweep.** A later version adds that.
 - **The shortlist does not promote a listing.** You promote a listing outside the app for now.
