@@ -80,8 +80,6 @@ next.
 - A card with no verdict comes after `skip` in its column.
 - An application with a status that the vault's rules do not permit shows in the `analyzed`
   column, with a warning that names the field.
-- The page of an application is a placeholder until that feature is built. It shows the title
-  and the company.
 
 ## Decisions
 
