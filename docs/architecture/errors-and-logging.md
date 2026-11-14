@@ -99,6 +99,8 @@ Both services use the OpenTelemetry SDK.
 
 ### See the traces
 
+The viewer is Grafana. The `tracing` profile is not set up yet. These steps are the plan.
+
 1. Run `docker compose --profile tracing up -d`. This starts the trace viewer and sets the
    endpoint for both services.
 2. Open the viewer on its port on the server.

@@ -6,11 +6,11 @@ the endpoints, because a hand-written list goes out of date. See
 
 ## Where to read the API docs
 
-| What | Where | Status |
-|---|---|---|
-| The docs page, for people | `/api/docs` on the running app | Proposed path |
-| The OpenAPI document, for tools and agents | `/api/openapi.json` on the running app | Proposed path |
-| A copy of the OpenAPI document in the repo | `docs/api/openapi.json` | Proposed |
+| What | Where |
+|---|---|
+| The docs page, for people | `/api/docs` on the running app |
+| The OpenAPI document, for tools and agents | `/api/openapi.json` on the running app |
+| A copy of the OpenAPI document in the repo | `docs/api/openapi.json` |
 
 The copy in the repo is there so that a person or an agent can read the API without a running
 app. A script writes it, and a check on each pull request fails if the copy differs from what the
@@ -57,8 +57,7 @@ The API is its own service, Hono on Node, in its own container. See
 [ADR-0009](../adr/0009-separate-api-service-with-hono.md). Web calls it over the Docker network.
 The browser reaches `/api/*` through Web, which forwards the request.
 
-## Not decided yet
+## Libraries
 
-- The library that builds the OpenAPI document from the Zod schemas. `@hono/zod-openapi` is the
-  proposal.
-- The docs page. Scalar is the proposal.
+`@hono/zod-openapi` builds the OpenAPI document from the Zod schemas. Scalar shows it as the docs
+page.

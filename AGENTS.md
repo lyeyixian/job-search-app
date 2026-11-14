@@ -55,7 +55,7 @@ The code does not exist yet. These are the planned commands.
 | `pnpm test` | Runs the unit tests and the API tests |
 | `pnpm e2e` | Runs the browser tests |
 | `pnpm openapi` | Writes the OpenAPI document and the Web types again |
-| `pnpm lint` | Runs ESLint and the type check |
+| `pnpm lint` | Runs Biome and the type check |
 
 Run `pnpm lint`, `pnpm test` and `pnpm openapi` before you open a pull request. The pull request
 checks are in `docs/architecture/checks.md`.

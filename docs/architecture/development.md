@@ -38,7 +38,7 @@ The app shows your real notes, with the changes that you did not push.
 | `pnpm test` | Runs the unit tests and the API tests |
 | `pnpm e2e` | Runs the browser tests |
 | `pnpm openapi` | Writes `docs/api/openapi.json` and the Web types again |
-| `pnpm lint` | Runs ESLint and the type check |
+| `pnpm lint` | Runs Biome and the type check |
 | `docker compose up --build` | Builds and runs the two images as the server runs them |
 
 ## Rules

@@ -26,4 +26,4 @@ viewer container, which runs only when asked for.
 - Traces stay on the home server, like the logs.
 - A span never holds note content. The rule for logs applies to span attributes.
 - Tracing is in place before the scan step needs it.
-- The viewer is not chosen yet. Jaeger and Grafana's all-in-one image are the candidates.
+- The viewer is Grafana. It is not set up until someone needs to look at traces.
