@@ -9,6 +9,7 @@ choice are in [`../adr/`](../adr/README.md).
 | This page | C4 level 1 and 2: the system and its containers |
 | [Components](components.md) | C4 level 3, and what happens on a page load and a Refresh |
 | [Code layout](code-layout.md) | Where the code lives and which folder may import which |
+| [Errors and logging](errors-and-logging.md) | How a failure looks to the API, to the person and in the logs |
 | [Testing](testing.md) | The test layers, and how a test maps to the spec |
 | [Pull request checks](checks.md) | What runs on each pull request and after a merge |
 | [Local development](development.md) | How to run the app on your machine |
