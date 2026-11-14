@@ -51,8 +51,14 @@ sequenceDiagram
 - An error has one shape for all endpoints: a code, a message, and details when there are any.
 - A list that can grow, such as listings, takes filters as query parameters.
 
+## Where the API runs
+
+The API is its own service, Hono on Node, in its own container. See
+[ADR-0009](../adr/0009-separate-api-service-with-hono.md). Web calls it over the Docker network.
+The browser reaches `/api/*` through Web, which forwards the request.
+
 ## Not decided yet
 
-- Where the API runs: inside the Next.js app, or as its own service.
-- The library that builds the OpenAPI document from the Zod schemas.
-- How pages call the API.
+- The library that builds the OpenAPI document from the Zod schemas. `@hono/zod-openapi` is the
+  proposal.
+- The docs page. Scalar is the proposal.

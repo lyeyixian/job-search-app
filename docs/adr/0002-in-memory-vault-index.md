@@ -14,7 +14,7 @@ At start and on each Refresh, the app pulls the vault clone and parses every not
 
 ## Consequences
 
-- The index is a singleton, so the app runs as one process.
+- The index is a singleton, so the service that holds it runs as one process. Since [ADR-0009](0009-separate-api-service-with-hono.md) that service is the API.
 - Pages render on each request. Next.js must not cache a page across a Refresh.
 - A new index replaces the old one in one step. If the pull or the parse fails, the old index stays and the page shows the error.
 - A note that breaks the schema stays in the index with a warning.
