@@ -25,6 +25,7 @@ The frameworks and libraries, each with its job. A row marked "proposed" is not 
 | Docs page | Scalar | Shows the OpenAPI document at `/api/docs` | Proposed |
 | Frontmatter | gray-matter | Splits a note into YAML and body | Proposed |
 | Markdown | unified with remark | Parses a note and finds its links | Proposed |
+| Logging | pino | One JSON line per request | [ADR-0012](../adr/0012-problem-details-and-json-logs.md) |
 | Vault sync | git command line | `git pull` in the vault clone | [ADR-0003](../adr/0003-read-only-deploy-key.md) |
 
 ## Both services

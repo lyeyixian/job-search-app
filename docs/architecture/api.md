@@ -48,7 +48,7 @@ sequenceDiagram
 - A Zod schema declares each request and each response.
 - The path names a resource with a plural noun, such as `/api/applications/{slug}`.
 - A `GET` changes nothing. In version one, only Refresh changes anything, and it is a `POST`.
-- An error has one shape for all endpoints: a code, a message, and details when there are any.
+- An error is a Problem Details response with a `code`. See [Errors and logging](errors-and-logging.md).
 - A list that can grow, such as listings, takes filters as query parameters.
 
 ## Where the API runs
