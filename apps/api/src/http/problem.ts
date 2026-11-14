@@ -7,6 +7,8 @@ const DOCS = "https://github.com/lyeyixian/job-search-app/blob/main/docs/archite
 /** Each code has a row in docs/architecture/errors-and-logging.md. */
 export const problems = {
   route_not_found: { status: 404, title: "Route not found" },
+  note_not_found: { status: 404, title: "Note not found" },
+  resume_not_found: { status: 404, title: "Resume not found" },
   index_not_ready: { status: 503, title: "Index not ready" },
   internal_error: { status: 500, title: "Internal error" },
 } as const;
