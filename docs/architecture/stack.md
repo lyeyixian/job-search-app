@@ -33,8 +33,8 @@ The frameworks and libraries, each with its job. A row marked "proposed" is not 
 |---|---|---|---|
 | Runtime | Node, current LTS | Runs each service | Proposed |
 | Package manager | pnpm workspaces | One repo, two apps | [ADR-0010](../adr/0010-monorepo-with-openapi-contract.md) |
-| Unit tests | Vitest | The vault module against made-up notes | Proposed |
-| Browser tests | Playwright | The acceptance criteria in the spec | Proposed |
+| Unit and API tests | Vitest | The vault module and each endpoint | [ADR-0011](../adr/0011-three-test-layers.md) |
+| Browser tests | Playwright | One test per acceptance criterion | [ADR-0011](../adr/0011-three-test-layers.md) |
 | Lint and format | ESLint, Prettier | Checks on each pull request | Proposed |
 | Container | Docker, Docker Compose | Runs both services on the server | [ADR-0004](../adr/0004-docker-container.md) |
 | Build | GitHub Actions | Builds and pushes both images | [ADR-0005](../adr/0005-github-builds-the-image.md) |

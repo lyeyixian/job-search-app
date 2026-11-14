@@ -9,6 +9,7 @@ choice are in [`../adr/`](../adr/README.md).
 | This page | C4 level 1 and 2: the system and its containers |
 | [Components](components.md) | C4 level 3, and what happens on a page load and a Refresh |
 | [Code layout](code-layout.md) | Where the code lives and which folder may import which |
+| [Testing](testing.md) | The test layers, and how a test maps to the spec |
 | [Deployment](deployment.md) | Where each part runs, and how a release reaches the server |
 | [Routes](routes.md) | The address of each page |
 | [API](api.md) | How the REST API is documented |
