@@ -2,24 +2,6 @@
 
 The frameworks and libraries, each with its job. A row marked "proposed" is not agreed yet.
 
-```mermaid
-flowchart LR
-    subgraph page["Rendering a page"]
-        next["Next.js<br/>App Router"] --> react["React<br/>server components"]
-        react --> shadcn["shadcn/ui<br/>on Radix"]
-        shadcn --> tw["Tailwind CSS"]
-        react --> pdfjs["PDF.js"]
-    end
-    subgraph vault["Reading the vault"]
-        matter["gray-matter<br/>frontmatter"] --> unified["unified, remark, rehype<br/>markdown to HTML"]
-        zod["Zod<br/>schema check"]
-        gitc["git<br/>command line"]
-    end
-    subgraph ship["Shipping"]
-        docker["Docker"] --> gha["GitHub Actions"] --> ghcr["Container registry"]
-    end
-```
-
 | Layer | Choice | Job | Status |
 |---|---|---|---|
 | Language | TypeScript | All app code | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |

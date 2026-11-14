@@ -11,63 +11,74 @@ choice are in [`../adr/`](../adr/README.md).
 | [Deployment](deployment.md) | Where each part runs, and how a release reaches the server |
 | [API](api.md) | The backend endpoints |
 | [Stack](stack.md) | The frameworks and libraries, each with its job |
+| [Diagram templates](diagram-templates.md) | The fixed template for each diagram type |
 
-The diagrams follow the C4 model. They are Mermaid flowcharts, because GitHub draws those more
-clearly than Mermaid's own C4 diagram type.
+The diagrams follow the C4 model. Each one starts from a template in
+[Diagram templates](diagram-templates.md), so a shape, a colour or an arrow means the same thing
+on every page.
 
 ## Level 1: system context
 
-One person uses the app. The app depends on two outside systems.
+Who uses the app, and which outside systems does it depend on?
 
 ```mermaid
 flowchart TB
-    user(["Job seeker<br/>reads applications, listings,<br/>experience and the plan"])
-    app["Job search app<br/>shows the vault in a browser"]
-    vault[("Vault repo on GitHub<br/>private, markdown notes<br/>and resume PDFs")]
-    tailnet{{"Tailscale<br/>private network<br/>between own devices"}}
+    user(["Job seeker<br/>[Person]<br/>Reads applications, listings,<br/>experience and the plan"]):::person
+    app["Job search app<br/>[Software system]<br/>Shows the vault in a browser"]:::system
+    tailnet["Tailscale<br/>[External system]<br/>Private network between own devices"]:::external
+    vault[("Vault repo<br/>[External system: GitHub]<br/>Private markdown notes and resume PDFs")]:::external
+    writers(["Claude Code skills and the person<br/>[Person]<br/>Write notes outside the app"]):::external
 
-    user -- "opens pages, selects Refresh" --> tailnet
-    tailnet -- "HTTPS" --> app
-    app -- "git pull, read only" --> vault
-    writer(["Claude Code skills and the person<br/>write notes outside the app"]) -- "git push" --> vault
+    user -- "opens pages and selects Refresh, HTTPS" --> tailnet
+    tailnet -- "forwards requests, HTTPS" --> app
+    app -- "pulls the notes, git over SSH" --> vault
+    writers -- "push notes, git" --> vault
+
+    classDef person fill:#08427b,stroke:#052e56,color:#ffffff
+    classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
+    classDef container fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef component fill:#85bbf0,stroke:#5d82a8,color:#000000
+    classDef store fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef external fill:#999999,stroke:#6b6b6b,color:#ffffff
 ```
 
 ## Level 2: containers
 
+Which parts that run or hold data make up the app, and how do they talk?
+
 ```mermaid
 flowchart TB
-    browser["Browser<br/>phone or laptop on the tailnet"]
+    user(["Job seeker<br/>[Person]<br/>Uses a phone or a laptop on the tailnet"]):::person
+    serve["tailscale serve<br/>[External system: Tailscale]<br/>HTTPS on the tailnet name"]:::external
 
-    subgraph server["Home server"]
-        serve["tailscale serve<br/>HTTPS on the tailnet name"]
-        subgraph docker["Docker container"]
-            next["Next.js app<br/>TypeScript, one Node process<br/>renders pages, serves endpoints"]
-            index["Vault index<br/>in the memory of the Node process"]
-            git["git<br/>command-line client"]
-        end
-        clone[("Vault clone<br/>Docker volume at VAULT_PATH")]
-        key["Deploy key<br/>read-only mount"]
+    subgraph system["Job search app"]
+        next["Next.js app<br/>[Container: TypeScript, Node]<br/>Renders pages and serves endpoints"]:::container
+        index[("Vault index<br/>[Container: memory of the Node process]<br/>Every parsed note, link and warning")]:::store
+        clone[("Vault clone<br/>[Container: git working copy]<br/>The server's copy of the vault")]:::store
     end
 
-    github[("Vault repo on GitHub")]
+    github[("Vault repo<br/>[External system: GitHub]<br/>Private markdown notes and resume PDFs")]:::external
 
-    browser -- "HTTPS" --> serve
-    serve -- "HTTP on 127.0.0.1" --> next
+    user -- "opens pages, HTTPS" --> serve
+    serve -- "forwards requests, HTTP on 127.0.0.1" --> next
     next -- "reads notes" --> index
-    next -- "builds at start and on Refresh" --> index
-    index -. "parsed from" .-> clone
-    next -- "runs git pull" --> git
-    git -- "SSH" --> github
-    git --> clone
-    key -.-> git
+    clone -. "is parsed into" .-> index
+    next -- "runs git pull" --> clone
+    clone -- "pulls the notes, git over SSH" --> github
+
+    classDef person fill:#08427b,stroke:#052e56,color:#ffffff
+    classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
+    classDef container fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef component fill:#85bbf0,stroke:#5d82a8,color:#000000
+    classDef store fill:#438dd5,stroke:#2e6295,color:#ffffff
+    classDef external fill:#999999,stroke:#6b6b6b,color:#ffffff
 ```
 
 | Container | Technology | Job |
 |---|---|---|
 | Next.js app | Next.js, TypeScript, Node | Renders each page on the server and serves the endpoints in [API](api.md) |
 | Vault index | A TypeScript object in memory | Holds every parsed note, its links, its backlinks and its warnings |
-| Vault clone | A git working copy on a volume | The server's copy of the vault |
-| git | Command-line client in the image | Pulls the vault with the deploy key |
+| Vault clone | A git working copy on a volume | The server's copy of the vault, pulled with the deploy key |
 | tailscale serve | Tailscale on the host | Gives the app HTTPS and keeps it private to the tailnet |
 
 ## What stays out of this repo
@@ -79,9 +90,7 @@ notes that follow the vault's schema.
 
 Each step gets its own design and its own decision records before work starts.
 
-```mermaid
-flowchart LR
-    v1["1. Read-only app<br/>this folder"] --> v2["2. Run a scan from the app<br/>scan data moves to SQLite"]
-    v2 --> v3["3. Find companies outside<br/>the watchlist"]
-    v3 --> v4["4. Edit from the app<br/>posting, fit analysis and status<br/>move to the database"]
-```
+1. The read-only app. This folder.
+2. Run a scan from the app. Scan data moves to SQLite.
+3. Find companies outside the watchlist.
+4. Edit from the app. The posting, the fit analysis and the status move to the database.
