@@ -5,7 +5,7 @@ import { DIRECTIONS, REGIONS, STATUSES, VERDICTS } from "../vault/schema.js";
 import type { VaultStore } from "../vault/store.js";
 import { type AppEnv, problem, problemContent } from "./problem.js";
 
-const WarningSchema = z
+export const WarningSchema = z
   .object({
     field: z.string().openapi({ description: "The frontmatter key.", example: "verdict" }),
     problem: z.enum(["missing", "invalid"]).openapi({

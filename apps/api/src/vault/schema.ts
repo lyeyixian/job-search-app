@@ -23,6 +23,12 @@ const day = z.union([
   z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 ]);
 
+/** A day cell of a scan table as `YYYY-MM-DD`, or null if the cell is not a day. */
+export function checkDay(cell: string | undefined): string | null {
+  const result = day.safeParse((cell ?? "").trim());
+  return result.success ? result.data : null;
+}
+
 /** The keys of an application that the app reads. SCHEMA.md of the vault has the rules. */
 const applicationFields = {
   company: z.string().min(1),

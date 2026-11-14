@@ -666,6 +666,154 @@
           "body",
           "achievements"
         ]
+      },
+      "Shortlist": {
+        "type": "object",
+        "properties": {
+          "listings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShortlistListing"
+            },
+            "description": "The listings that match the query. The companies are in the order of their names. In a company, the listing first seen most recently is first."
+          },
+          "total": {
+            "type": "integer",
+            "description": "The number of open listings with the triage `shortlist`. The query does not change it.",
+            "example": 45
+          },
+          "companies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "example": "example-co"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Example Co"
+                },
+                "count": {
+                  "type": "integer",
+                  "description": "The number of its listings on the shortlist.",
+                  "example": 2
+                }
+              },
+              "required": [
+                "slug",
+                "name",
+                "count"
+              ]
+            },
+            "description": "The companies with a listing on the shortlist. The query does not change them."
+          }
+        },
+        "required": [
+          "listings",
+          "total",
+          "companies"
+        ]
+      },
+      "ShortlistListing": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "description": "The folder of the company in the market scan.",
+            "example": "example-co"
+          },
+          "companyName": {
+            "type": "string",
+            "example": "Example Co"
+          },
+          "slug": {
+            "type": "string",
+            "description": "The file name of the listing record without `.md`.",
+            "example": "backend-engineer-1001"
+          },
+          "title": {
+            "type": "string",
+            "example": "Backend Engineer"
+          },
+          "level": {
+            "type": "string",
+            "description": "The level label from the job board.",
+            "example": "Mid"
+          },
+          "reason": {
+            "type": "string",
+            "description": "The reason for the triage. One line.",
+            "example": "Backend work on developer tools"
+          },
+          "firstSeen": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "description": "The day of the first sweep that found the listing. `null` if the row has a warning for it.",
+            "example": "2026-10-01"
+          },
+          "application": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "slug": {
+                "type": "string",
+                "example": "example-co-backend-engineer"
+              },
+              "found": {
+                "type": "boolean",
+                "description": "False if the vault has no such application."
+              },
+              "status": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "analyzed",
+                  "applied",
+                  "interviewing",
+                  "offer",
+                  "accepted",
+                  "rejected",
+                  "dropped",
+                  null
+                ],
+                "description": "`null` if the application does not exist or has no permitted status."
+              }
+            },
+            "required": [
+              "slug",
+              "found",
+              "status"
+            ],
+            "description": "The application that the listing was promoted to. `null` if it was not promoted."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            },
+            "description": "`field` is the column of the company index."
+          }
+        },
+        "required": [
+          "company",
+          "companyName",
+          "slug",
+          "title",
+          "level",
+          "reason",
+          "firstSeen",
+          "application",
+          "warnings"
+        ]
       }
     },
     "parameters": {}
@@ -935,6 +1083,61 @@
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shortlist": {
+      "get": {
+        "operationId": "getShortlist",
+        "summary": "List the open shortlisted listings of all companies",
+        "tags": [
+          "Market scan"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Only listings of this company. The value is the folder of the company.",
+              "example": "example-co"
+            },
+            "required": false,
+            "description": "Only listings of this company. The value is the folder of the company.",
+            "name": "company",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "`hide` leaves out each listing that has an application. Each other value does nothing.",
+              "example": "hide"
+            },
+            "required": false,
+            "description": "`hide` leaves out each listing that has an application. Each other value does nothing.",
+            "name": "promoted",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The open listings with the triage `shortlist` that match every query parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Shortlist"
                 }
               }
             }
