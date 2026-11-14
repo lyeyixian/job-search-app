@@ -14,6 +14,7 @@ choice are in [`../adr/`](../adr/README.md).
 | [Pull request checks](checks.md) | What runs on each pull request and after a merge |
 | [Local development](development.md) | How to run the app on your machine |
 | [Deployment](deployment.md) | Where each part runs, and how a release reaches the server |
+| [Server runbook](server-runbook.md) | The commands to install, update and check the app on the server |
 | [Routes](routes.md) | The address of each page |
 | [API](api.md) | How the REST API is documented |
 | [Stack](stack.md) | The frameworks and libraries, each with its job |

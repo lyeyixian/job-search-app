@@ -110,7 +110,11 @@ image.
 1. Create an SSH key on the server.
 2. Add the public key to the vault repo as a deploy key. Do not give it write access.
 3. Clone the vault into the volume.
-4. Write the Compose file with the two services, the volume, the key mount and the Web port on
-   `127.0.0.1`.
-5. Run `tailscale serve` to forward the tailnet HTTPS address to that port.
-6. Run `docker compose up -d`.
+4. Copy the Compose file to the server and set `VAULT_DIR`.
+5. Run `docker compose up -d`.
+6. Run `tailscale serve` to forward the tailnet HTTPS address to the Web port.
+
+The commands for each step, and for an update, are in the [Server runbook](server-runbook.md).
+
+The API does not run `git pull` yet. Until it does, the key is not mounted in the API container,
+and the vault clone is updated by hand on the server.
