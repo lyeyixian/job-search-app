@@ -10,6 +10,7 @@ pages call.
 Which parts of the Next.js app answer the browser?
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"system-ui, sans-serif","fontSize":"14px","lineColor":"#57606a","clusterBkg":"#f6f8fa","clusterBorder":"#d0d7de","edgeLabelBackground":"#ffffff","primaryTextColor":"#1f2328"},"flowchart":{"curve":"linear","nodeSpacing":40,"rankSpacing":50}}}%%
 flowchart TB
     browser(["<b>Job seeker</b><br/>[Person]<br/><small>Uses a browser</small>"]):::person
 
@@ -25,12 +26,12 @@ flowchart TB
     pages -- "calls" --> queries
     handlers -- "calls" --> queries
 
-    classDef person fill:#08427b,stroke:#052e56,color:#ffffff
-    classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
-    classDef container fill:#438dd5,stroke:#2e6295,color:#ffffff
-    classDef component fill:#85bbf0,stroke:#5d82a8,color:#000000
-    classDef store fill:#438dd5,stroke:#2e6295,color:#ffffff
-    classDef external fill:#999999,stroke:#6b6b6b,color:#ffffff
+    classDef person fill:#0b3d6b,stroke:#0b3d6b,color:#ffffff,rx:8,ry:8
+    classDef system fill:#1f6feb,stroke:#1a5fcc,color:#ffffff,rx:8,ry:8
+    classDef container fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
+    classDef component fill:#ddf4ff,stroke:#54aeff,color:#0a3069,rx:8,ry:8
+    classDef store fill:#ddf4ff,stroke:#54aeff,color:#0a3069
+    classDef external fill:#f6f8fa,stroke:#8c959f,color:#424a53,stroke-dasharray:4 3,rx:8,ry:8
 ```
 
 ## Endpoints
