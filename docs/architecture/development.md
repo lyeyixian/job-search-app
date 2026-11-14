@@ -6,7 +6,7 @@ Both services run on your machine with hot reload. Docker is not necessary for d
 
 ## Run the app
 
-1. Install Node 24 and pnpm 10.
+1. Install Node 26 and pnpm 12.
 2. Run `pnpm install`.
 3. Run `pnpm dev`.
 4. Open `http://localhost:3000`.

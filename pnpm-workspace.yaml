@@ -1,8 +1,13 @@
 packages:
   - apps/*
 
-onlyBuiltDependencies:
-  - "@biomejs/biome"
-  - esbuild
-  - sharp
-  - unrs-resolver
+allowBuilds:
+  "@biomejs/biome": true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - "@playwright/test@1.65.1"
+  - playwright-core@1.65.1
+  - playwright@1.65.1

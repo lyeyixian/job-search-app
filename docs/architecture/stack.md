@@ -2,13 +2,14 @@
 
 The frameworks and libraries, each with its job. The last column links to the decision record, or
 says "Agreed" for a choice made on 14 Nov 2026 with no record of its own. The exact
-versions are in each `package.json` and in `pnpm-lock.yaml`.
+versions are in each `package.json` and in `pnpm-lock.yaml`. Each package is at its latest
+version, with TypeScript 7, Node 26 and pnpm 12.
 
 ## Web
 
 | Layer | Choice | Job | Status |
 |---|---|---|---|
-| Language | TypeScript 5.9 | All Web code | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
+| Language | TypeScript | All Web code | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
 | Framework | Next.js, App Router | Server rendering and page routes | [ADR-0001](../adr/0001-nextjs-with-typescript.md) |
 | Components | shadcn/ui on Radix | Menu, tabs, tables, badges, filters | [ADR-0006](../adr/0006-tailwind-with-shadcn-ui.md) |
 | Styling | Tailwind CSS | Layout and phone breakpoints | [ADR-0006](../adr/0006-tailwind-with-shadcn-ui.md) |
@@ -46,5 +47,9 @@ versions are in each `package.json` and in `pnpm-lock.yaml`.
 | Build | GitHub Actions | Builds and pushes both images | [ADR-0005](../adr/0005-github-builds-the-image.md) |
 | Registry | GitHub Container Registry | Holds the public images | [ADR-0005](../adr/0005-github-builds-the-image.md) |
 | Network | Tailscale, `tailscale serve` | Private HTTPS access | [ADR-0004](../adr/0004-docker-container.md) |
+
+`openapi-typescript` needs the JS API of TypeScript 5, which TypeScript 7 does not have. The hook
+in `.pnpmfile.cjs` gives it a private copy of TypeScript 5. Remove the hook when
+`openapi-typescript` supports TypeScript 7.
 
 Later steps add `better-sqlite3` for scan data and the Claude Agent SDK to start a scan.
