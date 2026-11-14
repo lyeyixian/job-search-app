@@ -11,6 +11,7 @@ How a failure looks to the API, to the person, in the logs and in a trace. See
 | A note has a missing field or a bad value | `200`, the note with a `warnings` list | The note, with a warning that names the field |
 | A link names a note or an achievement that does not exist | `200`, the link marked as missing | Text with a mark, not a link |
 | No note has that slug | `404` problem, code `note_not_found` | A not-found page |
+| No route matches the path | `404` problem, code `route_not_found` | A not-found page |
 | An application has no resume | `404` problem, code `resume_not_found` | "No resume exists yet" |
 | Refresh cannot pull the vault | `502` problem, code `vault_pull_failed` | A banner with the error and the old time |
 | The API has no index yet | `503` problem, code `index_not_ready` | "The app is starting" |
@@ -74,6 +75,7 @@ Each service writes one JSON line per request to standard output.
 ```
 
 - The API uses the `pino` library.
+- Web writes one line for each call to the API. It does not write a line for a page load yet.
 - Each line holds the id of the current trace.
 - A log line never holds note content, frontmatter values or the text of a posting. A slug in a
   path is permitted.

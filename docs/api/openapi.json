@@ -1,0 +1,122 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Job search API",
+    "version": "0.1.0",
+    "description": "A REST API over the vault. Each error is an RFC 9457 Problem Details response with a `code`."
+  },
+  "components": {
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "vault": {
+            "type": "object",
+            "properties": {
+              "notes": {
+                "type": "integer",
+                "description": "The count of notes in the vault index.",
+                "example": 12
+              },
+              "loadedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The time that the API built the vault index.",
+                "example": "2026-11-14T08:47:10.000Z"
+              }
+            },
+            "required": [
+              "notes",
+              "loadedAt"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "vault"
+        ]
+      },
+      "Problem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://github.com/lyeyixian/job-search-app/blob/main/docs/architecture/errors-and-logging.md#index_not_ready"
+          },
+          "title": {
+            "type": "string",
+            "example": "Index not ready"
+          },
+          "status": {
+            "type": "integer",
+            "example": 503
+          },
+          "detail": {
+            "type": "string",
+            "example": "The API has no vault index yet."
+          },
+          "code": {
+            "type": "string",
+            "description": "A stable name for the error. Clients decide what to do from this field.",
+            "example": "index_not_ready"
+          },
+          "traceId": {
+            "type": "string",
+            "example": "4bf92f3577b34da6a3ce929d0e0e4736"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "code",
+          "traceId"
+        ],
+        "description": "An RFC 9457 Problem Details object with a `code`."
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Check that the API answers and has a vault index",
+        "tags": [
+          "Health"
+        ],
+        "responses": {
+          "200": {
+            "description": "The API has a vault index.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {}
+}

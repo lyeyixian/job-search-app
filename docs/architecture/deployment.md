@@ -95,6 +95,8 @@ sequenceDiagram
 
 | Setting | Where it is set | Purpose |
 |---|---|---|
+| `VAULT_DIR` | The environment of `docker compose` on the server | The folder of the vault clone on the server. Compose mounts it at `VAULT_PATH`. With no value, Compose mounts `fixtures/vault/`. |
+| `WEB_PORT` | The environment of `docker compose` on the server | The port of Web on `127.0.0.1`. The default is 3000. |
 | `VAULT_PATH` | Compose file on the server | The folder of the vault clone inside the API container |
 | `API_URL` | Compose file on the server | The address of the API on the Docker network, for Web |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | The `tracing` profile of the Compose file | Where both services send traces. Not set in normal use. |

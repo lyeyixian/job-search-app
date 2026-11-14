@@ -38,7 +38,7 @@ All six jobs must pass before a merge.
 | OpenAPI is current | `pnpm openapi`, then a check for changed files | A committed `openapi.json` or Web types that differ from the code |
 | Browser tests | `pnpm e2e` | An acceptance criterion that no longer holds, on desktop or phone |
 | Image build | `docker compose build` | A Dockerfile that no longer builds. Nothing is pushed. |
-| Docs | A link check and a Mermaid parse | A dead link between docs, or a diagram that does not draw |
+| Docs | `pnpm docs:check`, a link check and a Mermaid parse | A dead link between docs, or a diagram that does not draw |
 
 ## Rules on main
 

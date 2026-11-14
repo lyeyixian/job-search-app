@@ -46,8 +46,6 @@ Hono service that owns the vault clone and serves a REST API.
 
 ## Commands
 
-The code does not exist yet. These are the planned commands.
-
 | Command | Result |
 |---|---|
 | `pnpm install` | Installs both apps |
@@ -56,6 +54,9 @@ The code does not exist yet. These are the planned commands.
 | `pnpm e2e` | Runs the browser tests |
 | `pnpm openapi` | Writes the OpenAPI document and the Web types again |
 | `pnpm lint` | Runs Biome and the type check |
+| `pnpm format` | Lets Biome fix the format and the import order |
+| `pnpm docs:check` | Checks the links between docs and parses each Mermaid diagram |
 
-Run `pnpm lint`, `pnpm test` and `pnpm openapi` before you open a pull request. The pull request
+Run `pnpm lint`, `pnpm test`, `pnpm openapi` and `pnpm e2e` before you open a pull request. Run
+`pnpm docs:check` if you changed a doc. The pull request
 checks are in `docs/architecture/checks.md`.

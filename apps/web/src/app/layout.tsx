@@ -1,0 +1,15 @@
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "Job search",
+  description: "Shows a private markdown vault in a browser.",
+};
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html lang="en" className="h-full antialiased">
+      <body className="flex min-h-full flex-col font-sans">{children}</body>
+    </html>
+  );
+}
