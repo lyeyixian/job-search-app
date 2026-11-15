@@ -52,10 +52,12 @@ no approval.
 ## When you change the design
 
 - Ask the owner before you make a choice that an ADR records. Add the ADR as a new file in
-  `docs/adr/` with the status `Proposed`. Use the next number. Follow the sections of the
-  existing files: Status, Context, Decision, Consequences.
-- Change a status to `Accepted` only after the owner accepts that ADR in words. An approval of a
-  feature or of a pull request does not accept an ADR.
+  `docs/adr/`. Use the next number. Follow the sections of the existing files: Status, Context,
+  Decision, Consequences.
+- If the owner made the decision or agreed to it in words, write the ADR with the status
+  `Accepted`. If the owner did not answer yet, write it with the status `Proposed`, and change
+  the status after the owner agrees.
+- An approval of a feature or of a pull request does not accept an ADR.
 - Do not write code that depends on a proposed ADR.
 - Do not write an ADR for a detail of the code that is easy to reverse, such as how a reader
   handles one form of a note. Put that detail on the page in `docs/architecture/`.
