@@ -17,7 +17,6 @@ choice are in [`../adr/`](../adr/README.md).
 | [Server runbook](server-runbook.md) | The commands to install, update and check the app on the server |
 | [Routes](routes.md) | The address of each page |
 | [API](api.md) | How the REST API is documented |
-| [Vault readers](vault-readers.md) | How the API reads the notes of the market scan and of the experience |
 | [Stack](stack.md) | The frameworks and libraries, each with its job |
 | [Diagram templates](diagram-templates.md) | The fixed template for each diagram type |
 
