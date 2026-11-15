@@ -10,6 +10,8 @@ const row = (page: Page, slug: string) => page.locator(`[data-testid="listing-ro
 const slugs = (page: Page) =>
   rows(page).evaluateAll((elements) => elements.map((element) => element.getAttribute("data-slug")));
 
+const RANK = ["Shortlist", "Maybe", "Reject"];
+
 /** The page is as wide as the screen, on a phone too. */
 async function expectNoSidewaysScroll(page: Page) {
   const viewport = page.viewportSize()?.width ?? 0;
@@ -215,4 +217,27 @@ test("company-listings 10: go from a listing to its application", async ({ page 
 
   await expect(page).toHaveURL(/\/applications\/orchard-robotics-software-engineer$/);
   await expect(page.getByTestId("application-company")).toHaveText("Orchard Robotics");
+});
+
+test("company-listings 11: the listings to act on come first", async ({ page }) => {
+  await page.goto("/companies/kestrel-pay?rejected=show");
+
+  // The triage `shortlist` first: the open listings from the newest first day, then the closed one.
+  // Then the triage `reject`.
+  expect(await slugs(page)).toEqual([
+    "payments-platform-engineer-2002",
+    "developer-tools-engineer-2003",
+    "software-engineer-2001",
+    "site-reliability-engineer-2004",
+    "engineering-manager-2005",
+  ]);
+  const triages = await page.getByTestId("row-triage").allTextContents();
+  expect(triages).toEqual(["Shortlist", "Shortlist", "Shortlist", "Shortlist", "Reject"]);
+
+  // The triage `maybe` comes after `shortlist`.
+  await page.goto("/companies/example-co?rejected=show");
+  const order = await page.getByTestId("row-triage").allTextContents();
+  expect(order).toEqual([...order].sort((a, b) => RANK.indexOf(a) - RANK.indexOf(b)));
+  expect(order.slice(0, 3)).toEqual(["Shortlist", "Shortlist", "Maybe"]);
+  expect(order.at(-1)).toBe("Reject");
 });

@@ -14,7 +14,7 @@ test("application-board 1: see the applications by status", async ({ page }) => 
   await page.goto("/");
 
   for (const [status, heading, count] of [
-    ["analyzed", "Analyzed", 6],
+    ["analyzed", "Analyzed", 7],
     ["applied", "Applied", 2],
     ["interviewing", "Interviewing", 1],
     ["offer", "Offer", 0],
@@ -69,6 +69,7 @@ test("application-board 4: the best fits come first", async ({ page }) => {
 
   // Quill Works and Pine Street are both a good fit. Quill Works is newer.
   // Example Co and Lumen Labs are both a stretch. Example Co is newer.
+  // Birchwood Labs has no verdict, so it comes after the `skip` of Tidewater.
   expect(await slugs(column(page, "analyzed"))).toEqual([
     "northgate-systems-software-engineer",
     "quill-works-full-stack-engineer",
@@ -76,6 +77,7 @@ test("application-board 4: the best fits come first", async ({ page }) => {
     "example-co-platform-engineer",
     "lumen-labs-platform-engineer",
     "tidewater-data-engineer",
+    "birchwood-labs-software-engineer",
   ]);
   expect(await slugs(column(page, "applied"))).toEqual([
     "kestrel-pay-software-engineer",
@@ -103,7 +105,7 @@ test("application-board 5: narrow the board", async ({ page }) => {
 
   await filters.getByRole("link", { name: "Clear" }).click();
   await expect(page).toHaveURL(/\/applications$/);
-  await expect(column(page, "analyzed").getByTestId("count")).toHaveText("6");
+  await expect(column(page, "analyzed").getByTestId("count")).toHaveText("7");
 
   await filters.getByLabel("Region").selectOption("remote");
   await expect(page).toHaveURL(/region=remote/);
@@ -114,7 +116,7 @@ test("application-board 5: narrow the board", async ({ page }) => {
   await expect(page.getByTestId("finished-count-rejected")).toHaveText(/Rejected\s*0/);
 
   await filters.getByRole("link", { name: "Clear" }).click();
-  await expect(cards(page)).toHaveCount(13);
+  await expect(cards(page)).toHaveCount(14);
 });
 
 test("application-board 6: open an application", async ({ page }) => {
@@ -177,4 +179,17 @@ test("application-board 8: use the board on a phone", async ({ page, isMobile })
 
   await expect.poll(() => fullyOnScreen("applied")).toBe(true);
   expect(await page.evaluate(() => window.scrollX)).toBe(0);
+});
+
+test("application-board 9: an application with a wrong status still shows", async ({ page }) => {
+  // The status of Birchwood Labs is `phoned`, which the rules of the vault do not permit.
+  await page.goto("/applications");
+
+  const wrong = card(column(page, "analyzed"), "birchwood-labs-software-engineer");
+  await expect(wrong).toBeVisible();
+  await expect(wrong.getByTestId("card-company")).toHaveText("Birchwood Labs");
+  await expect(wrong.getByTestId("card-warnings")).toContainText(
+    "The note has a status that the vault's rules do not permit.",
+  );
+  await expect(cards(page).filter({ hasText: "Birchwood Labs" })).toHaveCount(1);
 });

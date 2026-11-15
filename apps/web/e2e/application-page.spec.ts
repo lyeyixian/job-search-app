@@ -159,6 +159,11 @@ test("application-page 7: read the gaps", async ({ page }) => {
   for (const gap of await gaps.all()) {
     await expect(gap.getByTestId("gap-action")).toHaveText(/^(Positioning|Learning)$/);
   }
+
+  // A gap that names no bridging action says so.
+  await page.goto("/applications/lumen-labs-platform-engineer");
+  await expect(page.getByTestId("gap")).toHaveCount(1);
+  await expect(page.getByTestId("gap").getByTestId("gap-action")).toHaveText("No bridging action");
 });
 
 test("application-page 8: see the tailored resume", async ({ page }) => {

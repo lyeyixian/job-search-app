@@ -11,6 +11,7 @@ Some notes are wrong on purpose, so that a test has a case to check:
 | Note | Case |
 |---|---|
 | `applications/harbor-data-software-engineer/posting.md` | The required key `verdict` is missing |
+| `applications/birchwood-labs-software-engineer/posting.md` | `status` has a value that the schema does not permit, and the note has no verdict |
 | `search/market/example-co/data-engineer-1004.md` | `region` has a value that the schema does not permit |
 | `experience/stories/slow-build.md` | A link to a note that does not exist |
 | `experience/stories/slow-build.md` | A link to an achievement that does not exist |
@@ -24,6 +25,7 @@ The applications also cover the cases of the application page:
 | `applications/pine-street-backend-engineer/posting.md` | No link, no source listing, no resume and no gaps |
 | `applications/quill-works-full-stack-engineer/posting.md` | The gaps as a table |
 | `applications/harbor-data-software-engineer/posting.md` | No fit analysis |
+| `applications/lumen-labs-platform-engineer/posting.md` | A gap that names no bridging action |
 
 The market scan covers the cases of the shortlist:
 
