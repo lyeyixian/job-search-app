@@ -7,7 +7,9 @@ import {
   getSkills,
   PROJECT_KINDS,
 } from "../vault/experience.js";
+import { linksOf, noteLinks, notePath } from "../vault/links.js";
 import type { VaultStore } from "../vault/store.js";
+import { backlinks, links } from "./links.js";
 import { type AppEnv, problem, problemContent } from "./problem.js";
 
 const month = (description: string, example: string) =>
@@ -98,6 +100,7 @@ export const ExperienceOverviewSchema = z
       .object({
         body: z.string().openapi({ description: "The profile without its title. Markdown." }),
         updated,
+        links,
       })
       .nullable()
       .openapi({ description: "`null` if the vault has no profile." }),
@@ -171,6 +174,10 @@ export const ExperienceNoteSchema = z
         programme: z.object(noteRef).nullable().openapi({
           description: "The programme that this stint is part of. `null` if the vault has no role note for it.",
         }),
+        missingProgramme: z.string().nullable().openapi({
+          description: "The slug of the programme, if the vault has no role note for it.",
+          example: null,
+        }),
         stints,
         stories: z.array(NoteRefSchema).openapi({ description: "The stories that come from the role." }),
       })
@@ -187,9 +194,17 @@ export const ExperienceNoteSchema = z
       .nullable()
       .openapi({ description: "The facts of a project note. `null` for each other kind." }),
     story: z
-      .object(storyFacts)
+      .object({
+        ...storyFacts,
+        missingRoles: z.array(z.string()).openapi({
+          description: "Each slug in `roles` of the note that no role note has.",
+          example: [],
+        }),
+      })
       .nullable()
       .openapi({ description: "The facts of a story. `null` for each other kind." }),
+    links,
+    backlinks,
   })
   .openapi("ExperienceNote");
 
@@ -210,6 +225,7 @@ export const SkillsInventorySchema = z
     unlisted: z.array(InventorySkillSchema).openapi({
       description: "The skills that a note lists and the inventory does not have.",
     }),
+    links,
   })
   .openapi("SkillsInventory");
 
@@ -305,14 +321,16 @@ export function experienceRoutes(store: VaultStore) {
         if (!index) {
           return problem(c, "index_not_ready", "The API has no vault index yet.");
         }
-        return c.json(getOverview(index), 200);
+        const overview = getOverview(index);
+        const profile = overview.profile && { ...overview.profile, links: linksOf(index, notePath.profile) };
+        return c.json({ ...overview, profile }, 200);
       })
       .openapi(getSkillsRoute, (c) => {
         const index = store.index;
         if (!index) {
           return problem(c, "index_not_ready", "The API has no vault index yet.");
         }
-        return c.json(getSkills(index), 200);
+        return c.json({ ...getSkills(index), links: linksOf(index, notePath.skills) }, 200);
       })
       // This route is before the route of a note, so that `skills` is not read as a kind.
       .openapi(getSkillRoute, (c) => {
@@ -337,7 +355,7 @@ export function experienceRoutes(store: VaultStore) {
         if (!note) {
           return problem(c, "note_not_found", `No note in ${kind} has the slug ${slug}.`);
         }
-        return c.json(note, 200);
+        return c.json({ ...note, ...noteLinks(index, notePath.experience(kind, slug)) }, 200);
       })
   );
 }

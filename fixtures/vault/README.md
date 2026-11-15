@@ -15,6 +15,8 @@ Some notes are wrong on purpose, so that a test has a case to check:
 | `search/market/example-co/data-engineer-1004.md` | `region` has a value that the schema does not permit |
 | `experience/stories/slow-build.md` | A link to a note that does not exist |
 | `experience/stories/slow-build.md` | A link to an achievement that does not exist |
+| `experience/stories/slow-build.md` | The role `retired-role` in `roles`, which no role note has |
+| `experience/roles/tinker-studio-intern.md` | The programme `tinker-summer-scheme`, which no role note has |
 | `applications/example-co-backend-engineer/posting.md` | Evidence that names an achievement that does not exist, `on-call-rota` |
 
 The applications also cover the cases of the application page:
@@ -55,3 +57,12 @@ The experience notes cover the cases of the experience pages:
 | `experience/projects/open-maps.md` | A skill that the skills inventory does not have, `rust` |
 | `experience/stories/unclear-owner.md` | A story from two roles, and no `#` heading |
 | `experience/skills.md` | A `Pinned` section, a name on two lines, and a skill that no note lists |
+
+The notes also cover the cases of the links between notes:
+
+| Note | Case |
+|---|---|
+| `experience/stories/slow-build.md` | A link to an achievement, a link with a label, a link to an application, a link to a listing, a link to a journal file, and a link to a website |
+| `experience/profile.md` | A link to a role note |
+| `applications/example-co-backend-engineer/posting.md` | A link in the verdict, and a link with a label in a gap |
+| `experience/journal/2026-10-01.md` | A journal file, which has no page in the app |

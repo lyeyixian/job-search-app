@@ -84,6 +84,8 @@ export type ExperienceNote = {
   role:
     | (Omit<RoleSummary, "slug" | "title" | "programme"> & {
         programme: NoteRef | null;
+        /** The slug of the programme, if the vault has no role note for it. */
+        missingProgramme: string | null;
         stints: RoleSummary[];
         /** The stories that name the role. */
         stories: NoteRef[];
@@ -92,7 +94,12 @@ export type ExperienceNote = {
   /** The facts of a project note. `null` for each other kind. */
   project: (Omit<ProjectSummary, "slug" | "title"> & { link: string | null }) | null;
   /** The facts of a story. `null` for each other kind. */
-  story: Pick<StorySummary, "competencies" | "roles"> | null;
+  story:
+    | (Pick<StorySummary, "competencies" | "roles"> & {
+        /** Each slug in `roles` of the note that no role note has. */
+        missingRoles: string[];
+      })
+    | null;
 };
 
 export type InventorySkill = Skill & {
@@ -436,9 +443,11 @@ export function getExperienceNote(index: VaultIndex, kind: ExperienceKind, slug:
   };
   if (kind === "roles") {
     const { slug: _slug, title: _title, programme, ...facts } = roleSummary(note);
+    const programmeRef = programme ? refOf(index, "roles", programme) : null;
     found.role = {
       ...facts,
-      programme: programme ? refOf(index, "roles", programme) : null,
+      programme: programmeRef,
+      missingProgramme: programme && !programmeRef ? programme : null,
       stints: stintsByProgramme(notesOf(index, "roles").map(roleSummary)).get(slug) ?? [],
       stories: notesOf(index, "stories")
         .filter((story) => slugs(story.frontmatter.roles).includes(slug))
@@ -452,7 +461,12 @@ export function getExperienceNote(index: VaultIndex, kind: ExperienceKind, slug:
     found.project = { ...facts, link: link && /^https?:\/\//.test(link) ? link : null };
   } else {
     const { competencies, roles } = storySummary(index, note);
-    found.story = { competencies, roles };
+    const known = new Set(roles.map((role) => role.slug));
+    found.story = {
+      competencies,
+      roles,
+      missingRoles: slugs(note.frontmatter.roles).filter((role) => !known.has(role)),
+    };
   }
   return found;
 }

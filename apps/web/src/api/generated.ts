@@ -385,6 +385,113 @@ export type FitAnalysis = {
   gapsNote: string;
 } | null;
 
+/**
+ * `found` if the target has a page. `missing` if the vault has no such note or no such achievement. `no-page` if the note exists and the app has no page for it, such as a journal file.
+ */
+export type ResolvedLinkState = typeof ResolvedLinkState[keyof typeof ResolvedLinkState];
+
+
+export const ResolvedLinkState = {
+  found: 'found',
+  missing: 'missing',
+  'no-page': 'no-page',
+} as const;
+
+export type ResolvedLinkPageKind = typeof ResolvedLinkPageKind[keyof typeof ResolvedLinkPageKind];
+
+
+export const ResolvedLinkPageKind = {
+  roles: 'roles',
+  projects: 'projects',
+  stories: 'stories',
+  applications: 'applications',
+  listings: 'listings',
+  profile: 'profile',
+  skills: 'skills',
+} as const;
+
+/**
+ * The page of the target. Web makes the address from it. `null` if the state is not `found`.
+ * @nullable
+ */
+export type ResolvedLinkPage = {
+  kind: ResolvedLinkPageKind;
+  /** The file name without `.md`, or the folder name for an application. */
+  slug: string;
+  /**
+     * The folder of the company. `null` if the note is not a listing.
+     * @nullable
+     */
+  company: string | null;
+} | null;
+
+/**
+ * One `[[wikilink]]` of a note, resolved against the vault.
+ */
+export interface ResolvedLink {
+  /** The link as the note writes it, without the brackets and the label: `note` or `note#achievement`. */
+  ref: string;
+  /** `found` if the target has a page. `missing` if the vault has no such note or no such achievement. `no-page` if the note exists and the app has no page for it, such as a journal file. */
+  state: ResolvedLinkState;
+  /**
+     * The page of the target. Web makes the address from it. `null` if the state is not `found`.
+     * @nullable
+     */
+  page: ResolvedLinkPage;
+  /**
+     * The achievement that the link names. `null` if the link names a whole note.
+     * @nullable
+     */
+  anchor: string | null;
+  /**
+     * The title of the achievement or of the note. `null` if the state is `missing`.
+     * @nullable
+     */
+  title: string | null;
+}
+
+export type NotePageKind = typeof NotePageKind[keyof typeof NotePageKind];
+
+
+export const NotePageKind = {
+  roles: 'roles',
+  projects: 'projects',
+  stories: 'stories',
+  applications: 'applications',
+  listings: 'listings',
+  profile: 'profile',
+  skills: 'skills',
+} as const;
+
+/**
+ * The page of a note. Web makes the address from it.
+ */
+export interface NotePage {
+  kind: NotePageKind;
+  /** The file name without `.md`, or the folder name for an application. */
+  slug: string;
+  /**
+     * The folder of the company. `null` if the note is not a listing.
+     * @nullable
+     */
+  company: string | null;
+}
+
+export type BacklinkAchievementsItem = {
+  anchor: string;
+  title: string;
+};
+
+/**
+ * A note that names the note of the response.
+ */
+export interface Backlink {
+  page: NotePage;
+  title: string;
+  /** The achievements of this note that the other note names. Can be empty. */
+  achievements: BacklinkAchievementsItem[];
+}
+
 export type Application = ApplicationSummary & ({
   /**
      * The posting on the job board. `null` also if the field has a warning.
@@ -404,6 +511,10 @@ export type Application = ApplicationSummary & ({
   /** The posting, without the fit analysis. Markdown. */
   posting: string;
   fit: FitAnalysis | null;
+  /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
+  links: ResolvedLink[];
+  /** Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles. */
+  backlinks: Backlink[];
 });
 
 /**
@@ -418,6 +529,8 @@ export type ExperienceOverviewProfile = {
      * @nullable
      */
   updated: string | null;
+  /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
+  links: ResolvedLink[];
 } | null;
 
 export interface RoleSummary {
@@ -565,6 +678,8 @@ export interface SkillsInventory {
   categories: SkillsInventoryCategoriesItem[];
   /** The skills that a note lists and the inventory does not have. */
   unlisted: InventorySkill[];
+  /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
+  links: ResolvedLink[];
 }
 
 /**
@@ -669,6 +784,11 @@ export type ExperienceNoteRole = {
      * @nullable
      */
   programme: ExperienceNoteRoleProgramme;
+  /**
+     * The slug of the programme, if the vault has no role note for it.
+     * @nullable
+     */
+  missingProgramme: string | null;
   /** The stints of the programme, newest first. Empty if the role is not a programme. */
   stints: RoleSummary[];
   /** The stories that come from the role. */
@@ -728,6 +848,8 @@ export type ExperienceNoteStory = {
   competencies: string[];
   /** The role notes that the story comes from. A slug with no role note is not here. */
   roles: NoteRef[];
+  /** Each slug in `roles` of the note that no role note has. */
+  missingRoles: string[];
 } | null;
 
 export interface ExperienceNote {
@@ -759,6 +881,10 @@ export interface ExperienceNote {
      * @nullable
      */
   story: ExperienceNoteStory;
+  /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
+  links: ResolvedLink[];
+  /** Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles. */
+  backlinks: Backlink[];
 }
 
 export type ShortlistCompaniesItem = {
@@ -963,6 +1089,8 @@ export interface Company {
   sweeps: string[];
   /** Each listing of the company. The order is `shortlist`, `maybe`, then `reject`. With the same triage, open listings are first, then the listing first seen most recently. */
   listings: CompanyListing[];
+  /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
+  links: ResolvedLink[];
 }
 
 /**
@@ -1072,6 +1200,10 @@ export interface Listing {
   application: ListingApplication;
   /** The text of the listing as the job board had it, as markdown, without the title line. */
   body: string;
+  /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
+  links: ResolvedLink[];
+  /** Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles. */
+  backlinks: Backlink[];
 }
 
 export type GetApplicationsParams = {

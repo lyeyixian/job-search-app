@@ -37,6 +37,23 @@ describe("GET /api/experience/{kind}/{slug}", () => {
     expect(body.role).toBeNull();
   });
 
+  it("returns the link table, the backlinks and the facts with no note", async () => {
+    const story = ExperienceNoteSchema.parse(await (await app.request("/api/experience/stories/slow-build")).json());
+    expect(story.links.find((link) => link.ref === "missing-note")?.state).toBe("missing");
+    expect(story.links.find((link) => link.ref === "recipe-box")?.title).toBe("Recipe box");
+    expect(story.story?.missingRoles).toEqual(["retired-role"]);
+
+    const role = ExperienceNoteSchema.parse(
+      await (await app.request("/api/experience/roles/northwind-software-engineer")).json(),
+    );
+    expect(role.backlinks.map((backlink) => backlink.page.kind)).toContain("applications");
+
+    const intern = ExperienceNoteSchema.parse(
+      await (await app.request("/api/experience/roles/tinker-studio-intern")).json(),
+    );
+    expect(intern.role?.missingProgramme).toBe("tinker-summer-scheme");
+  });
+
   it.each([
     "/api/experience/roles/no-such-role",
     "/api/experience/journal/2026-10-01",

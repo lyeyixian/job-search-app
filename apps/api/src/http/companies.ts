@@ -1,7 +1,9 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { getCompanies, getCompany, getListing, MODES } from "../vault/companies.js";
+import { linksOf, noteLinks, notePath } from "../vault/links.js";
 import { LISTING_STATES, TRIAGES } from "../vault/shortlist.js";
 import type { VaultStore } from "../vault/store.js";
+import { backlinks, links } from "./links.js";
 import { type AppEnv, problem, problemContent } from "./problem.js";
 import { PromotionSchema, ShortlistListingSchema } from "./shortlist.js";
 
@@ -79,6 +81,7 @@ export const CompanySchema = z
       description:
         "Each listing of the company. The order is `shortlist`, `maybe`, then `reject`. With the same triage, open listings are first, then the listing first seen most recently.",
     }),
+    links,
   })
   .openapi("Company");
 
@@ -106,6 +109,8 @@ export const ListingSchema = z
     body: z.string().openapi({
       description: "The text of the listing as the job board had it, as markdown, without the title line.",
     }),
+    links,
+    backlinks,
   })
   .openapi("Listing", {
     description:
@@ -191,7 +196,7 @@ export function companyRoutes(store: VaultStore) {
       if (!found) {
         return problem(c, "note_not_found", `No company has the folder ${slug}.`);
       }
-      return c.json(found, 200);
+      return c.json({ ...found, links: linksOf(index, notePath.watchlist) }, 200);
     })
     .openapi(getListingRoute, (c) => {
       const index = store.index;
@@ -203,6 +208,6 @@ export function companyRoutes(store: VaultStore) {
       if (!listing) {
         return problem(c, "note_not_found", `The company ${folder} has no listing with the slug ${slug}.`);
       }
-      return c.json(listing, 200);
+      return c.json({ ...listing, ...noteLinks(index, notePath.listing(folder, slug)) }, 200);
     });
 }

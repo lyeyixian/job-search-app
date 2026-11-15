@@ -7,6 +7,7 @@ import { BackToBoard } from "@/components/application/back-to-board";
 import { FitAnalysisView } from "@/components/application/fit-analysis";
 import { type Part, PartTabs } from "@/components/application/part-tabs";
 import { ResumeView } from "@/components/application/resume-view";
+import { Backlinks } from "@/components/backlinks";
 import {
   DIRECTION_LABEL,
   DIRECTION_STYLE,
@@ -17,6 +18,7 @@ import {
   warningText,
 } from "@/components/board/labels";
 import { Markdown } from "@/components/markdown";
+import { MissingLink } from "@/components/note-link";
 import { Badge } from "@/components/ui/badge";
 import { day } from "@/lib/day";
 import { cn } from "@/lib/utils";
@@ -100,12 +102,7 @@ function Facts({ application }: { application: Application }) {
                   {listing.title}
                 </Link>
               ) : (
-                <span className="text-destructive" title="The vault has no such listing">
-                  <code className="font-mono text-[0.85em]">
-                    {listing.company}/{listing.slug}
-                  </code>{" "}
-                  (missing)
-                </span>
+                <MissingLink name={`${listing.company}/${listing.slug}`} what="listing" />
               )}
             </span>
           ) : null}
@@ -123,18 +120,18 @@ async function ApplicationData({ params }: Pick<PageProps<"/applications/[slug]"
     return <ApiProblem code={result.code} traceId={result.traceId} />;
   }
   const application = result.data;
-  const { company, title, fit, posting, hasResume, warnings } = application;
+  const { company, title, fit, posting, hasResume, warnings, links, backlinks } = application;
 
   const fitPart: Part = {
     id: "fit",
     label: "Fit analysis",
     content: fit ? (
-      <FitAnalysisView fit={fit} />
+      <FitAnalysisView fit={fit} links={links} />
     ) : (
       <p className="text-muted-foreground text-sm">This application has no fit analysis yet.</p>
     ),
   };
-  const postingPart: Part = { id: "posting", label: "Posting", content: <Markdown>{posting}</Markdown> };
+  const postingPart: Part = { id: "posting", label: "Posting", content: <Markdown links={links}>{posting}</Markdown> };
   const resumePart: Part = {
     id: "resume",
     label: "Resume",
@@ -165,6 +162,7 @@ async function ApplicationData({ params }: Pick<PageProps<"/applications/[slug]"
       ) : null}
       {/* The fit analysis is what the person acts on, so it comes first when the note has one. */}
       <PartTabs parts={[fitPart, postingPart, resumePart]} first={fit ? "fit" : "posting"} />
+      <Backlinks backlinks={backlinks} />
     </>
   );
 }

@@ -1,8 +1,10 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { getApplication, listApplications, readResume } from "../vault/applications.js";
 import { BRIDGING_ACTIONS, GRADES, REQUIREMENT_KINDS } from "../vault/fit.js";
+import { noteLinks, notePath } from "../vault/links.js";
 import { DIRECTIONS, REGIONS, STATUSES, VERDICTS } from "../vault/schema.js";
 import type { VaultStore } from "../vault/store.js";
+import { backlinks, links } from "./links.js";
 import { type AppEnv, problem, problemContent } from "./problem.js";
 
 export const WarningSchema = z
@@ -186,6 +188,8 @@ export const ApplicationSchema = ApplicationSummarySchema.extend({
     .openapi({ description: "The listing that the application came from." }),
   posting: z.string().openapi({ description: "The posting, without the fit analysis. Markdown." }),
   fit: FitAnalysisSchema.nullable().openapi({ description: "`null` if the note has no fit analysis." }),
+  links,
+  backlinks,
 }).openapi("Application");
 
 const indexNotReady = {
@@ -250,7 +254,7 @@ export function applicationRoutes(store: VaultStore) {
       if (!application) {
         return problem(c, "note_not_found", `No application has the slug ${slug}.`);
       }
-      return c.json(application, 200);
+      return c.json({ ...application, ...noteLinks(index, notePath.application(slug)) }, 200);
     })
     .openapi(getResumeRoute, async (c) => {
       const index = store.index;

@@ -4,11 +4,14 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { type ExperienceNote, type ExperienceNoteKind, getExperienceNote } from "@/api/client";
 import { ApiProblem } from "@/components/api-problem";
+import { Backlinks } from "@/components/backlinks";
 import { Fact } from "@/components/companies/fact";
 import { AchievementList } from "@/components/experience/achievement-list";
 import { competencyName, NOTE_KIND_LABEL, PROJECT_KIND_LABEL } from "@/components/experience/labels";
 import { SkillChips } from "@/components/experience/skill-chips";
 import { Markdown, RevisitMark } from "@/components/markdown";
+import { MissingLink } from "@/components/note-link";
+import { TargetHighlight } from "@/components/target-highlight";
 import { Badge } from "@/components/ui/badge";
 import { months } from "@/lib/month";
 
@@ -79,6 +82,11 @@ function RoleFacts({ note, role }: { note: ExperienceNote; role: NonNullable<Exp
           </Link>
         </Fact>
       ) : null}
+      {role.missingProgramme ? (
+        <Fact name="Programme" testId="note-programme">
+          <MissingLink name={role.missingProgramme} what="role note" />
+        </Fact>
+      ) : null}
     </dl>
   );
 }
@@ -123,7 +131,7 @@ function StoryFacts({ story }: { story: NonNullable<ExperienceNote["story"]> }) 
         )}
       </Fact>
       <Fact name="Roles" testId="note-roles">
-        {story.roles.length === 0 ? (
+        {story.roles.length + story.missingRoles.length === 0 ? (
           "None"
         ) : (
           <span className="flex flex-col gap-1">
@@ -131,6 +139,9 @@ function StoryFacts({ story }: { story: NonNullable<ExperienceNote["story"]> }) 
               <Link key={role.slug} href={`/experience/roles/${role.slug}`} className={`w-fit ${noteLink}`}>
                 {role.title}
               </Link>
+            ))}
+            {story.missingRoles.map((role) => (
+              <MissingLink key={role} name={role} what="role note" />
             ))}
           </span>
         )}
@@ -205,7 +216,10 @@ async function NoteData({ params }: Pick<Props, "params">) {
       )}
       {note.achievements.length > 0 ? <AchievementList achievements={note.achievements} /> : null}
       <div data-testid="note-body">
-        <Markdown headingIds={headingIds}>{note.body}</Markdown>
+        <Markdown headingIds={headingIds} links={note.links}>
+          {note.body}
+        </Markdown>
+        <TargetHighlight />
       </div>
       {role ? (
         <>
@@ -228,6 +242,7 @@ async function NoteData({ params }: Pick<Props, "params">) {
           />
         </>
       ) : null}
+      <Backlinks backlinks={note.backlinks} />
     </>
   );
 }

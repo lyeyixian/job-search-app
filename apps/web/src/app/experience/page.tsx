@@ -94,7 +94,7 @@ async function ExperienceData({ searchParams }: Pick<PageProps<"/experience">, "
         </h2>
         {profile ? (
           <div className="rounded-xl border p-3 sm:p-4" data-testid="profile">
-            <Markdown>{profile.body}</Markdown>
+            <Markdown links={profile.links}>{profile.body}</Markdown>
           </div>
         ) : (
           <p className="text-muted-foreground text-sm" data-testid="profile-empty">

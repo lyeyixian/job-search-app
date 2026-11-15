@@ -109,7 +109,7 @@
   }
 
   /* The achievement that a link names stands out for a moment. */
-  .note-text h3:target {
+  .note-text h3[data-highlight] {
     animation: achievement-target 2.5s ease-out;
     @apply outline-2 outline-amber-400 outline-offset-4;
   }

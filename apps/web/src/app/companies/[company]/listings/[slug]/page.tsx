@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getListing } from "@/api/client";
 import { ApiProblem } from "@/components/api-problem";
+import { Backlinks } from "@/components/backlinks";
 import { regionLabel, STATUS_LABEL } from "@/components/board/labels";
 import { Fact } from "@/components/companies/fact";
 import { StateLabel, TriageBadge } from "@/components/companies/listing-labels";
 import { Markdown } from "@/components/markdown";
+import { MissingLink } from "@/components/note-link";
 import { day } from "@/lib/day";
 
 // The feature is docs/features/company-listings.md.
@@ -29,6 +31,7 @@ async function ListingData({ params }: Pick<PageProps<"/companies/[company]/list
   }
   const { companyName, title, region, level, firstSeen, lastSeen, url, triage, reason, state, application, body } =
     result.data;
+  const { links, backlinks } = result.data;
   const notOpen = state === "closed" || state === "unknown";
 
   return (
@@ -93,9 +96,7 @@ async function ListingData({ params }: Pick<PageProps<"/companies/[company]/list
                   {application.status ? STATUS_LABEL[application.status] : "No status"}
                 </Link>
               ) : (
-                <span className="text-destructive" title="The vault has no such application">
-                  <code className="font-mono text-[0.85em]">{application.slug}</code> (missing)
-                </span>
+                <MissingLink name={application.slug} what="application" />
               )}
             </span>
           ) : null}
@@ -103,8 +104,9 @@ async function ListingData({ params }: Pick<PageProps<"/companies/[company]/list
       ) : null}
 
       <section className="border-t pt-4" aria-label="Text of the listing" data-testid="listing-body">
-        <Markdown>{body}</Markdown>
+        <Markdown links={links}>{body}</Markdown>
       </section>
+      <Backlinks backlinks={backlinks} />
     </>
   );
 }

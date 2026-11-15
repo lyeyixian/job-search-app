@@ -38,6 +38,11 @@ It has at least one note for each case that a criterion names:
 - an application with a status that the schema does not permit and with no verdict
 - a gap that names no bridging action
 - a link to a note that does not exist, and a link to an achievement that does not exist
+- a story with a link to an achievement, a link with a label, a link to an application, a link to
+  a listing, a link to a journal file and a link to a website
+- a story whose facts name a role that does not exist, and a role whose facts name a programme
+  that does not exist
+- a link in the verdict of a fit analysis, and a link in a gap
 - an application with a link to the posting, a source listing, each grade and each bridging
   action, and an application with none of these
 - an application with no fit analysis, and a fit analysis that writes its gaps as a table
