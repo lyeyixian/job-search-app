@@ -52,9 +52,10 @@ when someone edits the title. It runs a shell pattern and installs nothing.
 
 ## The owner approval workflow
 
-The owner approves each change to `docs/adr/` and `docs/features/`.
-[Changes](../changes/README.md) has the steps. The owner approval workflow fails a pull request
-that changes one of these folders until the owner adds the label `owner-approved`.
+The owner approves each change to `docs/adr/` and `docs/features/`. An agent changes these
+folders in the pull request of the code, and the owner approves the pull request with a label.
+The owner approval workflow fails a pull request that changes one of these folders until the
+owner adds the label `owner-approved`. All other docs need no approval.
 
 | Job | Checks | Catches |
 |---|---|---|

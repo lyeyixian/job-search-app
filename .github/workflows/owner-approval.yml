@@ -1,7 +1,7 @@
 name: Owner approval
 
 # A pull request that changes docs/adr/ or docs/features/ needs the label owner-approved,
-# and the owner of the repo must be the one who added it. See docs/changes/README.md.
+# and the owner of the repo must be the one who added it. See AGENTS.md.
 #
 # pull_request_target runs this file from main, so a pull request cannot change the check
 # that judges it. The job does not check out or run the code of the pull request.
@@ -55,7 +55,7 @@ jobs:
 
           labels=$(gh api --paginate "repos/$REPO/issues/$PR/labels" --jq '.[].name')
           if ! grep -Fxq "$LABEL" <<<"$labels"; then
-            echo "::error::This pull request changes docs/adr/ or docs/features/. Only the owner approves that, with the label $LABEL. See docs/changes/README.md."
+            echo "::error::This pull request changes docs/adr/ or docs/features/. Only the owner approves that, with the label $LABEL. See AGENTS.md."
             exit 1
           fi
 
