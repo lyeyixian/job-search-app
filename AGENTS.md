@@ -11,7 +11,6 @@ Hono service that owns the vault clone and serves a REST API.
 | To learn | Read |
 |---|---|
 | What the app does for the person | `docs/features/`, one file per feature, with numbered acceptance criteria |
-| What is proposed and not built yet | `docs/changes/`, one folder per change |
 | How the app is built | `docs/architecture/README.md`, then the page for your area |
 | Why a choice was made | `docs/adr/`, one file per decision |
 | The shape of the API | `docs/api/openapi.json`, generated from the code |
@@ -32,28 +31,24 @@ Hono service that owns the vault clone and serves a REST API.
 
 The owner approves each change to `docs/adr/` and `docs/features/`. A pull request that changes
 one of these folders fails the owner approval check until the owner adds the label
-`owner-approved`. Do not add that label. Keep all other docs the same as the code, with no
-approval. `docs/changes/README.md` has the steps and the file formats.
+`owner-approved`. Do not add that label. A push that changes one of these folders removes the
+label, and the owner adds it again. Keep all other docs the same as the code, with no approval.
 
+- In the description of the pull request, name each acceptance criterion that you added, changed
+  or removed, and each ADR that you added.
 - If you find a choice in the build that the owner did not make, stop and ask the owner. Do not
   record your own choice as a decision.
-- Name each proposed ADR and each change to a feature file in the description of the pull
-  request.
 
 ## When you change behaviour
 
-- `docs/features/` is the baseline. It says what the app on `main` does.
-- Write the new, changed and removed acceptance criteria as a change in `docs/changes/<name>/`.
-  Do not write code until the owner approves the change.
-- A behaviour that the person sees is an acceptance criterion. It is not a decision or an
-  assumption.
+- Change the feature file in `docs/features/` in the same pull request.
+- A behaviour that the person sees is an acceptance criterion. Do not write it as a decision or
+  an assumption.
+- A decision in a feature file is a choice that the owner made. Do not add your own.
 - Each acceptance criterion has one Playwright test with the same name:
   `"application-board 2: finished applications stay out of the way"`. Change the test with the
   criterion.
-- In the last commit of the pull request, fold the change into `docs/features/` and move its
-  folder to `docs/changes/archive/`.
 - A feature is done when the tests for its criteria pass.
-- A fix that makes the code do what the baseline already says needs no change folder.
 
 ## When you change the design
 
