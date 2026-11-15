@@ -16,6 +16,7 @@ listing in full. You use them when you want to look past the shortlist.
 - **When** I open the list of companies
 - **Then** I see each company with its mode, the day of its last sweep and the number of its open
   listings that have the triage `shortlist`
+- **And** a company that is on the watchlist and has no sweep is not in the list
 
 ### 2. See the listings of one company
 
@@ -38,7 +39,7 @@ listing in full. You use them when you want to look past the shortlist.
 
 - **Given** a listing has the state `closed` or `unknown`
 - **When** I look at its row
-- **Then** I can tell at a glance that the listing is not open
+- **Then** its row is grey, its title has a line through it, and a badge shows its state
 
 ### 5. See which listings I promoted
 
@@ -79,13 +80,19 @@ listing in full. You use them when you want to look past the shortlist.
 - **When** I look at the page of the listing
 - **Then** I see a link to the application page
 
+### 11. The listings to act on come first
+
+- **Given** a company has listings with different triages and states
+- **When** I look at its listings page
+- **Then** the listings with the triage `shortlist` come first, then `maybe`, then `reject`
+- **And** with the same triage, the open listings come before the others
+- **And** then the listing first seen most recently comes first
+
 ## Assumptions
 
 - The market scan has about 860 listings from 43 companies today. Most have the triage `reject`.
 - A listing does not change after a sweep writes it. Only its triage, its state and its last-seen
   day change.
-- A company is in the list of companies after its first sweep. A company that is only on the
-  watchlist has no listings to show.
 - The sweep log of a company has one line for each sweep, and the line starts with the day.
 
 ## Decisions
@@ -94,12 +101,6 @@ listing in full. You use them when you want to look past the shortlist.
   them only to check a triage.
 - **The watchlist's instructions for a sweep stay out.** The page shows what helps you judge a
   company. It does not show how a sweep reads the job board.
-- **The choice to show rejected listings lives in the address.** Back returns to the same list,
-  and the list with the rejected listings can be bookmarked.
-- **Shortlisted listings come first, then `maybe`, then `reject`.** With the same triage, open
-  listings come before the others, and then the newest listing comes first.
-- **A listing that is not open has a grey row, a title with a line through it and a badge for its
-  state.** The colour is not the only sign.
 - **The sweeps show as days only.** The sweep log also holds the instructions for a sweep, and
   those stay out.
 - **The page does not change a triage or a mode.** You change those outside the app.

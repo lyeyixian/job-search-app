@@ -80,8 +80,6 @@ between companies before you promote one.
 
 - **Grouped by company.** Application slots are counted for each company, so you compare the
   listings of one company first.
-- **The choices live in the address.** A narrowed shortlist can be bookmarked, and Back returns
-  to it.
 - **The pages of a listing and of a company are the [company listings](company-listings.md)
   feature.**
 - **No browser test for criterion 9.** The browser tests run on one made-up vault, and that vault

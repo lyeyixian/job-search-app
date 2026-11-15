@@ -39,13 +39,15 @@ next.
 - **Given** a column has more than one card
 - **When** I look at the column
 - **Then** the cards are in the order `strong-fit`, `good-fit`, `stretch`, `skip`
-- **And** cards with the same verdict show the newest application first
+- **And** a card with no verdict comes after `skip`
+- **And** cards with the same verdict show the application with the latest `captured` day first
 
 ### 5. Narrow the board
 
 - **Given** I am on the board
 - **When** I choose a company, a region, a verdict or a direction check
 - **Then** the board shows only the cards that match all my choices
+- **And** I can choose one value for each of the four
 - **And** each column shows the number of cards that match
 - **When** I clear my choices
 - **Then** all the cards come back
@@ -69,17 +71,19 @@ next.
 - **Then** I can read each card without zooming
 - **And** I can swipe sideways to go to the next column
 
+### 9. An application with a wrong status still shows
+
+- **Given** an application has a status that the vault's rules do not permit
+- **When** I open the board
+- **Then** its card is in the `analyzed` column
+- **And** the card has a warning that names the status
+
 ## Assumptions
 
 - All the applications, about 40, have the status `analyzed` today. The first column is long until you start
   to apply.
 - You change a status outside the app for now. The board shows the change the next time the app
   updates.
-- The newest application is the one with the latest `captured` day.
-- You choose one value for each of company, region, verdict and direction check.
-- A card with no verdict comes after `skip` in its column.
-- An application with a status that the vault's rules do not permit shows in the `analyzed`
-  column, with a warning that names the field.
 
 ## Decisions
 
@@ -87,7 +91,5 @@ next.
   column holds all the cards today.
 - **Finished applications start closed.** An application that is `accepted`, `rejected` or
   `dropped` needs no more action from you.
-- **Your choices go in the address of the page.** Back returns to the same board, and you can
-  bookmark a narrowed board.
 - **The board changes nothing in this version.** A later version lets you move a card to change
   its status.
