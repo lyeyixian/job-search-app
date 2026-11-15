@@ -29,10 +29,9 @@ Hono service that owns the vault clone and serves a REST API.
 
 ## What only the owner approves
 
-The owner approves each change to `docs/adr/` and `docs/features/`. A pull request that changes
-one of these folders fails the owner approval check until the owner adds the label
-`owner-approved`. Do not add that label. A push that changes one of these folders removes the
-label, and the owner adds it again. Keep all other docs the same as the code, with no approval.
+The owner approves each change to `docs/adr/` and `docs/features/`. The owner reads these changes
+in the pull request and decides to merge or not. Keep all other docs the same as the code, with
+no approval.
 
 - In the description of the pull request, name each acceptance criterion that you added, changed
   or removed, and each ADR that you added.
