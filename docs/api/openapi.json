@@ -346,6 +346,20 @@
               },
               "fit": {
                 "$ref": "#/components/schemas/FitAnalysis"
+              },
+              "links": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ResolvedLink"
+                },
+                "description": "Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them."
+              },
+              "backlinks": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Backlink"
+                },
+                "description": "Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles."
               }
             },
             "required": [
@@ -353,7 +367,9 @@
               "analyzed",
               "listing",
               "posting",
-              "fit"
+              "fit",
+              "links",
+              "backlinks"
             ]
           }
         ]
@@ -612,6 +628,165 @@
           "text"
         ]
       },
+      "ResolvedLink": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "description": "The link as the note writes it, without the brackets and the label: `note` or `note#achievement`.",
+            "example": "northwind-software-engineer#cut-build-time"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "found",
+              "missing",
+              "no-page"
+            ],
+            "description": "`found` if the target has a page. `missing` if the vault has no such note or no such achievement. `no-page` if the note exists and the app has no page for it, such as a journal file."
+          },
+          "page": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "roles",
+                  "projects",
+                  "stories",
+                  "applications",
+                  "listings",
+                  "profile",
+                  "skills"
+                ],
+                "example": "roles"
+              },
+              "slug": {
+                "type": "string",
+                "description": "The file name without `.md`, or the folder name for an application.",
+                "example": "northwind-software-engineer"
+              },
+              "company": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The folder of the company. `null` if the note is not a listing.",
+                "example": null
+              }
+            },
+            "required": [
+              "kind",
+              "slug",
+              "company"
+            ],
+            "description": "The page of the target. Web makes the address from it. `null` if the state is not `found`."
+          },
+          "anchor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The achievement that the link names. `null` if the link names a whole note.",
+            "example": "cut-build-time"
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The title of the achievement or of the note. `null` if the state is `missing`.",
+            "example": "Cut build time"
+          }
+        },
+        "required": [
+          "ref",
+          "state",
+          "page",
+          "anchor",
+          "title"
+        ],
+        "description": "One `[[wikilink]]` of a note, resolved against the vault."
+      },
+      "Backlink": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "$ref": "#/components/schemas/NotePage"
+          },
+          "title": {
+            "type": "string",
+            "example": "Backend Engineer, Example Co"
+          },
+          "achievements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "anchor": {
+                  "type": "string",
+                  "example": "cut-build-time"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "Cut build time"
+                }
+              },
+              "required": [
+                "anchor",
+                "title"
+              ]
+            },
+            "description": "The achievements of this note that the other note names. Can be empty."
+          }
+        },
+        "required": [
+          "page",
+          "title",
+          "achievements"
+        ],
+        "description": "A note that names the note of the response."
+      },
+      "NotePage": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "roles",
+              "projects",
+              "stories",
+              "applications",
+              "listings",
+              "profile",
+              "skills"
+            ],
+            "example": "roles"
+          },
+          "slug": {
+            "type": "string",
+            "description": "The file name without `.md`, or the folder name for an application.",
+            "example": "northwind-software-engineer"
+          },
+          "company": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The folder of the company. `null` if the note is not a listing.",
+            "example": null
+          }
+        },
+        "required": [
+          "kind",
+          "slug",
+          "company"
+        ],
+        "description": "The page of a note. Web makes the address from it."
+      },
       "ExperienceOverview": {
         "type": "object",
         "properties": {
@@ -632,11 +807,19 @@
                 ],
                 "description": "The month or the day of the last change to the note.",
                 "example": "2026-10"
+              },
+              "links": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ResolvedLink"
+                },
+                "description": "Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them."
               }
             },
             "required": [
               "body",
-              "updated"
+              "updated",
+              "links"
             ],
             "description": "`null` if the vault has no profile."
           },
@@ -930,13 +1113,21 @@
               "$ref": "#/components/schemas/InventorySkill"
             },
             "description": "The skills that a note lists and the inventory does not have."
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResolvedLink"
+            },
+            "description": "Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them."
           }
         },
         "required": [
           "updated",
           "pinned",
           "categories",
-          "unlisted"
+          "unlisted",
+          "links"
         ]
       },
       "InventorySkill": {
@@ -1195,6 +1386,14 @@
                 ],
                 "description": "The programme that this stint is part of. `null` if the vault has no role note for it."
               },
+              "missingProgramme": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The slug of the programme, if the vault has no role note for it.",
+                "example": null
+              },
               "stints": {
                 "type": "array",
                 "items": {
@@ -1217,6 +1416,7 @@
               "start",
               "end",
               "programme",
+              "missingProgramme",
               "stints",
               "stories"
             ],
@@ -1306,13 +1506,36 @@
                   "$ref": "#/components/schemas/NoteRef"
                 },
                 "description": "The role notes that the story comes from. A slug with no role note is not here."
+              },
+              "missingRoles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Each slug in `roles` of the note that no role note has.",
+                "example": []
               }
             },
             "required": [
               "competencies",
-              "roles"
+              "roles",
+              "missingRoles"
             ],
             "description": "The facts of a story. `null` for each other kind."
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResolvedLink"
+            },
+            "description": "Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them."
+          },
+          "backlinks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Backlink"
+            },
+            "description": "Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles."
           }
         },
         "required": [
@@ -1325,7 +1548,9 @@
           "revisits",
           "role",
           "project",
-          "story"
+          "story",
+          "links",
+          "backlinks"
         ]
       },
       "Shortlist": {
@@ -1631,6 +1856,13 @@
               "$ref": "#/components/schemas/CompanyListing"
             },
             "description": "Each listing of the company. The order is `shortlist`, `maybe`, then `reject`. With the same triage, open listings are first, then the listing first seen most recently."
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResolvedLink"
+            },
+            "description": "Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them."
           }
         },
         "required": [
@@ -1638,7 +1870,8 @@
           "name",
           "watchlist",
           "sweeps",
-          "listings"
+          "listings",
+          "links"
         ]
       },
       "CompanyListing": {
@@ -1828,6 +2061,20 @@
           "body": {
             "type": "string",
             "description": "The text of the listing as the job board had it, as markdown, without the title line."
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResolvedLink"
+            },
+            "description": "Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them."
+          },
+          "backlinks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Backlink"
+            },
+            "description": "Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles."
           }
         },
         "required": [
@@ -1844,7 +2091,9 @@
           "lastSeen",
           "state",
           "application",
-          "body"
+          "body",
+          "links",
+          "backlinks"
         ],
         "description": "One listing record. `triage`, `reason`, `lastSeen`, `state` and `application` come from the company index."
       }

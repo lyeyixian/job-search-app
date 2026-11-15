@@ -1,6 +1,7 @@
 import Link from "next/link";
-import type { EvidencePart, FitAnalysis, Gap, Requirement } from "@/api/client";
+import type { EvidencePart, FitAnalysis, Gap, Requirement, ResolvedLink } from "@/api/client";
 import { InlineMarkdown, Markdown } from "@/components/markdown";
+import { MissingLink } from "@/components/note-link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +32,9 @@ function GradeBadge({ grade }: { grade: Requirement["grade"] }) {
   );
 }
 
-function Evidence({ parts }: { parts: EvidencePart[] }) {
+type Links = ResolvedLink[];
+
+function Evidence({ parts, links }: { parts: EvidencePart[]; links: Links }) {
   if (parts.length === 0) return <span className="text-muted-foreground">No evidence</span>;
   return (
     <>
@@ -43,23 +46,14 @@ function Evidence({ parts }: { parts: EvidencePart[] }) {
           return (
             <span key={key}>
               {/^\s/.test(part.text) ? " " : null}
-              <InlineMarkdown>{part.text}</InlineMarkdown>
+              <InlineMarkdown links={links}>{part.text}</InlineMarkdown>
               {/\s$/.test(part.text) ? " " : null}
             </span>
           );
         }
         if (!part.note || !part.title) {
           // The vault has no such achievement. Text with a mark, not a link.
-          return (
-            <span
-              key={key}
-              className="text-destructive"
-              data-testid="evidence-missing"
-              title="The vault has no such achievement"
-            >
-              <code className="font-mono text-[0.85em]">{part.ref}</code> (missing)
-            </span>
-          );
+          return <MissingLink key={key} name={part.ref} what="achievement" testId="evidence-missing" />;
         }
         return (
           <Link
@@ -81,7 +75,7 @@ function Evidence({ parts }: { parts: EvidencePart[] }) {
 const cell = "px-3 py-2 align-top max-md:block max-md:px-0 max-md:py-0.5";
 const cellName = "mr-2 font-medium text-muted-foreground text-xs md:hidden";
 
-function RequirementsTable({ requirements }: { requirements: Requirement[] }) {
+function RequirementsTable({ requirements, links }: { requirements: Requirement[]; links: Links }) {
   return (
     <table className="w-full text-left text-sm max-md:block" data-testid="requirements">
       <thead className="text-muted-foreground text-xs max-md:hidden">
@@ -101,7 +95,7 @@ function RequirementsTable({ requirements }: { requirements: Requirement[] }) {
             data-testid="requirement"
           >
             <td className={cn(cell, "font-medium md:w-[26%]")} data-testid="requirement-name">
-              <InlineMarkdown>{row.requirement}</InlineMarkdown>
+              <InlineMarkdown links={links}>{row.requirement}</InlineMarkdown>
             </td>
             <td className={cn(cell, "md:w-[14%]")} data-testid="requirement-kind">
               <span className={cellName}>Kind</span>
@@ -110,7 +104,7 @@ function RequirementsTable({ requirements }: { requirements: Requirement[] }) {
             </td>
             <td className={cn(cell, "md:w-[18%]")} data-testid="requirement-firmness">
               <span className={cellName}>Firmness</span>
-              <InlineMarkdown>{row.firmness}</InlineMarkdown>
+              <InlineMarkdown links={links}>{row.firmness}</InlineMarkdown>
             </td>
             <td className={cell} data-testid="requirement-grade">
               <span className={cellName}>Grade</span>
@@ -118,7 +112,7 @@ function RequirementsTable({ requirements }: { requirements: Requirement[] }) {
             </td>
             <td className={cell} data-testid="requirement-evidence">
               <span className={cellName}>Evidence</span>
-              <Evidence parts={row.evidence} />
+              <Evidence parts={row.evidence} links={links} />
             </td>
           </tr>
         ))}
@@ -127,10 +121,10 @@ function RequirementsTable({ requirements }: { requirements: Requirement[] }) {
   );
 }
 
-function Gaps({ gaps, note }: { gaps: Gap[]; note: string }) {
+function Gaps({ gaps, note, links }: { gaps: Gap[]; note: string; links: Links }) {
   return (
     <div className="flex flex-col gap-3">
-      {note ? <Markdown>{note}</Markdown> : null}
+      {note ? <Markdown links={links}>{note}</Markdown> : null}
       {gaps.length > 0 ? (
         <ul className="flex flex-col gap-2" data-testid="gaps">
           {gaps.map((gap) => (
@@ -154,11 +148,11 @@ function Gaps({ gaps, note }: { gaps: Gap[]; note: string }) {
               </div>
               {gap.requirement ? (
                 <p className="font-medium text-sm" data-testid="gap-requirement">
-                  <InlineMarkdown>{gap.requirement}</InlineMarkdown>
+                  <InlineMarkdown links={links}>{gap.requirement}</InlineMarkdown>
                 </p>
               ) : null}
               <p className="text-sm leading-relaxed">
-                <InlineMarkdown>{gap.text}</InlineMarkdown>
+                <InlineMarkdown links={links}>{gap.text}</InlineMarkdown>
               </p>
             </li>
           ))}
@@ -174,26 +168,26 @@ function Heading({ children }: { children: string }) {
 }
 
 /** The four parts of a fit analysis: the verdict, the direction check, the requirements and the gaps. */
-export function FitAnalysisView({ fit }: { fit: NonNullable<FitAnalysis> }) {
+export function FitAnalysisView({ fit, links }: { fit: NonNullable<FitAnalysis>; links: Links }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-6 md:grid-cols-2">
         <section className="flex flex-col gap-2" data-testid="fit-verdict">
           <Heading>Verdict</Heading>
-          <Markdown>{fit.verdict}</Markdown>
+          <Markdown links={links}>{fit.verdict}</Markdown>
         </section>
         <section className="flex flex-col gap-2" data-testid="fit-direction">
           <Heading>Direction check</Heading>
-          <Markdown>{fit.direction}</Markdown>
+          <Markdown links={links}>{fit.direction}</Markdown>
         </section>
       </div>
       <section className="flex flex-col gap-2">
         <Heading>Requirements</Heading>
-        <RequirementsTable requirements={fit.requirements} />
+        <RequirementsTable requirements={fit.requirements} links={links} />
       </section>
       <section className="flex flex-col gap-2">
         <Heading>Gaps and bridging actions</Heading>
-        <Gaps gaps={fit.gaps} note={fit.gapsNote} />
+        <Gaps gaps={fit.gaps} note={fit.gapsNote} links={links} />
       </section>
     </div>
   );

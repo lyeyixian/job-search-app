@@ -3,6 +3,7 @@ type: role
 company: Tinker Studio
 title: Web Development Intern
 team: Web
+programme: tinker-summer-scheme
 start: 2020-05
 end: 2020-08
 skills: [typescript]

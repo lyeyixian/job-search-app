@@ -45,7 +45,8 @@ pipeline, the deploy service and the service catalogue.
 
 The must-haves are pitched at three years, and three of the four are `met`. The Kubernetes
 must-have is `partial`, and the evidence for it is a side project, not production work. Both
-nice-to-haves are weak, but the posting does not lean on them.
+nice-to-haves are weak, but the posting does not lean on them. The story [[slow-build]] carries
+the build work.
 
 ### Direction check: `aligned`
 
@@ -75,4 +76,5 @@ nice-to-haves are weak, but the posting does not lean on them.
 
 - **Experience with a public API** (gap): `learning`. Publish the API of the recipe box with
   an OpenAPI document and a rate limit.
-- **Has spoken at a meetup** (gap): `learning`. Give the build time talk at a local meetup.
+- **Has spoken at a meetup** (gap): `learning`. Give the build time talk at a local meetup,
+  from [[slow-build|the story of the slow build]].

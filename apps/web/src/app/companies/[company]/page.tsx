@@ -24,7 +24,7 @@ export default function CompanyPage({ params, searchParams }: PageProps<"/compan
 }
 
 /** What the watchlist says about the company. The instructions for a sweep are not in the data. */
-function Watchlist({ watchlist }: { watchlist: NonNullable<Company["watchlist"]> }) {
+function Watchlist({ watchlist, links }: { watchlist: NonNullable<Company["watchlist"]>; links: Company["links"] }) {
   const { mode, lastSwept, board, notes, pay, remote } = watchlist;
   return (
     <section className="flex flex-col gap-4" aria-labelledby="watchlist-heading" data-testid="company-watchlist">
@@ -50,13 +50,13 @@ function Watchlist({ watchlist }: { watchlist: NonNullable<Company["watchlist"]>
       </dl>
       <dl className="grid gap-x-10 gap-y-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <Fact name="Notes" testId="watchlist-notes">
-          {notes ? <Markdown>{notes}</Markdown> : "None"}
+          {notes ? <Markdown links={links}>{notes}</Markdown> : "None"}
         </Fact>
         <Fact name="Pay" testId="watchlist-pay">
-          {pay ? <Markdown>{pay}</Markdown> : "None"}
+          {pay ? <Markdown links={links}>{pay}</Markdown> : "None"}
         </Fact>
         <Fact name="Remote work" testId="watchlist-remote">
-          {remote ? <Markdown>{remote}</Markdown> : "None"}
+          {remote ? <Markdown links={links}>{remote}</Markdown> : "None"}
         </Fact>
       </dl>
     </section>
@@ -98,7 +98,7 @@ async function CompanyData({ params, searchParams }: PageProps<"/companies/[comp
     <>
       <h1 className="font-semibold text-2xl tracking-tight">{company.name}</h1>
       {company.watchlist ? (
-        <Watchlist watchlist={company.watchlist} />
+        <Watchlist watchlist={company.watchlist} links={company.links} />
       ) : (
         <p className="text-muted-foreground text-sm" data-testid="company-not-watched">
           This company is not on the watchlist.

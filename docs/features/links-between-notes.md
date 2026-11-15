@@ -47,6 +47,7 @@ you can follow a thought from one note to the next.
 - **Given** other notes name the note that I am reading
 - **When** I look at the end of the page
 - **Then** I see a list of those notes, grouped by kind
+- **And** for a note that names one achievement of this note, I see the name of that achievement
 
 ### 7. Go back
 

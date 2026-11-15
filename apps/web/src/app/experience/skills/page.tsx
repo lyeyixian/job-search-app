@@ -51,7 +51,7 @@ function Category({ name, skills }: { name: string; skills: SkillsInventory["unl
 async function SkillsData() {
   const result = await getSkills();
   if (!result.ok) return <ApiProblem code={result.code} traceId={result.traceId} />;
-  const { pinned, categories, unlisted } = result.data;
+  const { pinned, categories, unlisted, links } = result.data;
 
   if (!pinned && categories.length === 0 && unlisted.length === 0) {
     return (
@@ -72,7 +72,7 @@ async function SkillsData() {
           <h2 id="pinned-heading" className={heading}>
             Pinned
           </h2>
-          <Markdown>{pinned}</Markdown>
+          <Markdown links={links}>{pinned}</Markdown>
         </section>
       ) : null}
       {categories.map((category) => (
