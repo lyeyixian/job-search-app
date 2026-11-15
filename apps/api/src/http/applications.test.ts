@@ -19,7 +19,7 @@ describe("GET /api/applications", () => {
 
     expect(response.status).toBe(200);
     const body = ApplicationListSchema.parse(await response.json());
-    expect(body.applications).toHaveLength(13);
+    expect(body.applications).toHaveLength(14);
     expect(body.choices.companies).toContain("Example Co");
   });
 

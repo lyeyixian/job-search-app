@@ -328,3 +328,37 @@ test("experience 13: notes that wait for an update stand out", async ({ page }) 
   await page.goto("/experience/projects/recipe-box");
   await expect(page.getByTestId("revisit-mark")).toHaveCount(0);
 });
+
+test("experience 14: each note has a title", async ({ page }) => {
+  await page.goto("/experience");
+
+  // A role note with no title line shows its job title, its company and its team.
+  await stintRow(page, "harbour-search-rotation").getByTestId("role-title").click();
+  await expect(page).toHaveURL(/\/experience\/roles\/harbour-search-rotation$/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Graduate Software Engineer, Harbour Bank (Search)" }),
+  ).toBeVisible();
+
+  // A story and a project note with no title line show the file name as words.
+  await page.goto("/experience");
+  await expect(storyRow(page, "unclear-owner").getByTestId("story-title")).toHaveText("Unclear owner");
+  await expect(projectRow(page, "recipe-box")).toContainText("Recipe box");
+  await page.goto("/experience/stories/unclear-owner");
+  await expect(page.getByRole("heading", { level: 1, name: "Unclear owner" })).toBeVisible();
+  await page.goto("/experience/projects/recipe-box");
+  await expect(page.getByRole("heading", { level: 1, name: "Recipe box" })).toBeVisible();
+  await expectNoSidewaysScroll(page);
+});
+
+test("experience 15: a skill that the inventory does not have still shows", async ({ page }) => {
+  // The project note `open-maps` lists the skill `rust`. The skills inventory does not have it.
+  await page.goto("/experience/skills");
+
+  const headings = page.getByTestId("skill-category").getByRole("heading");
+  await expect(headings.last()).toHaveText("Not in the inventory");
+  const unlisted = page.locator('[data-testid="skill-category"][data-category="Not in the inventory"]');
+  await expect(unlisted.getByTestId("skill-row")).toHaveCount(1);
+  await expect(unlisted.locator('[data-skill="rust"]')).toContainText("rust");
+  await expect(unlisted.locator('[data-skill="rust"]').getByTestId("skill-uses")).toHaveText("1 note");
+  await expectNoSidewaysScroll(page);
+});

@@ -43,4 +43,4 @@ Meets the must-haves on paper, but the nice-to-have has no evidence.
 
 **Nice-to-haves**
 
-- **Experience with Kubernetes** (gap): `learning`. Deploy the recipe box to a small cluster.
+- **Experience with Kubernetes** (gap). No action is chosen yet.
