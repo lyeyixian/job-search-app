@@ -35,6 +35,8 @@ It has at least one note for each case that a criterion names:
 - an application in each status except `offer`, with and without a tailored resume. No
   application has the status `offer`, because a criterion of the board needs an empty column.
 - a note with a missing field and a note with a value that the schema does not permit
+- an application with a status that the schema does not permit and with no verdict
+- a gap that names no bridging action
 - a link to a note that does not exist, and a link to an achievement that does not exist
 - an application with a link to the posting, a source listing, each grade and each bridging
   action, and an application with none of these

@@ -35,7 +35,8 @@ interview, and to check what a fit analysis or a resume points to.
 
 - **Given** some role notes are stints of the same programme
 - **When** I look at the list of roles
-- **Then** those stints are in one group under the programme
+- **Then** those stints are in one group under the programme, newest first
+- **And** the programme has the place of its newest stint in the list of roles
 
 ### 5. Read a role note
 
@@ -84,19 +85,36 @@ interview, and to check what a fit analysis or a resume points to.
 - **Given** I open the skills inventory
 - **When** I look at the page
 - **Then** I see the skills by category
-- **And** I see the pinned skills first
+- **And** I see the pinned skills first, as text in the words of the inventory
 
 ### 12. See where I used a skill
 
 - **Given** a role note or a project note lists a skill
 - **When** I select that skill, in the inventory or on a note
-- **Then** I see each role and project that lists the skill, newest first
+- **Then** I see the page of that skill, with its category
+- **And** I see each role and project that lists the skill, newest first
 
 ### 13. Notes that wait for an update stand out
 
 - **Given** a note has text marked for a revisit
 - **When** I read the note
 - **Then** the mark is visible at that text
+- **Given** the start month or the end month of a note is marked for a revisit
+- **When** I read the note
+- **Then** the mark is next to the months, with the comment from the note
+
+### 14. Each note has a title
+
+- **Given** a note has no title line
+- **When** I see the note in a list or open its page
+- **Then** a role note shows its job title, its company and its team as its title
+- **And** a project note and a story show the file name as words
+
+### 15. A skill that the inventory does not have still shows
+
+- **Given** a note lists a skill that the skills inventory does not have
+- **When** I open the skills inventory
+- **Then** the skill is under "Not in the inventory", after the categories
 
 ## Assumptions
 
@@ -106,7 +124,7 @@ interview, and to check what a fit analysis or a resume points to.
 - Most notes have no title line. A role note has a job title, a company and a team. A project
   note and a story have only a file name.
 - The skills inventory has one section for each category, and one section for the pinned skills.
-- The tag `#revisit` marks a text or a frontmatter value that waits for an update.
+- The tag `#revisit` marks a text, a start month or an end month that waits for an update.
 
 ## Decisions
 
@@ -116,16 +134,3 @@ interview, and to check what a fit analysis or a resume points to.
   hold what came out of them.
 - **Projects that cannot go on a resume still show.** The app is for you, and you want the full
   record. The page marks them.
-- **A note with no title line gets a title from what it has.** A role note shows its job title,
-  its company and its team. A project note and a story show the file name as words.
-- **A programme has the place of its newest stint in the list of roles.** The stints show below
-  it, newest first.
-- **The choice of a competency lives in the address.** Back returns to the same stories, and a
-  choice can be bookmarked.
-- **A skill has its own page.** It shows the category of the skill, and each role and project
-  that lists the skill.
-- **A skill that the inventory does not have still shows.** It is under "Not in the inventory",
-  so that you can add it or correct the slug.
-- **The pinned skills show as the inventory writes them.** The section is text, not a list.
-- **A month that waits for an update gets the mark too.** The mark is next to the months of the
-  note, with the comment from the note.

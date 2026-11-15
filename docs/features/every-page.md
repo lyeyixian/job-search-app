@@ -57,6 +57,14 @@ The other feature files do not repeat these criteria.
 - **Then** the page shows the note with a warning that names the field
 - **And** all the other notes show as usual
 
+### 8. My choices stay with the page
+
+- **Given** I narrowed a list, or I chose what a page shows
+- **When** I go to a different page and then go back
+- **Then** I see the page with the same choices
+- **When** I open a bookmark of the page
+- **Then** I see the page with the same choices
+
 ## Assumptions
 
 - You are the only user of the app.
