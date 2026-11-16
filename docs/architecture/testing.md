@@ -43,6 +43,10 @@ It has at least one note for each case that a criterion names:
 - a story whose facts name a role that does not exist, and a role whose facts name a programme
   that does not exist
 - a link in the verdict of a fit analysis, and a link in a gap
+- a direction with a month as its last update, four sections and a link to a story
+- targets with a day as their last update, waves and groups, a company in a list and in a table,
+  a company whose name has two parts, a company with text after its name, and two companies that
+  the market scan does not have
 - an application with a link to the posting, a source listing, each grade and each bridging
   action, and an application with none of these
 - an application with no fit analysis, and a fit analysis that writes its gaps as a table

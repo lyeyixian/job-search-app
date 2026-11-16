@@ -58,3 +58,5 @@ apply to, in waves. You read them to check that an application still fits the pl
   board, because the text has no fixed form.
 - **Three months for the review reminder.** Your routine updates the direction each quarter.
 - **The menu calls this part Search.** It is the vault's term for the plan and the market scan.
+- **Search opens a page with three links.** The links go to the direction, the targets and the
+  companies. You chose this on 16 Nov 2026.

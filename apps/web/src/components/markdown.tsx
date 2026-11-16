@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -88,7 +89,46 @@ function textOf(node: ReactNode): string {
   return "";
 }
 
-type WikilinkProps = { "data-wikilink"?: string; "data-label"?: string };
+/** A company in the text of a note, with the folder of its listings page. */
+export type CompanyName = { text: string; slug: string };
+
+/**
+ * A remark plugin. It makes a link from the name of a company at the start of a list item or a
+ * table cell. `companies` has the names as the note writes them. A name in a sentence stays text.
+ */
+function remarkCompanies(companies: CompanyName[]) {
+  // The longest name first, so that `Example Co Labs` does not match `Example Co`.
+  const names = [...companies].sort((a, b) => b.text.length - a.text.length);
+  const link = (holder: MarkdownNode | undefined) => {
+    const first = holder?.children?.[0];
+    if (!holder?.children || first?.type !== "text" || !first.value) return;
+    const value = first.value;
+    const company = names.find(
+      ({ text }) => value.startsWith(text) && !/[\p{L}\p{N}]/u.test(value.charAt(text.length)),
+    );
+    if (!company) return;
+    const rest = value.slice(company.text.length);
+    holder.children.splice(
+      0,
+      1,
+      {
+        type: "companyLink",
+        data: { hName: "a", hProperties: { dataCompany: company.slug } },
+        children: [{ type: "text", value: company.text }],
+      },
+      ...(rest ? [{ type: "text", value: rest }] : []),
+    );
+  };
+  const walk = (node: MarkdownNode) => {
+    if (node.type === "tableCell") link(node);
+    // The text of a list item is in its first paragraph.
+    if (node.type === "listItem") link(node.children?.[0]?.type === "paragraph" ? node.children[0] : undefined);
+    for (const child of node.children ?? []) walk(child);
+  };
+  return (tree: MarkdownNode) => walk(tree);
+}
+
+type WikilinkProps = { "data-wikilink"?: string; "data-label"?: string; "data-company"?: string };
 
 /**
  * A link in the text of a note. A `[[wikilink]]` goes to the page of a note, by the link table
@@ -96,7 +136,14 @@ type WikilinkProps = { "data-wikilink"?: string; "data-label"?: string };
  */
 function linkWith(links: ResolvedLink[] | undefined): Components["a"] {
   return ({ href, children, ...props }) => {
-    const { "data-wikilink": ref, "data-label": label } = props as WikilinkProps;
+    const { "data-wikilink": ref, "data-label": label, "data-company": company } = props as WikilinkProps;
+    if (company !== undefined) {
+      return (
+        <Link href={`/companies/${company}`} data-testid="company-link">
+          {children}
+        </Link>
+      );
+    }
     if (ref === undefined) {
       return (
         <a href={href} target="_blank" rel="noreferrer">
@@ -114,28 +161,35 @@ const plugins = [remarkGfm, remarkRevisit, remarkWikilinks];
 
 /**
  * Shows the markdown of a note. Raw HTML in the note shows as text. `headingIds` gives an `id` to
- * each `###` heading whose text is a key, so that a link can open the page at that heading. `links`
- * is the link table of the API for this text.
+ * each `##` heading and each `###` heading whose text is a key, so that a link can open the page at
+ * that heading. `links` is the link table of the API for this text. `companies` has the names of
+ * companies that become links to their listings.
  */
 export function Markdown({
   children,
   className,
   headingIds,
   links,
+  companies,
 }: {
   children: string;
   className?: string;
   headingIds?: Record<string, string>;
   links?: ResolvedLink[] | undefined;
+  companies?: CompanyName[] | undefined;
 }) {
   const components: Components = {
     a: linkWith(links),
+    h2: ({ children: heading }) => <h2 id={headingIds?.[textOf(heading).trim()]}>{heading}</h2>,
     h3: ({ children: heading }) => <h3 id={headingIds?.[textOf(heading).trim()]}>{heading}</h3>,
     mark: () => <RevisitMark />,
   };
   return (
     <div className={cn("note-text", className)}>
-      <ReactMarkdown remarkPlugins={plugins} components={components}>
+      <ReactMarkdown
+        remarkPlugins={companies?.length ? [...plugins, [remarkCompanies, companies]] : plugins}
+        components={components}
+      >
         {children}
       </ReactMarkdown>
     </div>

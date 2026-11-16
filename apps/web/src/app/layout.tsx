@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteMenu } from "@/components/site-menu";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="flex min-h-full flex-col font-sans">{children}</body>
+      <body className="flex min-h-full flex-col font-sans">
+        <SiteMenu />
+        {children}
+      </body>
     </html>
   );
 }

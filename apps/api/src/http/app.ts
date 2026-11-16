@@ -6,6 +6,7 @@ import { applicationRoutes } from "./applications.js";
 import { companyRoutes } from "./companies.js";
 import { experienceRoutes } from "./experience.js";
 import { healthRoutes } from "./health.js";
+import { planRoutes } from "./plan.js";
 import { type AppEnv, problem } from "./problem.js";
 import { requestTrace } from "./request-trace.js";
 import { shortlistRoutes } from "./shortlist.js";
@@ -29,6 +30,7 @@ export function createApp(store: VaultStore) {
   app.route("/", experienceRoutes(store));
   app.route("/", shortlistRoutes(store));
   app.route("/", companyRoutes(store));
+  app.route("/", planRoutes(store));
 
   app.doc31("/openapi.json", openApiInfo);
   app.get("/docs", Scalar({ url: "/api/openapi.json", pageTitle: "Job search API" }));

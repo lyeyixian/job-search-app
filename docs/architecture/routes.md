@@ -17,6 +17,7 @@ The address of each page. Agreed on 14 Nov 2026.
 | `/experience/stories/{slug}` | A story | [Experience](../features/experience.md) |
 | `/experience/skills` | Skills inventory | [Experience](../features/experience.md) |
 | `/experience/skills/{skill}` | The roles and projects that list one skill | [Experience](../features/experience.md) |
+| `/search` | Links to the direction, the targets and the companies | [Direction and targets](../features/direction-and-targets.md) |
 | `/search/direction` | Direction | [Direction and targets](../features/direction-and-targets.md) |
 | `/search/targets` | Targets | [Direction and targets](../features/direction-and-targets.md) |
 
@@ -30,4 +31,8 @@ The address of each page. Agreed on 14 Nov 2026.
   same filters, and a filtered view can be bookmarked.
 - The API uses the same nouns under `/api`. The page `/applications/{slug}` reads from
   `/api/applications/{slug}`.
-- `/api/*` on Web forwards to the API. No page lives under `/api`.
+- A section of the direction or the targets is an anchor on its page: `/search/direction#{section}`.
+- The menu has Applications, Shortlist, Experience and Search. Search is current on each page
+  under `/search` and `/companies`.
+- `/api/*` on Web forwards to the API. No page lives under `/api`. `/search` has no API endpoint,
+  because the page holds only links.

@@ -47,6 +47,46 @@ const choices: Record<string, Choice> = {
   },
 };
 
+test("every-page 1: go to each feature from each page", async ({ page }) => {
+  const pages = [
+    "/applications",
+    "/applications/example-co-backend-engineer",
+    "/shortlist",
+    "/companies",
+    "/companies/example-co",
+    "/companies/example-co/listings/backend-engineer-1001",
+    "/experience",
+    "/experience/roles/northwind-software-engineer",
+    "/experience/skills",
+    "/search",
+    "/search/direction",
+    "/search/targets",
+  ];
+  for (const start of pages) {
+    await page.goto(start);
+    // The menu is at the top of the page.
+    const menu = page.getByRole("navigation", { name: "Menu" });
+    await expect(menu.getByRole("link")).toHaveText(["Applications", "Shortlist", "Experience", "Search"]);
+    expect((await menu.boundingBox())?.y).toBeLessThan(60);
+  }
+
+  // One selection goes to each of them.
+  const menu = page.getByRole("navigation", { name: "Menu" });
+  const items = [
+    { name: "Applications", address: /\/applications$/ },
+    { name: "Shortlist", address: /\/shortlist$/ },
+    { name: "Experience", address: /\/experience$/ },
+    { name: "Search", address: /\/search$/ },
+  ];
+  for (const { name, address } of items) {
+    await menu.getByRole("link", { name }).click();
+    await expect(page).toHaveURL(address);
+    await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
+    // The menu marks the part of the app that the page is in.
+    await expect(menu.getByRole("link", { name })).toHaveAttribute("aria-current", "page");
+  }
+});
+
 test("every-page 8: my choices stay with the page", async ({ page, context }) => {
   for (const [name, { start, choose, address, check }] of Object.entries(choices)) {
     await test.step(name, async () => {

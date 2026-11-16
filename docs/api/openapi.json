@@ -660,7 +660,9 @@
                   "applications",
                   "listings",
                   "profile",
-                  "skills"
+                  "skills",
+                  "direction",
+                  "targets"
                 ],
                 "example": "roles"
               },
@@ -762,7 +764,9 @@
               "applications",
               "listings",
               "profile",
-              "skills"
+              "skills",
+              "direction",
+              "targets"
             ],
             "example": "roles"
           },
@@ -2096,6 +2100,178 @@
           "backlinks"
         ],
         "description": "One listing record. `triage`, `reason`, `lastSeen`, `state` and `application` come from the company index."
+      },
+      "Direction": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The first `#` heading of the note.",
+            "example": "Direction"
+          },
+          "body": {
+            "type": "string",
+            "description": "The note without its title. Markdown."
+          },
+          "updated": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}(-\\d{2})?$",
+            "description": "The month or the day of the last change, as `YYYY-MM` or `YYYY-MM-DD`. `null` if the field has a warning.",
+            "example": "2026-10"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            },
+            "description": "The `##` headings of the note, in the order of the note."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            }
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResolvedLink"
+            },
+            "description": "Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them."
+          },
+          "backlinks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Backlink"
+            },
+            "description": "Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles."
+          },
+          "targetRoles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The slugs of the target roles. Empty if the field has a warning.",
+            "example": [
+              "backend-engineer",
+              "platform-engineer"
+            ]
+          }
+        },
+        "required": [
+          "title",
+          "body",
+          "updated",
+          "sections",
+          "warnings",
+          "links",
+          "backlinks",
+          "targetRoles"
+        ]
+      },
+      "Section": {
+        "type": "object",
+        "properties": {
+          "anchor": {
+            "type": "string",
+            "example": "target-roles"
+          },
+          "title": {
+            "type": "string",
+            "description": "The `##` heading.",
+            "example": "Target roles"
+          }
+        },
+        "required": [
+          "anchor",
+          "title"
+        ]
+      },
+      "Targets": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The first `#` heading of the note.",
+            "example": "Direction"
+          },
+          "body": {
+            "type": "string",
+            "description": "The note without its title. Markdown."
+          },
+          "updated": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}(-\\d{2})?$",
+            "description": "The month or the day of the last change, as `YYYY-MM` or `YYYY-MM-DD`. `null` if the field has a warning.",
+            "example": "2026-10"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            },
+            "description": "The `##` headings of the note, in the order of the note."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            }
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResolvedLink"
+            },
+            "description": "Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them."
+          },
+          "backlinks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Backlink"
+            },
+            "description": "Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles."
+          },
+          "companies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "The name as the targets write it.",
+                  "example": "Example Co"
+                },
+                "slug": {
+                  "type": "string",
+                  "description": "The folder of the company in the market scan.",
+                  "example": "example-co"
+                }
+              },
+              "required": [
+                "text",
+                "slug"
+              ]
+            },
+            "description": "Each company that starts a list item or a table cell of the text, and that the market scan has. A company that the market scan does not have is not here."
+          }
+        },
+        "required": [
+          "title",
+          "body",
+          "updated",
+          "sections",
+          "warnings",
+          "links",
+          "backlinks",
+          "companies"
+        ]
       }
     },
     "parameters": {}
@@ -2681,6 +2857,88 @@
           },
           "404": {
             "description": "The company has no such listing. Code `note_not_found`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search/direction": {
+      "get": {
+        "operationId": "getDirection",
+        "summary": "Get the direction of the search",
+        "tags": [
+          "Search"
+        ],
+        "responses": {
+          "200": {
+            "description": "The direction.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Direction"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The vault has no direction. Code `note_not_found`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search/targets": {
+      "get": {
+        "operationId": "getTargets",
+        "summary": "Get the targets of the search",
+        "tags": [
+          "Search"
+        ],
+        "responses": {
+          "200": {
+            "description": "The targets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Targets"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The vault has no targets. Code `note_not_found`.",
             "content": {
               "application/problem+json": {
                 "schema": {
