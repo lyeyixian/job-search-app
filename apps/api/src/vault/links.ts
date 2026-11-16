@@ -5,7 +5,15 @@ import type { Note } from "./parser.js";
 import { INDEX_TITLE, indexRows } from "./shortlist.js";
 
 /** The kinds of note that have a page in the app. */
-export const PAGE_KINDS = [...EXPERIENCE_KINDS, "applications", "listings", "profile", "skills"] as const;
+export const PAGE_KINDS = [
+  ...EXPERIENCE_KINDS,
+  "applications",
+  "listings",
+  "profile",
+  "skills",
+  "direction",
+  "targets",
+] as const;
 export type PageKind = (typeof PAGE_KINDS)[number];
 
 /** The page of a note. Web makes the address from it. */
@@ -52,6 +60,8 @@ export const notePath = {
   profile: "experience/profile.md",
   skills: "experience/skills.md",
   watchlist: "search/market/watchlist.md",
+  direction: "search/direction.md",
+  targets: "search/targets.md",
 };
 
 const EXPERIENCE = /^experience\/(roles|projects|stories)\/([^/]+)\.md$/;
@@ -69,6 +79,8 @@ export function pageOf(path: string): NotePage | null {
   if (listing && listing[2] !== "index") return { kind: "listings", slug: listing[2] ?? "", company: listing[1] ?? "" };
   if (path === notePath.profile) return { kind: "profile", slug: "profile", company: null };
   if (path === notePath.skills) return { kind: "skills", slug: "skills", company: null };
+  if (path === notePath.direction) return { kind: "direction", slug: "direction", company: null };
+  if (path === notePath.targets) return { kind: "targets", slug: "targets", company: null };
   return null;
 }
 
@@ -165,6 +177,8 @@ function titleOf(index: VaultIndex, note: Note, page: NotePage | null): string {
   }
   if (page?.kind === "profile") return "Profile";
   if (page?.kind === "skills") return "Skills inventory";
+  if (page?.kind === "direction") return "Direction";
+  if (page?.kind === "targets") return "Targets";
   return heading ?? note.slug;
 }
 

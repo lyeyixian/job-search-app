@@ -33,10 +33,12 @@ describe("pageOf", () => {
     expect(pageOf("experience/profile.md")?.kind).toBe("profile");
   });
 
-  it("gives no page to a company index, a journal file and the direction", () => {
+  it("gives no page to a company index, a journal file and the watchlist", () => {
     expect(pageOf("search/market/example-co/index.md")).toBeNull();
     expect(pageOf("experience/journal/2026-10-01.md")).toBeNull();
-    expect(pageOf("search/direction.md")).toBeNull();
+    expect(pageOf("search/market/watchlist.md")).toBeNull();
+    expect(pageOf("search/direction.md")?.kind).toBe("direction");
+    expect(pageOf("search/targets.md")?.kind).toBe("targets");
   });
 });
 
@@ -94,9 +96,10 @@ describe("resolveLink", () => {
     });
   });
 
-  it("gives a journal file and the direction the state no-page", () => {
+  it("gives a journal file and the watchlist the state no-page", () => {
     expect(resolve("2026-10-01")).toMatchObject({ state: "no-page", page: null, title: "2026-10-01" });
-    expect(resolve("direction")).toMatchObject({ state: "no-page", page: null });
+    expect(resolve("watchlist")).toMatchObject({ state: "no-page", page: null });
+    expect(resolve("direction")).toMatchObject({ state: "found", page: { kind: "direction" }, title: "Direction" });
   });
 });
 

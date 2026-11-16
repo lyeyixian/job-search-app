@@ -408,6 +408,8 @@ export const ResolvedLinkPageKind = {
   listings: 'listings',
   profile: 'profile',
   skills: 'skills',
+  direction: 'direction',
+  targets: 'targets',
 } as const;
 
 /**
@@ -461,6 +463,8 @@ export const NotePageKind = {
   listings: 'listings',
   profile: 'profile',
   skills: 'skills',
+  direction: 'direction',
+  targets: 'targets',
 } as const;
 
 /**
@@ -1206,6 +1210,63 @@ export interface Listing {
   backlinks: Backlink[];
 }
 
+export interface Section {
+  anchor: string;
+  /** The `##` heading. */
+  title: string;
+}
+
+export interface Direction {
+  /** The first `#` heading of the note. */
+  title: string;
+  /** The note without its title. Markdown. */
+  body: string;
+  /**
+     * The month or the day of the last change, as `YYYY-MM` or `YYYY-MM-DD`. `null` if the field has a warning.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}(-\d{2})?$
+     */
+  updated: string | null;
+  /** The `##` headings of the note, in the order of the note. */
+  sections: Section[];
+  warnings: Warning[];
+  /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
+  links: ResolvedLink[];
+  /** Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles. */
+  backlinks: Backlink[];
+  /** The slugs of the target roles. Empty if the field has a warning. */
+  targetRoles: string[];
+}
+
+export type TargetsCompaniesItem = {
+  /** The name as the targets write it. */
+  text: string;
+  /** The folder of the company in the market scan. */
+  slug: string;
+};
+
+export interface Targets {
+  /** The first `#` heading of the note. */
+  title: string;
+  /** The note without its title. Markdown. */
+  body: string;
+  /**
+     * The month or the day of the last change, as `YYYY-MM` or `YYYY-MM-DD`. `null` if the field has a warning.
+     * @nullable
+     * @pattern ^\d{4}-\d{2}(-\d{2})?$
+     */
+  updated: string | null;
+  /** The `##` headings of the note, in the order of the note. */
+  sections: Section[];
+  warnings: Warning[];
+  /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
+  links: ResolvedLink[];
+  /** Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles. */
+  backlinks: Backlink[];
+  /** Each company that starts a list item or a table cell of the text, and that the market scan has. A company that the market scan does not have is not here. */
+  companies: TargetsCompaniesItem[];
+}
+
 export type GetApplicationsParams = {
   /** Only applications of this company. */
   company?: string;
@@ -1778,6 +1839,102 @@ export const getListing = async (company: string,
     slug: string, options?: Parameters<typeof apiFetch>[1]): Promise<getListingResponse> => {
 
   return apiFetch<getListingResponse>(getGetListingUrl(company,slug),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getDirectionResponse200 = {
+  data: Direction
+  status: 200
+}
+
+export type getDirectionResponse404 = {
+  data: Problem
+  status: 404
+}
+
+export type getDirectionResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getDirectionResponseSuccess = (getDirectionResponse200) & {
+  headers: Headers;
+};
+export type getDirectionResponseError = (getDirectionResponse404 | getDirectionResponse503) & {
+  headers: Headers;
+};
+
+export type getDirectionResponse = (getDirectionResponseSuccess | getDirectionResponseError)
+
+export const getGetDirectionUrl = () => {
+
+
+
+
+  return `/api/search/direction`
+}
+
+/**
+ * @summary Get the direction of the search
+ */
+export const getDirection = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getDirectionResponse> => {
+
+  return apiFetch<getDirectionResponse>(getGetDirectionUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getTargetsResponse200 = {
+  data: Targets
+  status: 200
+}
+
+export type getTargetsResponse404 = {
+  data: Problem
+  status: 404
+}
+
+export type getTargetsResponse503 = {
+  data: Problem
+  status: 503
+}
+
+export type getTargetsResponseSuccess = (getTargetsResponse200) & {
+  headers: Headers;
+};
+export type getTargetsResponseError = (getTargetsResponse404 | getTargetsResponse503) & {
+  headers: Headers;
+};
+
+export type getTargetsResponse = (getTargetsResponseSuccess | getTargetsResponseError)
+
+export const getGetTargetsUrl = () => {
+
+
+
+
+  return `/api/search/targets`
+}
+
+/**
+ * @summary Get the targets of the search
+ */
+export const getTargets = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getTargetsResponse> => {
+
+  return apiFetch<getTargetsResponse>(getGetTargetsUrl(),
   {
     ...options,
     method: 'GET'

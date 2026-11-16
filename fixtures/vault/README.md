@@ -66,3 +66,10 @@ The notes also cover the cases of the links between notes:
 | `experience/profile.md` | A link to a role note |
 | `applications/example-co-backend-engineer/posting.md` | A link in the verdict, and a link with a label in a gap |
 | `experience/journal/2026-10-01.md` | A journal file, which has no page in the app |
+
+The plan of the search covers the cases of the direction and targets pages:
+
+| Note | Case |
+|---|---|
+| `search/direction.md` | A month as the last update, four sections, and a link to a story |
+| `search/targets.md` | A day as the last update, waves and groups, companies in a list and in a table, a name with two parts, text after a name, and two companies that the market scan does not have |

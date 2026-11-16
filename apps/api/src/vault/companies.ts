@@ -181,6 +181,22 @@ function companyIndexes(index: VaultIndex): CompanyIndex[] {
   return companies;
 }
 
+/**
+ * The folder of the company that a text names, or null if the market scan has no such company.
+ * The text is the name in a company index, or its slug is the folder, or the slug of one part of
+ * a name such as `Name / Other name` is the folder. Upper case and lower case are the same.
+ */
+export function companyOf(index: VaultIndex, name: string): string | null {
+  const companies = companyIndexes(index);
+  const wanted = name.trim().toLowerCase();
+  if (!wanted) return null;
+  const found =
+    companies.find((company) => company.name.toLowerCase() === wanted) ??
+    companies.find((company) => company.slug === slugOf(wanted)) ??
+    companies.find((company) => wanted.split("/").some((part) => slugOf(part) === company.slug));
+  return found?.slug ?? null;
+}
+
 /** Each company that has a listing index, in the order of the names. */
 export function getCompanies(index: VaultIndex): CompanySummary[] {
   const entries = watchlist(index);

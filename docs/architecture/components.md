@@ -78,14 +78,14 @@ and the label. A link has one of three states:
 |---|---|---|
 | `found` | The target has a page | A link with the label of the writer, or the title of the achievement or the note |
 | `missing` | The vault has no such note, or the role note or project note has no such achievement | Text with a mark |
-| `no-page` | The note exists, and the app has no page for it: a journal file, the direction, the targets | Text |
+| `no-page` | The note exists, and the app has no page for it: a journal file, the watchlist | Text |
 
 The resolver finds the target of a name in this order:
 
 1. A listing with that name in the company of the note that has the link, or in the company that
    the link writes as `company/listing`.
-2. A role note, a project note, a story or an application with that name. The name of an
-   application is the name of its folder.
+2. A role note, a project note, a story, an application, the profile, the skills inventory, the
+   direction or the targets with that name. The name of an application is the name of its folder.
 3. A listing with that name, if only one company has it.
 4. Each other note with that file name.
 
@@ -102,6 +102,23 @@ A note names a second note in four ways, and each one makes a backlink:
 
 Only a note with a page can be in the list of backlinks. The resolver builds the backlinks of the
 whole vault on the first request after a load and keeps them with the index.
+
+## How the direction and the targets are read
+
+The reader is `apps/api/src/vault/plan.ts`. The two notes are free text, so the API returns the
+markdown as the note has it, with three things that the page needs:
+
+- `sections` has each `##` heading outside a code block, with an anchor by the same rule as an
+  achievement. Two headings with the same text give one section.
+- `updated` is a month or a day, as the note writes it. Web decides if the direction is due for a
+  review, because the reminder depends on the day of the device. A day is due when it is more
+  than three months ago. A month has no day, so it counts in whole months: a direction from
+  October is due from February.
+- `companies` of the targets has each company that the market scan has. The reader takes the text
+  at the start of each list item and each table cell, up to a bracket, a colon, a comma, or a
+  hyphen or a dash with spaces. The text names a company if it is the name in a company index, or
+  its slug is the folder, or the slug of one part of `Name / Other name` is the folder. The
+  Markdown view makes a link only from a name in that position. A name in a sentence stays text.
 
 ## Level 3: components of Web
 

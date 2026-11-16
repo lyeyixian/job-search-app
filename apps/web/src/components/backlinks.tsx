@@ -10,6 +10,8 @@ const KIND_LABEL: Record<Backlink["page"]["kind"], string> = {
   listings: "Listings",
   profile: "Profile",
   skills: "Skills inventory",
+  direction: "Direction",
+  targets: "Targets",
 };
 
 /**

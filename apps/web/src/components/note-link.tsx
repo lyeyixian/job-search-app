@@ -15,6 +15,10 @@ export function pageHref(page: NotePage, anchor?: string | null): string {
       return "/experience";
     case "skills":
       return "/experience/skills";
+    case "direction":
+      return "/search/direction";
+    case "targets":
+      return "/search/targets";
     default:
       return `/experience/${page.kind}/${page.slug}${hash}`;
   }

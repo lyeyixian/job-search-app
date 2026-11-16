@@ -7,6 +7,7 @@ import {
   type CompanyList,
   type CompanyListing,
   type CompanySummary,
+  type Direction,
   type EvidencePart,
   type ExperienceNote,
   type ExperienceNoteKind,
@@ -16,6 +17,7 @@ import {
   getApplications as fetchApplications,
   getCompanies as fetchCompanies,
   getCompany as fetchCompany,
+  getDirection as fetchDirection,
   getExperience as fetchExperience,
   getExperienceNote as fetchExperienceNote,
   getHealth as fetchHealth,
@@ -23,6 +25,7 @@ import {
   getShortlist as fetchShortlist,
   getSkill as fetchSkill,
   getSkills as fetchSkills,
+  getTargets as fetchTargets,
   type Gap,
   type GetApplicationsParams,
   type GetShortlistParams,
@@ -40,6 +43,7 @@ import {
   type SkillsInventory,
   type SkillUse,
   type StorySummary,
+  type Targets,
 } from "./generated";
 
 export type {
@@ -51,6 +55,7 @@ export type {
   CompanyList,
   CompanyListing,
   CompanySummary,
+  Direction,
   EvidencePart,
   ExperienceNote,
   ExperienceNoteKind,
@@ -72,6 +77,7 @@ export type {
   SkillsInventory,
   SkillUse,
   StorySummary,
+  Targets,
 };
 
 /**
@@ -135,4 +141,12 @@ export function getCompany(company: string): Promise<ApiResult<Company>> {
 
 export function getListing(company: string, slug: string): Promise<ApiResult<Listing>> {
   return result(() => fetchListing(company, slug));
+}
+
+export function getDirection(): Promise<ApiResult<Direction>> {
+  return result(() => fetchDirection());
+}
+
+export function getTargets(): Promise<ApiResult<Targets>> {
+  return result(() => fetchTargets());
 }
