@@ -3,6 +3,7 @@ import { getCompanies, getCompany, getListing, MODES } from "../vault/companies.
 import { linksOf, noteLinks, notePath } from "../vault/links.js";
 import { LISTING_STATES, TRIAGES } from "../vault/shortlist.js";
 import type { VaultStore } from "../vault/store.js";
+import { WarningSchema } from "./applications.js";
 import { backlinks, links } from "./links.js";
 import { type AppEnv, problem, problemContent } from "./problem.js";
 import { PromotionSchema, ShortlistListingSchema } from "./shortlist.js";
@@ -109,6 +110,7 @@ export const ListingSchema = z
     body: z.string().openapi({
       description: "The text of the listing as the job board had it, as markdown, without the title line.",
     }),
+    warnings: z.array(WarningSchema).openapi({ description: "Each field of the note that breaks the vault's rules." }),
     links,
     backlinks,
   })

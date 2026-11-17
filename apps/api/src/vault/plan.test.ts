@@ -16,6 +16,7 @@ function vault(notes: Record<string, string>): VaultIndex {
     notes: new Map(Object.entries(notes).map(([path, source]) => [path, parseNote(path, source)])),
     files: new Set(Object.keys(notes)),
     loadedAt: new Date(),
+    commit: null,
   };
 }
 

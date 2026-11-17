@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkApplication, checkApplicationDetail } from "./schema.js";
+import { checkApplication, checkApplicationDetail, checkNote } from "./schema.js";
 
 const valid = {
   company: "Example Co",
@@ -78,6 +78,61 @@ describe("checkApplicationDetail", () => {
     expect(warnings).toEqual([
       { field: "url", problem: "invalid" },
       { field: "source-listing", problem: "invalid" },
+    ]);
+  });
+});
+
+describe("checkNote", () => {
+  const role = {
+    company: "Northwind",
+    title: "Software Engineer",
+    team: "Build",
+    start: "2023-01",
+    end: null,
+    skills: ["typescript"],
+  };
+
+  it("gives no warning for a note that follows the rules", () => {
+    expect(checkNote("role", role)).toEqual([]);
+    expect(checkNote("role", { ...role, programme: "northwind-graduate-programme" })).toEqual([]);
+  });
+
+  it("names a required key that the note does not have", () => {
+    const { team: _team, ...rest } = role;
+
+    expect(checkNote("role", rest)).toEqual([{ field: "team", problem: "missing" }]);
+  });
+
+  it("names a key with a value that the rules do not permit", () => {
+    expect(checkNote("role", { ...role, start: "January 2023" })).toEqual([{ field: "start", problem: "invalid" }]);
+    expect(
+      checkNote("project", { kind: "work", start: "2024-01", end: null, skills: [], "on-profile": "yes" }),
+    ).toEqual([
+      { field: "kind", problem: "invalid" },
+      { field: "on-profile", problem: "invalid" },
+    ]);
+  });
+
+  it("gives no warning for an optional key that the note does not have", () => {
+    expect(
+      checkNote("project", { kind: "side-project", start: "2024-01", end: null, skills: [], "on-profile": true }),
+    ).toEqual([]);
+  });
+
+  it("reads a board id of only digits and a day that YAML made a date", () => {
+    const listing = {
+      company: "example-co",
+      "board-id": 1001,
+      title: "Backend Engineer",
+      url: "https://jobs.example.com/1001",
+      region: "sg",
+      "level-hint": "Senior",
+      "first-seen": new Date("2026-10-05"),
+    };
+
+    expect(checkNote("listing", listing)).toEqual([]);
+    expect(checkNote("listing", { ...listing, url: "jobs.example.com/1001" })).toEqual([
+      { field: "url", problem: "invalid" },
     ]);
   });
 });

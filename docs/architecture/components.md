@@ -59,9 +59,9 @@ flowchart TB
 | OpenAPI | Builds the OpenAPI document from the routes and the schemas. Serves it with a docs page. |
 | Queries | The only way the HTTP layer reads the index. Returns the data for one endpoint. |
 | Index store | Owns the one index. Builds a new one and swaps it in as one step. |
-| Sync | Runs `git pull` in `VAULT_PATH` and reports the result. |
+| Sync | Runs `git pull` in `VAULT_PATH` and reports the result. Does not pull a folder that is not a git clone, or a clone with no remote. |
 | Parser | Reads each file into frontmatter and a parsed body, and finds the `[[wikilinks]]` of the body. |
-| Schema check | Checks frontmatter against the vault's rules and returns warnings. Never throws. |
+| Schema check | Checks the frontmatter of each note that has a page against the vault's rules and returns warnings. Never throws. |
 | Link resolver | Resolves each link to a note or an achievement, marks missing targets, builds backlinks. |
 
 ## How a link resolves
@@ -226,6 +226,18 @@ sequenceDiagram
         Web-->>User: the new data and time
     end
 ```
+
+How the parts of a Refresh behave:
+
+- The browser sends `POST /api/refresh` through the API proxy of Web. After a `200`, the page
+  asks Next.js for its data again, so the page and the time at the top are new.
+- The time at the top of each page is `vault.loadedAt` of `GET /api/health`. The browser writes
+  it in the time zone of the device.
+- The pull is `git pull --ff-only`. It only moves forward. git gets 60 seconds to answer.
+- Two Refreshes at the same time share one pull and one parse.
+- At start the API pulls too. If that pull fails, the API writes a warning to the log and shows
+  the clone as it is.
+- If the parse fails on a Refresh, the response is `500` `internal_error` and the old index stays.
 
 ## Data: what the index holds
 

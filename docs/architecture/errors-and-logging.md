@@ -80,6 +80,8 @@ Each service writes one JSON line per request to standard output.
 - A log line never holds note content, frontmatter values or the text of a posting. A slug in a
   path is permitted.
 - Refresh logs the commit, the count of notes and the count of warnings.
+- A failed pull logs the first line that git wrote as `reason`. That line names the remote or the
+  clone, not a note.
 - Read the logs with `docker compose logs api` and `docker compose logs web`.
 
 ## Tracing

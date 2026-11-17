@@ -11,6 +11,7 @@ import { competencyName, NOTE_KIND_LABEL, PROJECT_KIND_LABEL } from "@/component
 import { SkillChips } from "@/components/experience/skill-chips";
 import { Markdown, RevisitMark } from "@/components/markdown";
 import { MissingLink } from "@/components/note-link";
+import { NoteWarnings } from "@/components/note-warnings";
 import { TargetHighlight } from "@/components/target-highlight";
 import { Badge } from "@/components/ui/badge";
 import { months } from "@/lib/month";
@@ -203,6 +204,7 @@ async function NoteData({ params }: Pick<Props, "params">) {
         </p>
         <h1 className="font-semibold text-2xl tracking-tight">{note.title}</h1>
       </div>
+      <NoteWarnings warnings={note.warnings} />
       {role ? <RoleFacts note={note} role={role} /> : null}
       {project ? <ProjectFacts note={note} project={project} /> : null}
       {story ? <StoryFacts story={story} /> : null}

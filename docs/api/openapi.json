@@ -17,29 +17,41 @@
             ]
           },
           "vault": {
-            "type": "object",
-            "properties": {
-              "notes": {
-                "type": "integer",
-                "description": "The count of notes in the vault index.",
-                "example": 12
-              },
-              "loadedAt": {
-                "type": "string",
-                "format": "date-time",
-                "description": "The time that the API built the vault index.",
-                "example": "2026-11-14T08:47:10.000Z"
-              }
-            },
-            "required": [
-              "notes",
-              "loadedAt"
-            ]
+            "$ref": "#/components/schemas/VaultState"
           }
         },
         "required": [
           "status",
           "vault"
+        ]
+      },
+      "VaultState": {
+        "type": "object",
+        "properties": {
+          "notes": {
+            "type": "integer",
+            "description": "The count of notes in the vault index.",
+            "example": 12
+          },
+          "loadedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The time of the last update from the vault. The API built the vault index at this time.",
+            "example": "2026-11-14T08:47:10.000Z"
+          },
+          "commit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The commit of the vault clone that the index shows. `null` if the vault is not a git clone.",
+            "example": "9fceb02d0ae598e95dc970b74767f19372d61af8"
+          }
+        },
+        "required": [
+          "notes",
+          "loadedAt",
+          "commit"
         ]
       },
       "Problem": {
@@ -81,6 +93,25 @@
           "traceId"
         ],
         "description": "An RFC 9457 Problem Details object with a `code`."
+      },
+      "Refresh": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VaultState"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "pulled": {
+                "type": "boolean",
+                "description": "`true` if the API ran `git pull`. `false` if the vault is not a git clone with a remote. Then the API only read the files again."
+              }
+            },
+            "required": [
+              "pulled"
+            ]
+          }
+        ]
       },
       "ApplicationList": {
         "type": "object",
@@ -812,6 +843,13 @@
                 "description": "The month or the day of the last change to the note.",
                 "example": "2026-10"
               },
+              "warnings": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Warning"
+                },
+                "description": "Each field of the note that breaks the vault's rules."
+              },
               "links": {
                 "type": "array",
                 "items": {
@@ -823,6 +861,7 @@
             "required": [
               "body",
               "updated",
+              "warnings",
               "links"
             ],
             "description": "`null` if the vault has no profile."
@@ -1083,6 +1122,13 @@
             "description": "The month or the day of the last change to the note.",
             "example": "2026-10"
           },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            },
+            "description": "Each field of the note that breaks the vault's rules."
+          },
           "pinned": {
             "type": "string",
             "description": "The `Pinned` section of the inventory, as markdown. Can be empty."
@@ -1128,6 +1174,7 @@
         },
         "required": [
           "updated",
+          "warnings",
           "pinned",
           "categories",
           "unlisted",
@@ -1312,6 +1359,13 @@
               ]
             },
             "description": "Each frontmatter key whose line has a comment with the tag `#revisit`. A tag in the text of the note stays in `body`."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            },
+            "description": "Each field of the note that breaks the vault's rules."
           },
           "role": {
             "type": [
@@ -1550,6 +1604,7 @@
           "achievements",
           "skills",
           "revisits",
+          "warnings",
           "role",
           "project",
           "story",
@@ -2066,6 +2121,13 @@
             "type": "string",
             "description": "The text of the listing as the job board had it, as markdown, without the title line."
           },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            },
+            "description": "Each field of the note that breaks the vault's rules."
+          },
           "links": {
             "type": "array",
             "items": {
@@ -2096,6 +2158,7 @@
           "state",
           "application",
           "body",
+          "warnings",
           "links",
           "backlinks"
         ],
@@ -2297,6 +2360,38 @@
           },
           "503": {
             "description": "The API has no vault index yet. Code `index_not_ready`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/refresh": {
+      "post": {
+        "operationId": "refreshVault",
+        "summary": "Get the newest saved vault and build the vault index again",
+        "description": "Runs `git pull` in the vault clone, reads each note and replaces the vault index in one step. If the pull fails, the old index stays.",
+        "tags": [
+          "Health"
+        ],
+        "responses": {
+          "200": {
+            "description": "The API has a new vault index.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Refresh"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The pull failed, and the old vault index stays. Code `vault_pull_failed`.",
             "content": {
               "application/problem+json": {
                 "schema": {

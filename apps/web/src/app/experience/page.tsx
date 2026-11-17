@@ -7,6 +7,7 @@ import { PROJECT_KIND_LABEL } from "@/components/experience/labels";
 import { RoleList } from "@/components/experience/role-list";
 import { StoryList } from "@/components/experience/story-list";
 import { Markdown } from "@/components/markdown";
+import { NoteWarnings } from "@/components/note-warnings";
 import { Badge } from "@/components/ui/badge";
 import { months } from "@/lib/month";
 
@@ -93,9 +94,12 @@ async function ExperienceData({ searchParams }: Pick<PageProps<"/experience">, "
           Profile
         </h2>
         {profile ? (
-          <div className="rounded-xl border p-3 sm:p-4" data-testid="profile">
-            <Markdown links={profile.links}>{profile.body}</Markdown>
-          </div>
+          <>
+            <NoteWarnings warnings={profile.warnings} testId="profile-warnings" />
+            <div className="rounded-xl border p-3 sm:p-4" data-testid="profile">
+              <Markdown links={profile.links}>{profile.body}</Markdown>
+            </div>
+          </>
         ) : (
           <p className="text-muted-foreground text-sm" data-testid="profile-empty">
             The vault has no profile.

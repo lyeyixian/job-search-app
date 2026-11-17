@@ -16,28 +16,26 @@ const ITEMS = [
 /** The links of the menu. With no `pathname`, no link has the mark of the current part. */
 function MenuLinks({ pathname }: { pathname: string | null }) {
   return (
-    <header className="border-b">
-      <nav aria-label="Menu" className="mx-auto flex w-full max-w-7xl gap-1 px-2 sm:px-4" data-testid="site-menu">
-        {ITEMS.map(({ name, href, paths }) => {
-          const current = paths.some((path) => pathname === path || pathname?.startsWith(`${path}/`));
-          return (
-            <Link
-              key={href}
-              href={href}
-              aria-current={current ? "page" : undefined}
-              className={cn(
-                "-mb-px flex h-11 items-center border-b-2 px-2 text-sm sm:px-3",
-                current
-                  ? "border-foreground font-semibold"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {name}
-            </Link>
-          );
-        })}
-      </nav>
-    </header>
+    <nav aria-label="Menu" className="flex gap-1" data-testid="site-menu">
+      {ITEMS.map(({ name, href, paths }) => {
+        const current = paths.some((path) => pathname === path || pathname?.startsWith(`${path}/`));
+        return (
+          <Link
+            key={href}
+            href={href}
+            aria-current={current ? "page" : undefined}
+            className={cn(
+              "-mb-px flex h-11 items-center border-b-2 px-2 text-sm sm:px-3",
+              current
+                ? "border-foreground font-semibold"
+                : "border-transparent text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {name}
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
 
@@ -46,7 +44,7 @@ function CurrentMenu() {
 }
 
 /**
- * The menu at the top of each page. The feature is docs/features/every-page.md. The address is
+ * The links of the menu at the top of each page. The feature is docs/features/every-page.md. The address is
  * known only at the time of a request, so the mark of the current part comes in after the links.
  */
 export function SiteMenu() {

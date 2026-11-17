@@ -9,6 +9,7 @@ export const problems = {
   route_not_found: { status: 404, title: "Route not found" },
   note_not_found: { status: 404, title: "Note not found" },
   resume_not_found: { status: 404, title: "Resume not found" },
+  vault_pull_failed: { status: 502, title: "Vault pull failed" },
   index_not_ready: { status: 503, title: "Index not ready" },
   internal_error: { status: 500, title: "Internal error" },
 } as const;

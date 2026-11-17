@@ -32,8 +32,11 @@ Only `compose.yaml` comes from this repo. There is no checkout of the app on the
    cd ~/srv/job-search-app
    chmod 700 deploy-key
    ssh-keygen -t ed25519 -N "" -C "job-search-app vault deploy key" -f deploy-key/id_ed25519
+   ssh-keyscan github.com > deploy-key/known_hosts
    cat deploy-key/id_ed25519.pub
    ```
+
+   The API container reads this folder. It trusts only the hosts in `known_hosts`.
 
 2. Add the public key to the vault repo on GitHub, in Settings, Deploy keys. Do not select
    "Allow write access".
@@ -100,18 +103,34 @@ docker image prune
 
 ## Update the vault
 
-The API reads the vault when it starts and keeps the index in memory. The API does not run
-`git pull` yet. Until it does, pull on the server and restart the API.
+Select **Refresh** at the top of a page. The API runs `git pull` in the vault clone, reads each
+note again and shows the new time. The API also pulls when it starts.
+
+The pull only moves forward. Do not commit in the clone on the server.
+
+If Refresh shows "The app could not get the newest vault", read the reason in the log.
 
 ```sh
 cd ~/srv/job-search-app
-git -C vault pull --ff-only
-docker compose restart api
+docker compose logs api | grep "vault pull failed" | tail -n 3
 ```
 
-Because the API does not pull, the deploy key is not mounted in the API container. The key stays
-in `deploy-key/` and only the clone on the server uses it. Add the mount when the API starts to
-pull.
+### An install from before Refresh
+
+An install that is older than Refresh has no `known_hosts` file, and its Compose file does not
+mount the key. Do this one time.
+
+```sh
+cd ~/srv/job-search-app
+ssh-keyscan github.com > deploy-key/known_hosts
+curl -fsSL https://raw.githubusercontent.com/lyeyixian/job-search-app/main/compose.yaml -o compose.yaml
+docker compose pull
+docker compose up -d
+id -u        # 1000
+```
+
+If `id -u` does not show 1000, the API container cannot read the key or write the clone. Give
+both folders to the user 1000: `sudo chown -R 1000:1000 deploy-key vault`.
 
 ## Check the app
 
@@ -119,11 +138,18 @@ pull.
 cd ~/srv/job-search-app
 docker compose ps                                              # both services are Up, api is healthy
 curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:3000/   # 200
-docker compose logs --tail 20 api                              # "vault index built" with a note count
+docker compose logs --tail 20 api                              # "vault index built" with "pulled":true and a note count
 tailscale serve status                                         # the entry that proxies to 127.0.0.1:3000
 ```
 
-Then open the tailnet address in a browser on one of your devices.
+Then open the tailnet address in a browser on one of your devices. Select **Refresh** and make
+sure that the time at the top of the page changes.
+
+Make sure that other devices cannot open the app.
+
+1. On a device that is not in the tailnet, open the tailnet address. The page does not open.
+2. On a second machine of your home network, open `http://<address of the server>:3000`. The page
+   does not open, because Web listens only on `127.0.0.1` of the server.
 
 ## If something is wrong
 
@@ -131,7 +157,8 @@ Then open the tailnet address in a browser on one of your devices.
 |---|---|
 | `api` is not healthy | Read `docker compose logs api`. Make sure that `.env` has `VAULT_DIR=./vault` and that `vault/` holds the clone. |
 | The pages show made-up notes | `VAULT_DIR` is not set, so Compose looked for `fixtures/vault/`. Write `.env` again and run `docker compose up -d`. |
-| `git pull` asks for a password or fails with "Permission denied" | The clone does not use the deploy key, or the key is not on the vault repo. Do step 3 of the first install again. |
+| `git pull` on the server asks for a password or fails with "Permission denied" | The clone does not use the deploy key, or the key is not on the vault repo. Do step 3 of the first install again. |
+| Refresh shows "The app could not get the newest vault" | Read the reason with the command in [Update the vault](#update-the-vault). "Host key verification failed": make `deploy-key/known_hosts` again with `ssh-keyscan`. "Permission denied": the user 1000 does not own `deploy-key/` or `vault/`, or the key is not on the vault repo. "Not possible to fast-forward": the clone has a commit that the vault repo does not have. Remove that commit. |
 | The tailnet address does not open | Run `tailscale serve status`. If the entry is there, approve the host for the service in the admin console. |
 | The app must go back one version | In `compose.yaml` on the server, change `latest` to the commit tag of the last good image for both services. Then run `docker compose up -d`. |
 

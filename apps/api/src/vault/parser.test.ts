@@ -46,3 +46,14 @@ describe("findRevisits", () => {
     expect(findRevisits('team: "the#revisit team"')).toEqual([]);
   });
 });
+
+describe("parseNote, a second time", () => {
+  it("finds the revisit marks again in the same text", () => {
+    const source = "---\ntype: project\nstart: 2020-01    # semester 2 #revisit\n---\nBody\n";
+
+    parseNote("experience/projects/a.md", source);
+    const second = parseNote("experience/projects/a.md", source);
+
+    expect(second.revisits).toEqual([{ field: "start", text: "semester 2" }]);
+  });
+});

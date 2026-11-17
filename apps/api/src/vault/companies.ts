@@ -1,6 +1,6 @@
 import { splitTitle } from "./experience.js";
 import type { VaultIndex } from "./load.js";
-import { checkDay } from "./schema.js";
+import { checkDay, checkNote, type Warning } from "./schema.js";
 import {
   COMPANY_INDEX,
   INDEX_TITLE,
@@ -76,6 +76,8 @@ export type Listing = {
   application: Promotion | null;
   /** The text of the listing as markdown, without the title line. */
   body: string;
+  /** Each field of the listing record that breaks the vault's rules. */
+  warnings: Warning[];
 };
 
 const WATCHLIST = "search/market/watchlist.md";
@@ -281,5 +283,6 @@ export function getListing(index: VaultIndex, company: string, slug: string): Li
     state: row?.state ?? null,
     application: row?.application ?? null,
     body,
+    warnings: checkNote("listing", frontmatter),
   };
 }

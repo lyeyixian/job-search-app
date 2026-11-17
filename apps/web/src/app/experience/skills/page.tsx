@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { getSkills, type SkillsInventory } from "@/api/client";
 import { ApiProblem } from "@/components/api-problem";
 import { Markdown } from "@/components/markdown";
+import { NoteWarnings } from "@/components/note-warnings";
 
 export const metadata: Metadata = { title: "Skills inventory" };
 
@@ -51,7 +52,7 @@ function Category({ name, skills }: { name: string; skills: SkillsInventory["unl
 async function SkillsData() {
   const result = await getSkills();
   if (!result.ok) return <ApiProblem code={result.code} traceId={result.traceId} />;
-  const { pinned, categories, unlisted, links } = result.data;
+  const { pinned, categories, unlisted, links, warnings } = result.data;
 
   if (!pinned && categories.length === 0 && unlisted.length === 0) {
     return (
@@ -63,6 +64,7 @@ async function SkillsData() {
 
   return (
     <div className="flex min-w-0 flex-col gap-6" data-testid="skills-inventory">
+      <NoteWarnings warnings={warnings} />
       {pinned ? (
         <section
           className="flex flex-col gap-2 rounded-xl border bg-muted p-3 sm:p-4"

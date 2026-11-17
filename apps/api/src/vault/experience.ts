@@ -1,5 +1,6 @@
 import type { VaultIndex } from "./load.js";
 import type { Note, Revisit } from "./parser.js";
+import { checkNote, type Warning } from "./schema.js";
 
 /** The kinds of note that have a page of their own. The name of a kind is the name of its folder. */
 export const EXPERIENCE_KINDS = ["roles", "projects", "stories"] as const;
@@ -65,7 +66,7 @@ export type StorySummary = {
 
 export type ExperienceOverview = {
   /** `null` if the vault has no profile. */
-  profile: { body: string; updated: string | null } | null;
+  profile: { body: string; updated: string | null; warnings: Warning[] } | null;
   roles: RoleEntry[];
   projects: ProjectSummary[];
   stories: StorySummary[];
@@ -80,6 +81,8 @@ export type ExperienceNote = {
   achievements: Achievement[];
   skills: Skill[];
   revisits: Revisit[];
+  /** Each field of the note that breaks the vault's rules. */
+  warnings: Warning[];
   /** The facts of a role note. `null` for each other kind. */
   role:
     | (Omit<RoleSummary, "slug" | "title" | "programme"> & {
@@ -109,6 +112,8 @@ export type InventorySkill = Skill & {
 
 export type SkillsInventory = {
   updated: string | null;
+  /** Each field of the inventory that breaks the vault's rules. */
+  warnings: Warning[];
   /** The `Pinned` section of the inventory, as markdown. Can be empty. */
   pinned: string;
   categories: { name: string; skills: InventorySkill[] }[];
@@ -283,7 +288,13 @@ function storySummary(index: VaultIndex, note: Note): StorySummary {
 export function getOverview(index: VaultIndex): ExperienceOverview {
   const profile = index.notes.get("experience/profile.md");
   return {
-    profile: profile ? { body: splitTitle(profile.body).body, updated: monthOrDay(profile.frontmatter.updated) } : null,
+    profile: profile
+      ? {
+          body: splitTitle(profile.body).body,
+          updated: monthOrDay(profile.frontmatter.updated),
+          warnings: checkNote("profile", profile.frontmatter),
+        }
+      : null,
     roles: getRoles(index),
     projects: notesOf(index, "projects").map(projectSummary).sort(newestFirst),
     stories: notesOf(index, "stories")
@@ -371,8 +382,10 @@ export function getSkills(index: VaultIndex): SkillsInventory {
   const inventory = readInventory(index);
   const uses = skillUses(index);
   const names = skillNames(inventory);
+  const note = index.notes.get(INVENTORY);
   return {
     updated: inventory.updated,
+    warnings: note ? checkNote("skills", note.frontmatter) : [],
     pinned: inventory.pinned,
     categories: inventory.categories.map(({ name, skills }) => ({
       name,
@@ -409,6 +422,8 @@ export function getSkill(index: VaultIndex, slug: string): SkillUse | null {
   };
 }
 
+const NOTE_TYPE = { roles: "role", projects: "project", stories: "story" } as const;
+
 /** The `###` headings below the `## Achievements` heading. */
 function achievementsOf(body: string): Achievement[] {
   const achievements: Achievement[] = [];
@@ -437,6 +452,7 @@ export function getExperienceNote(index: VaultIndex, kind: ExperienceKind, slug:
     achievements: kind === "stories" ? [] : achievementsOf(body),
     skills: kind === "stories" ? [] : skillsOf(note, skillNames(readInventory(index))),
     revisits: note.revisits,
+    warnings: checkNote(NOTE_TYPE[kind], note.frontmatter),
     role: null,
     project: null,
     story: null,
