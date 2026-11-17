@@ -16,6 +16,8 @@ FROM node:26-slim
 RUN apt-get update \
   && apt-get install -y --no-install-recommends git openssh-client ca-certificates \
   && rm -rf /var/lib/apt/lists/*
+# The vault clone is a folder of the server. git must not refuse it because of its owner.
+RUN git config --system --add safe.directory '*'
 ENV NODE_ENV=production PORT=3001
 WORKDIR /app
 COPY --from=build /out/package.json ./

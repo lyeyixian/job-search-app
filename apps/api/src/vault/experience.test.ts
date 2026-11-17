@@ -157,6 +157,7 @@ describe("getRoles", () => {
       ]),
       files: new Set(),
       loadedAt: new Date(),
+      commit: null,
     };
 
     expect(getRoles(made).map((entry) => entry.slug)).toEqual(["programme", "between", "orphan"]);

@@ -13,16 +13,21 @@ export const HealthStatus = {
   ok: 'ok',
 } as const;
 
-export type HealthVault = {
+export interface VaultState {
   /** The count of notes in the vault index. */
   notes: number;
-  /** The time that the API built the vault index. */
+  /** The time of the last update from the vault. The API built the vault index at this time. */
   loadedAt: string;
-};
+  /**
+     * The commit of the vault clone that the index shows. `null` if the vault is not a git clone.
+     * @nullable
+     */
+  commit: string | null;
+}
 
 export interface Health {
   status: HealthStatus;
-  vault: HealthVault;
+  vault: VaultState;
 }
 
 /**
@@ -37,6 +42,11 @@ export interface Problem {
   code: string;
   traceId: string;
 }
+
+export type Refresh = VaultState & {
+  /** `true` if the API ran `git pull`. `false` if the vault is not a git clone with a remote. Then the API only read the files again. */
+  pulled: boolean;
+};
 
 export type ApplicationListChoicesRegionsItem = typeof ApplicationListChoicesRegionsItem[keyof typeof ApplicationListChoicesRegionsItem];
 
@@ -533,6 +543,8 @@ export type ExperienceOverviewProfile = {
      * @nullable
      */
   updated: string | null;
+  /** Each field of the note that breaks the vault's rules. */
+  warnings: Warning[];
   /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
   links: ResolvedLink[];
 } | null;
@@ -676,6 +688,8 @@ export interface SkillsInventory {
      * @nullable
      */
   updated: string | null;
+  /** Each field of the note that breaks the vault's rules. */
+  warnings: Warning[];
   /** The `Pinned` section of the inventory, as markdown. Can be empty. */
   pinned: string;
   /** The categories in the order of the inventory. */
@@ -870,6 +884,8 @@ export interface ExperienceNote {
   skills: Skill[];
   /** Each frontmatter key whose line has a comment with the tag `#revisit`. A tag in the text of the note stays in `body`. */
   revisits: ExperienceNoteRevisitsItem[];
+  /** Each field of the note that breaks the vault's rules. */
+  warnings: Warning[];
   /**
      * The facts of a role note. `null` for each other kind.
      * @nullable
@@ -1204,6 +1220,8 @@ export interface Listing {
   application: ListingApplication;
   /** The text of the listing as the job board had it, as markdown, without the title line. */
   body: string;
+  /** Each field of the note that breaks the vault's rules. */
+  warnings: Warning[];
   /** Each `[[wikilink]]` in the markdown of this response, one time, with its target. The markdown keeps the links as the note writes them. */
   links: ResolvedLink[];
   /** Each note that names this note in its text, in its facts or in the evidence of its fit analysis. The notes of one kind are together, in the order of the titles. */
@@ -1321,6 +1339,50 @@ export const getHealth = async ( options?: Parameters<typeof apiFetch>[1]): Prom
   {
     ...options,
     method: 'GET'
+
+
+  }
+);}
+
+
+
+export type refreshVaultResponse200 = {
+  data: Refresh
+  status: 200
+}
+
+export type refreshVaultResponse502 = {
+  data: Problem
+  status: 502
+}
+
+export type refreshVaultResponseSuccess = (refreshVaultResponse200) & {
+  headers: Headers;
+};
+export type refreshVaultResponseError = (refreshVaultResponse502) & {
+  headers: Headers;
+};
+
+export type refreshVaultResponse = (refreshVaultResponseSuccess | refreshVaultResponseError)
+
+export const getRefreshVaultUrl = () => {
+
+
+
+
+  return `/api/refresh`
+}
+
+/**
+ * Runs `git pull` in the vault clone, reads each note and replaces the vault index in one step. If the pull fails, the old index stays.
+ * @summary Get the newest saved vault and build the vault index again
+ */
+export const refreshVault = async ( options?: Parameters<typeof apiFetch>[1]): Promise<refreshVaultResponse> => {
+
+  return apiFetch<refreshVaultResponse>(getRefreshVaultUrl(),
+  {
+    ...options,
+    method: 'POST'
 
 
   }

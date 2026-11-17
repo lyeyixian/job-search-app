@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# The deploy key of the vault, if Compose runs in this folder
+/deploy-key/
+
 # Local copies of the private vault
 /experience-vault/
 /vault/

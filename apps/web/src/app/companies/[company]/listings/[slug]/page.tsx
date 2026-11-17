@@ -9,6 +9,7 @@ import { Fact } from "@/components/companies/fact";
 import { StateLabel, TriageBadge } from "@/components/companies/listing-labels";
 import { Markdown } from "@/components/markdown";
 import { MissingLink } from "@/components/note-link";
+import { NoteWarnings } from "@/components/note-warnings";
 import { day } from "@/lib/day";
 
 // The feature is docs/features/company-listings.md.
@@ -31,7 +32,7 @@ async function ListingData({ params }: Pick<PageProps<"/companies/[company]/list
   }
   const { companyName, title, region, level, firstSeen, lastSeen, url, triage, reason, state, application, body } =
     result.data;
-  const { links, backlinks } = result.data;
+  const { links, backlinks, warnings } = result.data;
   const notOpen = state === "closed" || state === "unknown";
 
   return (
@@ -45,6 +46,7 @@ async function ListingData({ params }: Pick<PageProps<"/companies/[company]/list
           {companyName}
         </p>
       </div>
+      <NoteWarnings warnings={warnings} />
 
       {notOpen ? (
         <p className="rounded-md border border-dashed bg-muted px-3 py-2 text-sm" data-testid="listing-not-open">

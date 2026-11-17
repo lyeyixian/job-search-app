@@ -100,14 +100,15 @@ sequenceDiagram
 | `VAULT_PATH` | Compose file on the server | The folder of the vault clone inside the API container |
 | `API_URL` | Compose file on the server | The address of the API on the Docker network, for Web |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | The `tracing` profile of the Compose file | Where both services send traces. Not set in normal use. |
-| Deploy key path | Compose file on the server | The key that `git pull` uses |
+| `DEPLOY_KEY_DIR` | The environment of `docker compose` on the server | The folder with the deploy key and `known_hosts`. Compose mounts it read-only at `/deploy-key`. The default is `./deploy-key`. |
+| `GIT_SSH_COMMAND` | Compose file on the server | Makes `git pull` use the key and the `known_hosts` file in `/deploy-key` |
 
 No setting holds a secret value. The key is a file on the server and is never in the repo or the
 image.
 
 ## One-time setup on the server
 
-1. Create an SSH key on the server.
+1. Create an SSH key on the server, and save the host key of GitHub next to it.
 2. Add the public key to the vault repo as a deploy key. Do not give it write access.
 3. Clone the vault into the volume.
 4. Copy the Compose file to the server and set `VAULT_DIR`.
@@ -116,5 +117,5 @@ image.
 
 The commands for each step, and for an update, are in the [Server runbook](server-runbook.md).
 
-The API does not run `git pull` yet. Until it does, the key is not mounted in the API container,
-and the vault clone is updated by hand on the server.
+The API runs `git pull` in the vault clone when it starts and on each Refresh. The API container
+runs as the user with the id 1000. That user must own the vault clone and the deploy key folder.

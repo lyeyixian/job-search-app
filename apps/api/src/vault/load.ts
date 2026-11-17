@@ -9,6 +9,8 @@ export type VaultIndex = {
   files: Set<string>;
   /** The time that this index was built. */
   loadedAt: Date;
+  /** The commit of the vault clone that the index shows. `null` if the vault is not a git clone. */
+  commit: string | null;
 };
 
 async function allFiles(dir: string): Promise<string[]> {
@@ -27,7 +29,7 @@ async function allFiles(dir: string): Promise<string[]> {
 }
 
 /** Reads every markdown file below `vaultPath`, records the path of every file, and builds a new index. */
-export async function loadVault(vaultPath: string): Promise<VaultIndex> {
+export async function loadVault(vaultPath: string, commit: string | null = null): Promise<VaultIndex> {
   const notes = new Map<string, Note>();
   const files = new Set<string>();
   for (const file of await allFiles(vaultPath)) {
@@ -37,5 +39,5 @@ export async function loadVault(vaultPath: string): Promise<VaultIndex> {
       notes.set(path, parseNote(path, await readFile(file, "utf8")));
     }
   }
-  return { notes, files, loadedAt: new Date() };
+  return { notes, files, loadedAt: new Date(), commit };
 }

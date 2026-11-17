@@ -94,3 +94,67 @@ export function checkApplicationDetail(frontmatter: Record<string, unknown>): {
 } {
   return check<ApplicationDetailFrontmatter>(applicationDetailFields, frontmatter);
 }
+
+const words = z.string().trim().min(1);
+const month = z.string().regex(/^\d{4}-\d{2}$/);
+const monthOrDay = z.union([day, month]);
+const slugList = z.array(z.string().min(1));
+const webAddress = z.url({ protocol: /^https?$/ });
+
+type Rule = { schema: z.ZodType; optional?: true };
+
+/** The keys of each other note type that has a page. SCHEMA.md of the vault has the rules. */
+const noteRules = {
+  role: {
+    company: { schema: words },
+    title: { schema: words },
+    team: { schema: words },
+    programme: { schema: words, optional: true },
+    start: { schema: month },
+    end: { schema: month.nullable() },
+    skills: { schema: slugList },
+  },
+  project: {
+    kind: { schema: z.enum(["open-source", "coursework", "hackathon", "side-project"]) },
+    start: { schema: month },
+    end: { schema: month.nullable() },
+    skills: { schema: slugList },
+    link: { schema: webAddress, optional: true },
+    "on-profile": { schema: z.boolean() },
+  },
+  story: {
+    competencies: { schema: slugList },
+    roles: { schema: slugList },
+  },
+  profile: { updated: { schema: monthOrDay } },
+  skills: { updated: { schema: monthOrDay } },
+  listing: {
+    company: { schema: words },
+    // YAML reads an id of only digits as a number.
+    "board-id": { schema: z.union([words, z.number()]) },
+    title: { schema: words },
+    url: { schema: webAddress },
+    region: { schema: words },
+    "level-hint": { schema: words },
+    "first-seen": { schema: day },
+  },
+} satisfies Record<string, Record<string, Rule>>;
+
+export type CheckedNoteType = keyof typeof noteRules;
+
+/**
+ * The warnings of a note of one of the types above. Never throws. A required key with no value
+ * or with a value that the rules do not permit gets a warning. An optional key gets a warning
+ * only if the note has it with a value that the rules do not permit.
+ */
+export function checkNote(type: CheckedNoteType, frontmatter: Record<string, unknown>): Warning[] {
+  const warnings: Warning[] = [];
+  for (const [field, rule] of Object.entries<Rule>(noteRules[type])) {
+    if (!(field in frontmatter)) {
+      if (!rule.optional) warnings.push({ field, problem: "missing" });
+    } else if (!rule.schema.safeParse(frontmatter[field]).success) {
+      warnings.push({ field, problem: "invalid" });
+    }
+  }
+  return warnings;
+}

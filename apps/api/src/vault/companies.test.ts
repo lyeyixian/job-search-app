@@ -17,6 +17,7 @@ function indexOf(notes: Record<string, string>): VaultIndex {
     notes: new Map(Object.entries(notes).map(([path, source]) => [path, parseNote(path, source)])),
     files: new Set(Object.keys(notes)),
     loadedAt: new Date(),
+    commit: null,
   };
 }
 
@@ -204,6 +205,7 @@ describe("getListing", () => {
       level: "Mid",
       firstSeen: "2026-10-01",
       url: "https://example.com/careers/1001",
+      warnings: [],
       triage: "shortlist",
       reason: "Backend work on developer tools",
       lastSeen: "2026-10-20",

@@ -26,6 +26,11 @@ apps/web/e2e/application-board.spec.ts
 - The criteria in [Every page](../features/every-page.md) have their own spec file.
 - Each test runs at a desktop size and a phone size.
 - A criterion that cannot be tested in a browser says so in a skipped test with the reason.
+- The browser test of Refresh runs on the fixture vault, where Refresh does not pull. The API
+  tests in `apps/api/src/vault/sync.test.ts` make a git repo and a clone of it in a temporary
+  folder, and check that a Refresh shows a note that the repo got after the first load.
+- The browser test of "The app changes nothing" compares a hash of the fixture vault before and
+  after it uses each feature.
 
 ## The fixture vault
 
@@ -35,6 +40,7 @@ It has at least one note for each case that a criterion names:
 - an application in each status except `offer`, with and without a tailored resume. No
   application has the status `offer`, because a criterion of the board needs an empty column.
 - a note with a missing field and a note with a value that the schema does not permit
+- a project note with a link that is not a web address, and a listing record with no `board-id`
 - an application with a status that the schema does not permit and with no verdict
 - a gap that names no bridging action
 - a link to a note that does not exist, and a link to an achievement that does not exist

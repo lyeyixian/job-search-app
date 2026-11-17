@@ -4,6 +4,7 @@ kind: coursework
 start: 2020-01    # semester 2 #revisit exact months
 end: 2020-05
 skills: [java]
+link: github.com/example/course-compiler
 on-profile: false
 ---
 ## Context

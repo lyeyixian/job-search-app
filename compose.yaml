@@ -3,6 +3,7 @@
 #
 # On the server, set VAULT_DIR to the folder of the vault clone.
 # With no VAULT_DIR, the API shows the made-up vault in fixtures/vault/.
+# The API pulls the vault clone with the deploy key in DEPLOY_KEY_DIR. The default is ./deploy-key.
 services:
   api:
     image: ghcr.io/lyeyixian/job-search-app-api:latest
@@ -11,8 +12,13 @@ services:
       dockerfile: apps/api/Dockerfile
     environment:
       VAULT_PATH: /vault
+      # git uses the deploy key and trusts only the hosts in known_hosts.
+      GIT_SSH_COMMAND: >-
+        ssh -i /deploy-key/id_ed25519 -o IdentitiesOnly=yes
+        -o UserKnownHostsFile=/deploy-key/known_hosts -o StrictHostKeyChecking=yes
     volumes:
       - ${VAULT_DIR:-./fixtures/vault}:/vault
+      - ${DEPLOY_KEY_DIR:-./deploy-key}:/deploy-key:ro
     healthcheck:
       test:
         [

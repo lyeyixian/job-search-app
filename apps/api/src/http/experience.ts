@@ -9,6 +9,7 @@ import {
 } from "../vault/experience.js";
 import { linksOf, noteLinks, notePath } from "../vault/links.js";
 import type { VaultStore } from "../vault/store.js";
+import { WarningSchema } from "./applications.js";
 import { backlinks, links } from "./links.js";
 import { type AppEnv, problem, problemContent } from "./problem.js";
 
@@ -100,6 +101,9 @@ export const ExperienceOverviewSchema = z
       .object({
         body: z.string().openapi({ description: "The profile without its title. Markdown." }),
         updated,
+        warnings: z
+          .array(WarningSchema)
+          .openapi({ description: "Each field of the note that breaks the vault's rules." }),
         links,
       })
       .nullable()
@@ -168,6 +172,7 @@ export const ExperienceNoteSchema = z
         description:
           "Each frontmatter key whose line has a comment with the tag `#revisit`. A tag in the text of the note stays in `body`.",
       }),
+    warnings: z.array(WarningSchema).openapi({ description: "Each field of the note that breaks the vault's rules." }),
     role: z
       .object({
         ...roleFacts,
@@ -211,6 +216,7 @@ export const ExperienceNoteSchema = z
 export const SkillsInventorySchema = z
   .object({
     updated,
+    warnings: z.array(WarningSchema).openapi({ description: "Each field of the note that breaks the vault's rules." }),
     pinned: z.string().openapi({
       description: "The `Pinned` section of the inventory, as markdown. Can be empty.",
     }),

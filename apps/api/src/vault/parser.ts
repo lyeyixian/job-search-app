@@ -71,7 +71,10 @@ export function findLinks(body: string): NoteLink[] {
 
 /** Splits a note into frontmatter and body, and finds its links. */
 export function parseNote(path: string, source: string): Note {
-  const { data, content, matter: rawFrontmatter } = matter(source);
+  // With options, gray-matter does not use its cache. A cached result has no `matter`, so a second
+  // parse of the same text, as on a Refresh, would lose the revisit marks. The cache also grows on
+  // each Refresh.
+  const { data, content, matter: rawFrontmatter } = matter(source, {});
   const fileName = path.split("/").at(-1) ?? path;
   return {
     path,
