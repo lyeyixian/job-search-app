@@ -32,6 +32,10 @@ The app shows your real notes, with the changes that you did not push.
 | A folder with no git remote | That folder | Reads the files again. No pull. |
 | A git clone with a remote | That clone | Runs `git pull`, then reads the files. |
 
+The API also pulls when it starts, by the same rule. The pull uses your own git login and only
+moves forward. Changes that you did not commit stay. If the pull fails, the API shows the clone
+as it is. To stop the pull, point `VAULT_PATH` at a folder with no git remote.
+
 ## Commands
 
 | Command | Result |
